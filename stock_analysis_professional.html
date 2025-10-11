@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>专业量化股票分析系统</title>
-    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -1764,136 +1762,191 @@
             drawSupportResistanceChart(data);
         }
 
-        // K线图
+        // K线图（使用Chart.js实现，更稳定）
         function drawCandlestickChart(data, indicators) {
             const container = document.getElementById('candlestickChart');
-            container.innerHTML = '';
+            container.innerHTML = '<canvas id="candleCanvas"></canvas>';
             
-            const chart = LightweightCharts.createChart(container, {
-                width: container.clientWidth,
-                height: container.clientHeight,
-                layout: {
-                    background: { color: '#0f1429' },
-                    textColor: '#aaa',
-                },
-                grid: {
-                    vertLines: { color: '#2d3561' },
-                    horzLines: { color: '#2d3561' },
-                },
-                crosshair: {
-                    mode: LightweightCharts.CrosshairMode.Normal,
-                },
-                rightPriceScale: {
-                    borderColor: '#2d3561',
-                },
-                timeScale: {
-                    borderColor: '#2d3561',
-                    timeVisible: true,
-                },
-            });
+            const ctx = document.getElementById('candleCanvas').getContext('2d');
+            if (charts.candlestick) charts.candlestick.destroy();
 
-            // K线
-            const candlestickSeries = chart.addCandlestickSeries({
-                upColor: '#22c55e',
-                downColor: '#ef4444',
-                borderUpColor: '#22c55e',
-                borderDownColor: '#ef4444',
-                wickUpColor: '#22c55e',
-                wickDownColor: '#ef4444',
-            });
-
+            const dates = data.map(d => d.date);
+            
+            // 创建K线的高低点数据
             const candleData = data.map(d => ({
-                time: d.date,
-                open: d.open,
-                high: d.high,
-                low: d.low,
-                close: d.close
+                x: d.date,
+                o: d.open,
+                h: d.high,
+                l: d.low,
+                c: d.close
             }));
-            candlestickSeries.setData(candleData);
 
-            // 均线
-            const maLines = [
-                { data: indicators.ma5, color: '#22c55e', title: 'MA5' },
-                { data: indicators.ma10, color: '#f59e0b', title: 'MA10' },
-                { data: indicators.ma20, color: '#a855f7', title: 'MA20' },
-                { data: indicators.ma60, color: '#ec4899', title: 'MA60' }
-            ];
-
-            maLines.forEach(ma => {
-                if (ma.data.some(v => v !== null)) {
-                    const series = chart.addLineSeries({
-                        color: ma.color,
-                        lineWidth: 2,
-                        title: ma.title
-                    });
-                    const lineData = data.map((d, i) => ({
-                        time: d.date,
-                        value: ma.data[i]
-                    })).filter(d => d.value !== null);
-                    series.setData(lineData);
-                }
-            });
-
-            chart.timeScale().fitContent();
-            charts.candlestick = chart;
-
-            window.addEventListener('resize', () => {
-                if (charts.candlestick) {
-                    charts.candlestick.applyOptions({
-                        width: container.clientWidth,
-                        height: container.clientHeight
-                    });
+            charts.candlestick = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: '最高价',
+                            data: data.map(d => d.high),
+                            borderColor: 'rgba(79, 172, 254, 0.3)',
+                            backgroundColor: 'rgba(79, 172, 254, 0.05)',
+                            borderWidth: 1,
+                            fill: true,
+                            pointRadius: 0,
+                            tension: 0.1
+                        },
+                        {
+                            label: '最低价',
+                            data: data.map(d => d.low),
+                            borderColor: 'rgba(79, 172, 254, 0.3)',
+                            backgroundColor: 'rgba(79, 172, 254, 0.05)',
+                            borderWidth: 1,
+                            fill: '-1',
+                            pointRadius: 0,
+                            tension: 0.1
+                        },
+                        {
+                            label: '收盘价',
+                            data: data.map(d => d.close),
+                            borderColor: '#4facfe',
+                            borderWidth: 3,
+                            fill: false,
+                            pointRadius: 0,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'MA5',
+                            data: indicators.ma5,
+                            borderColor: '#22c55e',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'MA10',
+                            data: indicators.ma10,
+                            borderColor: '#f59e0b',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'MA20',
+                            data: indicators.ma20,
+                            borderColor: '#a855f7',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'MA60',
+                            data: indicators.ma60,
+                            borderColor: '#ec4899',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: { color: '#aaa' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const idx = context.dataIndex;
+                                    const d = data[idx];
+                                    if (context.dataset.label === '收盘价') {
+                                        return [
+                                            `开: ${d.open.toFixed(2)}`,
+                                            `高: ${d.high.toFixed(2)}`,
+                                            `低: ${d.low.toFixed(2)}`,
+                                            `收: ${d.close.toFixed(2)}`
+                                        ];
+                                    }
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#2d3561' },
+                            ticks: { color: '#aaa', maxTicksLimit: 15 }
+                        },
+                        y: {
+                            grid: { color: '#2d3561' },
+                            ticks: { color: '#aaa' }
+                        }
+                    }
                 }
             });
         }
 
-        // 布林带图表
+        // 布林带图表（使用Chart.js）
         function drawBollingerChartLW(data, indicators) {
             const container = document.getElementById('bollingerChart');
-            container.innerHTML = '';
+            container.innerHTML = '<canvas id="bollingerCanvas"></canvas>';
             
-            const chart = LightweightCharts.createChart(container, {
-                width: container.clientWidth,
-                height: container.clientHeight,
-                layout: {
-                    background: { color: '#0f1429' },
-                    textColor: '#aaa',
-                },
-                grid: {
-                    vertLines: { color: '#2d3561' },
-                    horzLines: { color: '#2d3561' },
-                },
-                rightPriceScale: {
-                    borderColor: '#2d3561',
-                },
-                timeScale: {
-                    borderColor: '#2d3561',
-                },
-            });
+            const ctx = document.getElementById('bollingerCanvas').getContext('2d');
+            if (charts.bollinger) charts.bollinger.destroy();
 
-            // 价格线
-            const priceSeries = chart.addLineSeries({
-                color: '#4facfe',
-                lineWidth: 2
-            });
-            priceSeries.setData(data.map(d => ({ time: d.date, value: d.close })));
+            const dates = data.map(d => d.date);
 
-            // 布林带
-            ['upper', 'middle', 'lower'].forEach((band, i) => {
-                const series = chart.addLineSeries({
-                    color: i === 0 ? '#ef4444' : i === 1 ? '#facc15' : '#22c55e',
-                    lineWidth: 1.5,
-                    lineStyle: i === 1 ? 0 : 2
-                });
-                const bandData = data.map((d, idx) => ({
-                    time: d.date,
-                    value: indicators.bollinger[band][idx]
-                })).filter(d => d.value !== null);
-                series.setData(bandData);
+            charts.bollinger = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: '上轨',
+                            data: indicators.bollinger.upper,
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '中轨',
+                            data: indicators.bollinger.middle,
+                            borderColor: '#facc15',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '下轨',
+                            data: indicators.bollinger.lower,
+                            borderColor: '#22c55e',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '收盘价',
+                            data: data.map(d => d.close),
+                            borderColor: '#4facfe',
+                            backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: getChartOptions()
             });
-
-            chart.timeScale().fitContent();
-            charts.bollinger = chart;
         }
 
         // 其他图表函数（使用Chart.js）
@@ -2172,62 +2225,55 @@
 
         function drawSupportResistanceChart(data) {
             const container = document.getElementById('supportResistanceChart');
-            container.innerHTML = '';
+            container.innerHTML = '<canvas id="supportResistanceCanvas"></canvas>';
             
+            const ctx = document.getElementById('supportResistanceCanvas').getContext('2d');
+            if (charts.supportResistance) charts.supportResistance.destroy();
+
             // 计算支撑压力位
             const highs = data.map(d => d.high);
             const lows = data.map(d => d.low);
             const resistance = Math.max(...highs.slice(-20));
             const support = Math.min(...lows.slice(-20));
             
-            const chart = LightweightCharts.createChart(container, {
-                width: container.clientWidth,
-                height: container.clientHeight,
-                layout: {
-                    background: { color: '#0f1429' },
-                    textColor: '#aaa',
+            const dates = data.map(d => d.date);
+
+            charts.supportResistance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: '收盘价',
+                            data: data.map(d => d.close),
+                            borderColor: '#4facfe',
+                            backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '压力位',
+                            data: data.map(() => resistance),
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
+                            borderDash: [10, 5],
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '支撑位',
+                            data: data.map(() => support),
+                            borderColor: '#22c55e',
+                            borderWidth: 2,
+                            borderDash: [10, 5],
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
                 },
-                grid: {
-                    vertLines: { color: '#2d3561' },
-                    horzLines: { color: '#2d3561' },
-                },
+                options: getChartOptions()
             });
-
-            const priceSeries = chart.addCandlestickSeries({
-                upColor: '#22c55e',
-                downColor: '#ef4444',
-                borderUpColor: '#22c55e',
-                borderDownColor: '#ef4444',
-                wickUpColor: '#22c55e',
-                wickDownColor: '#ef4444',
-            });
-
-            priceSeries.setData(data.map(d => ({
-                time: d.date,
-                open: d.open,
-                high: d.high,
-                low: d.low,
-                close: d.close
-            })));
-
-            // 支撑线
-            const supportSeries = chart.addLineSeries({
-                color: '#22c55e',
-                lineWidth: 2,
-                lineStyle: 2
-            });
-            supportSeries.setData(data.map(d => ({ time: d.date, value: support })));
-
-            // 压力线
-            const resistanceSeries = chart.addLineSeries({
-                color: '#ef4444',
-                lineWidth: 2,
-                lineStyle: 2
-            });
-            resistanceSeries.setData(data.map(d => ({ time: d.date, value: resistance })));
-
-            chart.timeScale().fitContent();
-            charts.supportResistance = chart;
         }
 
         // 形态识别
