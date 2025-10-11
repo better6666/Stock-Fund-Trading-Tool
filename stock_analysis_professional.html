@@ -838,67 +838,117 @@
             }
         }
 
-        // 从Yahoo Finance获取数据
-        async function fetchFromYahoo(symbol, range) {
-            try {
-                // 使用Yahoo Finance的查询API
-                const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
-                const period2 = Math.floor(Date.now() / 1000);
-                
-                const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
-                
-                console.log('Fetching data from:', url);
-                
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+        // 多数据源配置（自动切换，无需手动配置）
+        const dataSources = [
+            {
+                name: 'Yahoo Finance Direct',
+                fetch: async (symbol, range) => {
+                    const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
+                    const period2 = Math.floor(Date.now() / 1000);
+                    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
+                    const response = await fetch(url);
+                    return await response.json();
                 }
-                
-                const json = await response.json();
-                console.log('Response:', json);
-                
-                if (json.chart && json.chart.result && json.chart.result[0]) {
-                    const result = json.chart.result[0];
-                    
-                    if (!result.timestamp || result.timestamp.length === 0) {
-                        throw new Error('没有可用的历史数据');
-                    }
-                    
-                    const timestamps = result.timestamp;
-                    const quotes = result.indicators.quote[0];
-                    
-                    const data = timestamps.map((time, i) => ({
-                        date: new Date(time * 1000).toISOString().split('T')[0],
-                        open: quotes.open[i] || quotes.close[i],
-                        high: quotes.high[i] || quotes.close[i],
-                        low: quotes.low[i] || quotes.close[i],
-                        close: quotes.close[i],
-                        volume: quotes.volume[i] || 0
-                    })).filter(d => d.close !== null && d.close !== undefined);
-                    
-                    if (data.length === 0) {
-                        throw new Error('过滤后没有有效数据');
-                    }
-                    
-                    console.log('Parsed data:', data.length, 'records');
-                    
-                    // 获取基本面信息
-                    fetchCompanyInfo(symbol).catch(err => {
-                        console.warn('Failed to fetch company info:', err);
-                        displayBasicInfo(symbol);
-                    });
-                    
-                    return data;
-                } else if (json.chart && json.chart.error) {
-                    throw new Error(json.chart.error.description || '数据获取失败');
+            },
+            {
+                name: 'Yahoo Finance via CORS Proxy 1',
+                fetch: async (symbol, range) => {
+                    const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
+                    const period2 = Math.floor(Date.now() / 1000);
+                    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                    const response = await fetch(proxyUrl);
+                    return await response.json();
                 }
-                
-                throw new Error('未找到数据，请检查股票代码');
-            } catch (error) {
-                console.error('Yahoo Finance error:', error);
-                throw new Error(`获取数据失败: ${error.message}`);
+            },
+            {
+                name: 'Yahoo Finance via CORS Proxy 2',
+                fetch: async (symbol, range) => {
+                    const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
+                    const period2 = Math.floor(Date.now() / 1000);
+                    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
+                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+                    const response = await fetch(proxyUrl);
+                    return await response.json();
+                }
+            },
+            {
+                name: 'Yahoo Finance via CORS Proxy 3',
+                fetch: async (symbol, range) => {
+                    const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
+                    const period2 = Math.floor(Date.now() / 1000);
+                    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
+                    const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
+                    const response = await fetch(proxyUrl);
+                    return await response.json();
+                }
             }
+        ];
+
+        // 自动尝试多个数据源
+        async function fetchFromYahoo(symbol, range) {
+            let lastError = null;
+            
+            for (let i = 0; i < dataSources.length; i++) {
+                const source = dataSources[i];
+                try {
+                    console.log(`🔄 尝试数据源 ${i + 1}/${dataSources.length}: ${source.name}`);
+                    
+                    const json = await source.fetch(symbol, range);
+                    console.log('Response:', json);
+                    
+                    if (json.chart && json.chart.result && json.chart.result[0]) {
+                        const result = json.chart.result[0];
+                        
+                        if (!result.timestamp || result.timestamp.length === 0) {
+                            throw new Error('没有可用的历史数据');
+                        }
+                        
+                        const timestamps = result.timestamp;
+                        const quotes = result.indicators.quote[0];
+                        
+                        const data = timestamps.map((time, i) => ({
+                            date: new Date(time * 1000).toISOString().split('T')[0],
+                            open: quotes.open[i] || quotes.close[i],
+                            high: quotes.high[i] || quotes.close[i],
+                            low: quotes.low[i] || quotes.close[i],
+                            close: quotes.close[i],
+                            volume: quotes.volume[i] || 0
+                        })).filter(d => d.close !== null && d.close !== undefined);
+                        
+                        if (data.length === 0) {
+                            throw new Error('过滤后没有有效数据');
+                        }
+                        
+                        console.log(`✅ 成功！使用 ${source.name}，获取 ${data.length} 条数据`);
+                        
+                        // 获取基本面信息
+                        fetchCompanyInfo(symbol).catch(err => {
+                            console.warn('Failed to fetch company info:', err);
+                            displayBasicInfo(symbol);
+                        });
+                        
+                        return data;
+                    } else if (json.chart && json.chart.error) {
+                        throw new Error(json.chart.error.description || '数据获取失败');
+                    }
+                    
+                    throw new Error('未找到数据');
+                } catch (error) {
+                    console.warn(`❌ ${source.name} 失败:`, error.message);
+                    lastError = error;
+                    
+                    // 如果不是最后一个数据源，继续尝试下一个
+                    if (i < dataSources.length - 1) {
+                        console.log('继续尝试下一个数据源...');
+                        continue;
+                    }
+                }
+            }
+            
+            // 所有数据源都失败了
+            console.error('❌ 所有数据源都失败了');
+            throw new Error(`所有数据源都无法访问。最后错误: ${lastError?.message || '未知错误'}`);
         }
 
         // 获取公司基本面信息
