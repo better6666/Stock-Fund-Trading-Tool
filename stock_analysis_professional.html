@@ -1,0 +1,2146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业量化股票分析系统</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightweight-charts/3.8.0/lightweight-charts.standalone.production.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: #0a0e27;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #2d3561;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .search-section {
+            background: #1a1f3a;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #2d3561;
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .search-input {
+            flex: 1;
+            min-width: 300px;
+            background: #0f1429;
+            border: 2px solid #2d3561;
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+        select {
+            background: #0f1429;
+            border: 2px solid #2d3561;
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        select:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #4facfe;
+        }
+        .loading.active {
+            display: block;
+        }
+        .spinner {
+            border: 4px solid #2d3561;
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #2d3561;
+        }
+        .stat-card.bullish {
+            background: linear-gradient(135deg, #134e48 0%, #267871 100%);
+        }
+        .stat-card.bearish {
+            background: linear-gradient(135deg, #7b1e3d 0%, #a32952 100%);
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-change {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        .card {
+            background: #1a1f3a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #2d3561;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #4facfe;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chart-container {
+            background: #0f1429;
+            border-radius: 8px;
+            padding: 15px;
+            height: 500px;
+        }
+        .chart-container.small {
+            height: 350px;
+        }
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 20px;
+        }
+        .signals {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .signal {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            border: 1px solid;
+        }
+        .signal.buy {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+        .signal.sell {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        .signal.neutral {
+            background: rgba(250, 204, 21, 0.2);
+            border-color: #facc15;
+            color: #facc15;
+        }
+        .indicator-panel {
+            background: #0f1429;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .indicator-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #2d3561;
+        }
+        .indicator-row:last-child {
+            border-bottom: none;
+        }
+        .indicator-name {
+            color: #aaa;
+            font-size: 14px;
+        }
+        .indicator-value {
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .bullish-text {
+            color: #22c55e;
+        }
+        .bearish-text {
+            color: #ef4444;
+        }
+        .neutral-text {
+            color: #facc15;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            background: #1a1f3a;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #2d3561;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .tab:hover {
+            background: #2d3561;
+            border-color: #4facfe;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+        }
+        .content {
+            display: none;
+        }
+        .content.active {
+            display: block;
+        }
+        .info-box {
+            background: #0f1429;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+            margin-bottom: 15px;
+        }
+        .info-box h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #4facfe;
+        }
+        .info-box p {
+            font-size: 14px;
+            color: #aaa;
+            line-height: 1.6;
+        }
+        .company-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .company-info-item {
+            background: #0f1429;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .company-info-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        .company-info-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error.active {
+            display: block;
+        }
+        .category-btn {
+            flex: 1;
+            background: #1a1f3a;
+            border: 2px solid #2d3561;
+            color: #aaa;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .category-btn:hover {
+            border-color: #4facfe;
+            background: #2d3561;
+        }
+        .category-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+        .category-content {
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .stock-item {
+            background: #0f1429;
+            border: 2px solid #2d3561;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .stock-item:hover {
+            border-color: #4facfe;
+            background: #1a1f3a;
+            transform: translateY(-2px);
+        }
+        .stock-item.selected {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+        }
+        .stock-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        .stock-code {
+            font-size: 12px;
+            color: #888;
+        }
+        .fundamentals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .fundamental-item {
+            background: #0f1429;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #4facfe;
+        }
+        .fundamental-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        .fundamental-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 专业量化股票分析系统</h1>
+            <p style="color: #aaa;">实时数据获取 · 全量技术指标 · K线图分析 · 基本面研究</p>
+        </div>
+
+        <div class="search-section">
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <button onclick="switchCategory('stock')" id="stockCategoryBtn" class="category-btn active">
+                        📊 股票市场
+                    </button>
+                    <button onclick="switchCategory('fund')" id="fundCategoryBtn" class="category-btn">
+                        💼 基金市场
+                    </button>
+                </div>
+            </div>
+
+            <div id="stockCategory" class="category-content">
+                <div style="margin-bottom: 15px;">
+                    <h3 style="color: #4facfe; font-size: 16px; margin-bottom: 10px;">📈 热门股票</h3>
+                    <div class="stock-grid" id="stockGrid"></div>
+                </div>
+            </div>
+
+            <div id="fundCategory" class="category-content" style="display: none;">
+                <div style="margin-bottom: 15px;">
+                    <h3 style="color: #4facfe; font-size: 16px; margin-bottom: 10px;">💼 热门基金</h3>
+                    <div class="stock-grid" id="fundGrid"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #2d3561;">
+                <h3 style="color: #4facfe; font-size: 16px; margin-bottom: 15px;">🔍 自定义搜索</h3>
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="stockCode" placeholder="输入股票/基金代码（如：AAPL, 600519.SS, 000001.SZ）" />
+                    <select id="dataSource">
+                        <option value="yahoo">Yahoo Finance（全球市场）</option>
+                        <option value="sina">新浪财经（A股实时）</option>
+                    </select>
+                    <select id="timeRange">
+                        <option value="1mo">1个月</option>
+                        <option value="3mo" selected>3个月</option>
+                        <option value="6mo">6个月</option>
+                        <option value="1y">1年</option>
+                        <option value="2y">2年</option>
+                        <option value="5y">5年</option>
+                    </select>
+                    <button onclick="fetchStockData()" id="searchBtn">🔍 获取数据</button>
+                </div>
+                <div style="margin-top: 10px; font-size: 12px; color: #888;">
+                    <strong>提示：</strong>
+                    美股直接输入代码（如 AAPL），
+                    A股上海加 .SS（如 600519.SS），
+                    深圳加 .SZ（如 000001.SZ），
+                    港股加 .HK（如 0700.HK）
+                    <br>
+                    <span style="color: #facc15;">⚠️ 如果数据获取失败，请：1) 检查网络连接 2) 按F12打开控制台查看详细错误 3) 尝试其他股票代码</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorMsg" class="error"></div>
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>正在获取数据，请稍候...</p>
+        </div>
+
+        <div id="results" style="display: none;">
+            <!-- 基本信息 -->
+            <div class="card" id="companyInfoCard">
+                <h2>📋 基本信息</h2>
+                <div class="company-info" id="companyInfo"></div>
+            </div>
+
+            <!-- 基本面数据 -->
+            <div class="card" id="fundamentalsCard">
+                <h2>💰 基本面分析</h2>
+                <div class="fundamentals-grid" id="fundamentalsData"></div>
+            </div>
+
+            <!-- 实时数据 -->
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <!-- 技术信号 -->
+            <div class="card">
+                <h2>🎯 综合技术信号</h2>
+                <div class="signals" id="signals"></div>
+                <div class="indicator-panel" id="indicatorPanel"></div>
+            </div>
+
+            <!-- 标签页 -->
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('overview')">📈 市场总览</div>
+                <div class="tab" onclick="switchTab('technical')">📊 技术指标</div>
+                <div class="tab" onclick="switchTab('volume')">📦 量价分析</div>
+                <div class="tab" onclick="switchTab('pattern')">🔍 形态识别</div>
+            </div>
+
+            <!-- 总览 -->
+            <div id="overview" class="content active">
+                <div class="card">
+                    <h2>📊 K线图与均线系统</h2>
+                    <div class="chart-container">
+                        <div id="candlestickChart"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📈 布林带分析（Bollinger Bands）</h2>
+                    <div class="chart-container small">
+                        <div id="bollingerChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 技术指标 -->
+            <div id="technical" class="content">
+                <div class="chart-grid">
+                    <div class="card">
+                        <h2>📉 MACD指标</h2>
+                        <div class="info-box">
+                            <p>平滑异同移动平均线，用于判断买卖时机。DIF上穿DEA为金叉（买入），下穿为死叉（卖出）。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="macdChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📊 KDJ随机指标</h2>
+                        <div class="info-box">
+                            <p>随机摆动指标，K值>80超买，<20超卖。J值最敏感，可提前发现转折点。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="kdjChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📈 RSI相对强弱指标</h2>
+                        <div class="info-box">
+                            <p>相对强弱指数，>70超买区域，<30超卖区域。50为强弱分界线。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="rsiChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📊 威廉指标（WR）</h2>
+                        <div class="info-box">
+                            <p>威廉超买超卖指标，>-20为超买，<-80为超卖。与价格形成背离时为反转信号。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="wrChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📉 CCI顺势指标</h2>
+                        <div class="info-box">
+                            <p>商品路径指标，>100为超买，<-100为超卖。穿越0轴为趋势改变信号。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="cciChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📊 DMI趋向指标</h2>
+                        <div class="info-box">
+                            <p>动向指标，PDI上穿MDI看多，下穿看空。ADX>25表示趋势强劲。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="dmiChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 量价分析 -->
+            <div id="volume" class="content">
+                <div class="card">
+                    <h2>📦 成交量分析</h2>
+                    <div class="info-box">
+                        <p>价涨量增为正常上涨，价涨量缩需谨慎。价跌量增为杀跌，价跌量缩为自然回调。</p>
+                    </div>
+                    <div class="chart-container small">
+                        <canvas id="volumeChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📊 OBV能量潮</h2>
+                    <div class="info-box">
+                        <p>累积能量线，价升量增OBV上升，价跌量增OBV下降。OBV与价格背离为反转信号。</p>
+                    </div>
+                    <div class="chart-container small">
+                        <canvas id="obvChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📈 量比分析</h2>
+                    <div class="info-box">
+                        <p>当日每分钟平均成交量与过去5日每分钟平均成交量的比值。>1放量，<1缩量。</p>
+                    </div>
+                    <div class="chart-container small">
+                        <canvas id="volumeRatioChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 形态识别 -->
+            <div id="pattern" class="content">
+                <div class="card">
+                    <h2>🔍 K线形态识别</h2>
+                    <div id="patternResults"></div>
+                </div>
+
+                <div class="card">
+                    <h2>📊 支撑压力位</h2>
+                    <div class="chart-container small">
+                        <div id="supportResistanceChart"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📈 趋势线分析</h2>
+                    <div id="trendAnalysis"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let charts = {};
+        let stockData = null;
+        let currentSymbol = '';
+
+        // 热门股票列表
+        const stockList = [
+            // 美股
+            { name: '苹果', code: 'AAPL', market: '美股' },
+            { name: '微软', code: 'MSFT', market: '美股' },
+            { name: '谷歌', code: 'GOOGL', market: '美股' },
+            { name: '亚马逊', code: 'AMZN', market: '美股' },
+            { name: '特斯拉', code: 'TSLA', market: '美股' },
+            { name: '英伟达', code: 'NVDA', market: '美股' },
+            { name: '脸书', code: 'META', market: '美股' },
+            { name: '奈飞', code: 'NFLX', market: '美股' },
+            // A股
+            { name: '贵州茅台', code: '600519.SS', market: 'A股' },
+            { name: '腾讯控股', code: '0700.HK', market: '港股' },
+            { name: '阿里巴巴', code: '9988.HK', market: '港股' },
+            { name: '中国平安', code: '601318.SS', market: 'A股' },
+            { name: '招商银行', code: '600036.SS', market: 'A股' },
+            { name: '五粮液', code: '000858.SZ', market: 'A股' },
+            { name: '宁德时代', code: '300750.SZ', market: 'A股' },
+            { name: '比亚迪', code: '002594.SZ', market: 'A股' },
+            { name: '美的集团', code: '000333.SZ', market: 'A股' },
+            { name: '格力电器', code: '000651.SZ', market: 'A股' },
+            { name: '中国移动', code: '600941.SS', market: 'A股' },
+            { name: '工商银行', code: '601398.SS', market: 'A股' }
+        ];
+
+        // 热门基金列表（使用ETF代码）
+        const fundList = [
+            // 美国ETF
+            { name: '标普500ETF', code: 'SPY', market: '美国' },
+            { name: '纳斯达克100ETF', code: 'QQQ', market: '美国' },
+            { name: '道琼斯ETF', code: 'DIA', market: '美国' },
+            { name: '罗素2000ETF', code: 'IWM', market: '美国' },
+            { name: '科技股ETF', code: 'XLK', market: '美国' },
+            { name: '金融股ETF', code: 'XLF', market: '美国' },
+            { name: '医疗股ETF', code: 'XLV', market: '美国' },
+            { name: '能源股ETF', code: 'XLE', market: '美国' },
+            { name: '新兴市场ETF', code: 'EEM', market: '美国' },
+            { name: '中国ETF', code: 'FXI', market: '美国' },
+            { name: '黄金ETF', code: 'GLD', market: '美国' },
+            { name: '白银ETF', code: 'SLV', market: '美国' },
+            // 中国ETF
+            { name: '沪深300ETF', code: '510300.SS', market: '中国' },
+            { name: '中证500ETF', code: '510500.SS', market: '中国' },
+            { name: '创业板ETF', code: '159915.SZ', market: '中国' },
+            { name: '科创50ETF', code: '588000.SS', market: '中国' },
+            { name: '恒生ETF', code: '159920.SZ', market: '中国' },
+            { name: '红利ETF', code: '510880.SS', market: '中国' },
+            { name: '消费ETF', code: '159928.SZ', market: '中国' },
+            { name: '医药ETF', code: '512010.SS', market: '中国' }
+        ];
+
+        // 初始化页面
+        window.onload = function() {
+            initStockGrid();
+            initFundGrid();
+        };
+
+        // 初始化股票列表
+        function initStockGrid() {
+            const grid = document.getElementById('stockGrid');
+            grid.innerHTML = stockList.map(stock => `
+                <div class="stock-item" onclick="selectStock('${stock.code}', '${stock.name}')">
+                    <div class="stock-name">${stock.name}</div>
+                    <div class="stock-code">${stock.code}</div>
+                    <div class="stock-code">${stock.market}</div>
+                </div>
+            `).join('');
+        }
+
+        // 初始化基金列表
+        function initFundGrid() {
+            const grid = document.getElementById('fundGrid');
+            grid.innerHTML = fundList.map(fund => `
+                <div class="stock-item" onclick="selectStock('${fund.code}', '${fund.name}')">
+                    <div class="stock-name">${fund.name}</div>
+                    <div class="stock-code">${fund.code}</div>
+                    <div class="stock-code">${fund.market}</div>
+                </div>
+            `).join('');
+        }
+
+        // 切换分类
+        function switchCategory(category) {
+            document.getElementById('stockCategoryBtn').classList.remove('active');
+            document.getElementById('fundCategoryBtn').classList.remove('active');
+            document.getElementById('stockCategory').style.display = 'none';
+            document.getElementById('fundCategory').style.display = 'none';
+
+            if (category === 'stock') {
+                document.getElementById('stockCategoryBtn').classList.add('active');
+                document.getElementById('stockCategory').style.display = 'block';
+            } else {
+                document.getElementById('fundCategoryBtn').classList.add('active');
+                document.getElementById('fundCategory').style.display = 'block';
+            }
+        }
+
+        // 选择股票/基金
+        function selectStock(code, name) {
+            // 移除所有选中状态
+            document.querySelectorAll('.stock-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            // 添加选中状态
+            event.currentTarget.classList.add('selected');
+            
+            // 设置代码并获取数据
+            document.getElementById('stockCode').value = code;
+            currentSymbol = code;
+            fetchStockData();
+        }
+
+        // 切换标签页
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // 显示错误
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMsg');
+            // 处理换行符
+            errorDiv.innerHTML = message.replace(/\n/g, '<br>');
+            errorDiv.classList.add('active');
+            
+            // 滚动到错误位置
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // 10秒后自动隐藏
+            setTimeout(() => errorDiv.classList.remove('active'), 10000);
+        }
+
+        // 获取股票数据
+        async function fetchStockData() {
+            const stockCode = document.getElementById('stockCode').value.trim();
+            const dataSource = document.getElementById('dataSource').value;
+            const timeRange = document.getElementById('timeRange').value;
+
+            if (!stockCode) {
+                showError('请输入股票代码');
+                return;
+            }
+
+            console.log('=== 开始获取数据 ===');
+            console.log('股票代码:', stockCode);
+            console.log('数据源:', dataSource);
+            console.log('时间范围:', timeRange);
+
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('searchBtn').disabled = true;
+            document.getElementById('results').style.display = 'none';
+
+            try {
+                let data;
+                if (dataSource === 'yahoo') {
+                    data = await fetchFromYahoo(stockCode, timeRange);
+                } else if (dataSource === 'sina') {
+                    data = await fetchFromSina(stockCode);
+                } else {
+                    showError('该数据源暂未实现，请选择Yahoo Finance或新浪财经');
+                    return;
+                }
+
+                if (data && data.length > 0) {
+                    stockData = data;
+                    analyzeAndDisplay(data);
+                    // 清除错误信息
+                    document.getElementById('errorMsg').classList.remove('active');
+                } else {
+                    showError('未能获取数据，请检查股票代码是否正确');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                let errorMsg = error.message || '数据获取失败';
+                
+                // 提供更友好的错误提示
+                if (errorMsg.includes('HTTP error')) {
+                    errorMsg = '网络连接失败，请检查网络或稍后重试';
+                } else if (errorMsg.includes('未找到数据')) {
+                    errorMsg = `股票代码"${stockCode}"可能不正确，请检查：\n- 美股直接输入代码（如 AAPL）\n- A股上海加 .SS（如 600519.SS）\n- A股深圳加 .SZ（如 000001.SZ）\n- 港股加 .HK（如 0700.HK）`;
+                }
+                
+                showError(errorMsg);
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('searchBtn').disabled = false;
+            }
+        }
+
+        // 从Yahoo Finance获取数据
+        async function fetchFromYahoo(symbol, range) {
+            try {
+                // 使用Yahoo Finance的查询API
+                const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
+                const period2 = Math.floor(Date.now() / 1000);
+                
+                const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
+                
+                console.log('Fetching data from:', url);
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const json = await response.json();
+                console.log('Response:', json);
+                
+                if (json.chart && json.chart.result && json.chart.result[0]) {
+                    const result = json.chart.result[0];
+                    
+                    if (!result.timestamp || result.timestamp.length === 0) {
+                        throw new Error('没有可用的历史数据');
+                    }
+                    
+                    const timestamps = result.timestamp;
+                    const quotes = result.indicators.quote[0];
+                    
+                    const data = timestamps.map((time, i) => ({
+                        date: new Date(time * 1000).toISOString().split('T')[0],
+                        open: quotes.open[i] || quotes.close[i],
+                        high: quotes.high[i] || quotes.close[i],
+                        low: quotes.low[i] || quotes.close[i],
+                        close: quotes.close[i],
+                        volume: quotes.volume[i] || 0
+                    })).filter(d => d.close !== null && d.close !== undefined);
+                    
+                    if (data.length === 0) {
+                        throw new Error('过滤后没有有效数据');
+                    }
+                    
+                    console.log('Parsed data:', data.length, 'records');
+                    
+                    // 获取基本面信息
+                    fetchCompanyInfo(symbol).catch(err => {
+                        console.warn('Failed to fetch company info:', err);
+                        displayBasicInfo(symbol);
+                    });
+                    
+                    return data;
+                } else if (json.chart && json.chart.error) {
+                    throw new Error(json.chart.error.description || '数据获取失败');
+                }
+                
+                throw new Error('未找到数据，请检查股票代码');
+            } catch (error) {
+                console.error('Yahoo Finance error:', error);
+                throw new Error(`获取数据失败: ${error.message}`);
+            }
+        }
+
+        // 获取公司基本面信息
+        async function fetchCompanyInfo(symbol) {
+            try {
+                // 获取报价信息
+                const quoteUrl = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${symbol}?modules=summaryDetail,defaultKeyStatistics,financialData,price`;
+                const response = await fetch(quoteUrl);
+                const json = await response.json();
+                
+                if (json.quoteSummary && json.quoteSummary.result && json.quoteSummary.result[0]) {
+                    const data = json.quoteSummary.result[0];
+                    displayCompanyInfo(data, symbol);
+                    displayFundamentals(data);
+                }
+            } catch (error) {
+                console.error('Company info error:', error);
+                // 如果获取失败，显示基本信息
+                displayBasicInfo(symbol);
+            }
+        }
+
+        // 显示公司基本信息
+        function displayCompanyInfo(data, symbol) {
+            const price = data.price || {};
+            const summary = data.summaryDetail || {};
+            
+            const html = `
+                <div class="company-info-item">
+                    <div class="company-info-label">股票名称</div>
+                    <div class="company-info-value">${price.shortName || symbol}</div>
+                </div>
+                <div class="company-info-item">
+                    <div class="company-info-label">股票代码</div>
+                    <div class="company-info-value">${symbol}</div>
+                </div>
+                <div class="company-info-item">
+                    <div class="company-info-label">交易所</div>
+                    <div class="company-info-value">${price.exchangeName || '-'}</div>
+                </div>
+                <div class="company-info-item">
+                    <div class="company-info-label">货币</div>
+                    <div class="company-info-value">${price.currency || '-'}</div>
+                </div>
+                <div class="company-info-item">
+                    <div class="company-info-label">市场类型</div>
+                    <div class="company-info-value">${price.quoteType || '-'}</div>
+                </div>
+                <div class="company-info-item">
+                    <div class="company-info-label">52周最高</div>
+                    <div class="company-info-value">${summary.fiftyTwoWeekHigh?.fmt || '-'}</div>
+                </div>
+                <div class="company-info-item">
+                    <div class="company-info-label">52周最低</div>
+                    <div class="company-info-value">${summary.fiftyTwoWeekLow?.fmt || '-'}</div>
+                </div>
+            `;
+            
+            document.getElementById('companyInfo').innerHTML = html;
+        }
+
+        // 显示基本面数据
+        function displayFundamentals(data) {
+            const stats = data.defaultKeyStatistics || {};
+            const financial = data.financialData || {};
+            const summary = data.summaryDetail || {};
+            
+            const fundamentals = [
+                {
+                    label: '市盈率 (P/E)',
+                    value: stats.trailingPE?.fmt || summary.trailingPE?.fmt || '-',
+                    desc: '股价与每股收益的比率'
+                },
+                {
+                    label: '市净率 (P/B)',
+                    value: stats.priceToBook?.fmt || '-',
+                    desc: '股价与每股净资产的比率'
+                },
+                {
+                    label: '市值',
+                    value: summary.marketCap?.fmt || '-',
+                    desc: '公司总市值'
+                },
+                {
+                    label: '每股收益 (EPS)',
+                    value: stats.trailingEps?.fmt || '-',
+                    desc: '公司盈利能力指标'
+                },
+                {
+                    label: '股息率',
+                    value: summary.dividendYield?.fmt ? (parseFloat(summary.dividendYield.raw) * 100).toFixed(2) + '%' : '-',
+                    desc: '年度股息/股价'
+                },
+                {
+                    label: '净资产收益率 (ROE)',
+                    value: financial.returnOnEquity?.fmt || '-',
+                    desc: '净利润/净资产'
+                },
+                {
+                    label: '总资产收益率 (ROA)',
+                    value: financial.returnOnAssets?.fmt || '-',
+                    desc: '净利润/总资产'
+                },
+                {
+                    label: '营业收入',
+                    value: financial.totalRevenue?.fmt || '-',
+                    desc: '公司总营收'
+                },
+                {
+                    label: '毛利率',
+                    value: financial.grossMargins?.fmt || '-',
+                    desc: '毛利润/营业收入'
+                },
+                {
+                    label: '净利率',
+                    value: financial.profitMargins?.fmt || '-',
+                    desc: '净利润/营业收入'
+                },
+                {
+                    label: '营收增长率',
+                    value: financial.revenueGrowth?.fmt || '-',
+                    desc: '同比营收增长'
+                },
+                {
+                    label: '自由现金流',
+                    value: financial.freeCashflow?.fmt || '-',
+                    desc: '公司可自由支配现金'
+                },
+                {
+                    label: '流通股',
+                    value: stats.floatShares?.fmt || '-',
+                    desc: '可流通的股票数量'
+                },
+                {
+                    label: '总股本',
+                    value: stats.sharesOutstanding?.fmt || '-',
+                    desc: '公司发行的总股数'
+                },
+                {
+                    label: '资产负债率',
+                    value: financial.debtToEquity?.fmt || '-',
+                    desc: '总负债/股东权益'
+                },
+                {
+                    label: '流动比率',
+                    value: financial.currentRatio?.fmt || '-',
+                    desc: '流动资产/流动负债'
+                }
+            ];
+            
+            const html = fundamentals.map(item => `
+                <div class="fundamental-item">
+                    <div class="fundamental-label">${item.label}</div>
+                    <div class="fundamental-value">${item.value}</div>
+                    <div style="font-size: 11px; color: #666; margin-top: 5px;">${item.desc}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('fundamentalsData').innerHTML = html;
+        }
+
+        // 显示基本信息（当无法获取详细信息时）
+        function displayBasicInfo(symbol) {
+            const html = `
+                <div class="company-info-item">
+                    <div class="company-info-label">股票代码</div>
+                    <div class="company-info-value">${symbol}</div>
+                </div>
+                <div class="company-info-item">
+                    <div class="company-info-label">提示</div>
+                    <div class="company-info-value">基本面数据加载中或暂无数据</div>
+                </div>
+            `;
+            document.getElementById('companyInfo').innerHTML = html;
+            document.getElementById('fundamentalsData').innerHTML = '<div class="info-box"><p>暂时无法获取基本面数据</p></div>';
+        }
+
+        // 从新浪财经获取数据
+        async function fetchFromSina(symbol) {
+            try {
+                // 转换股票代码格式
+                let sinaCode = symbol.replace('.SS', '').replace('.SZ', '');
+                if (symbol.includes('.SS')) {
+                    sinaCode = 'sh' + sinaCode;
+                } else if (symbol.includes('.SZ')) {
+                    sinaCode = 'sz' + sinaCode;
+                } else {
+                    sinaCode = 'sh' + sinaCode; // 默认上海
+                }
+                
+                // 注意：由于跨域限制，这里需要使用代理或JSONP
+                // 这是一个简化示例，实际使用时可能需要后端代理
+                showError('新浪财经需要后端代理支持，请使用Yahoo Finance数据源');
+                return null;
+            } catch (error) {
+                console.error('Sina Finance error:', error);
+                throw error;
+            }
+        }
+
+        function getRangeSeconds(range) {
+            const ranges = {
+                '1mo': 30 * 24 * 3600,
+                '3mo': 90 * 24 * 3600,
+                '6mo': 180 * 24 * 3600,
+                '1y': 365 * 24 * 3600,
+                '2y': 730 * 24 * 3600,
+                '5y': 1825 * 24 * 3600
+            };
+            return ranges[range] || ranges['3mo'];
+        }
+
+        // 分析并显示数据
+        function analyzeAndDisplay(data) {
+            // 计算所有技术指标
+            const indicators = calculateAllIndicators(data);
+            
+            // 显示结果区域
+            document.getElementById('results').style.display = 'block';
+            
+            // 显示统计数据
+            displayStats(data, indicators);
+            
+            // 显示技术信号
+            displaySignals(data, indicators);
+            
+            // 绘制所有图表
+            drawAllCharts(data, indicators);
+            
+            // 形态识别
+            displayPatterns(data);
+            
+            // 滚动到结果
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 计算所有技术指标
+        function calculateAllIndicators(data) {
+            return {
+                ma5: calculateMA(data, 5),
+                ma10: calculateMA(data, 10),
+                ma20: calculateMA(data, 20),
+                ma30: calculateMA(data, 30),
+                ma60: calculateMA(data, 60),
+                ma120: calculateMA(data, 120),
+                macd: calculateMACD(data),
+                kdj: calculateKDJ(data),
+                rsi: calculateRSI(data, 14),
+                rsi6: calculateRSI(data, 6),
+                rsi12: calculateRSI(data, 12),
+                bollinger: calculateBollinger(data, 20, 2),
+                wr: calculateWR(data, 14),
+                cci: calculateCCI(data, 14),
+                dmi: calculateDMI(data, 14),
+                obv: calculateOBV(data),
+                volumeRatio: calculateVolumeRatio(data)
+            };
+        }
+
+        // 计算MA
+        function calculateMA(data, period) {
+            const closes = data.map(d => d.close);
+            return closes.map((_, i) => {
+                if (i < period - 1) return null;
+                const sum = closes.slice(i - period + 1, i + 1).reduce((a, b) => a + b);
+                return sum / period;
+            });
+        }
+
+        // 计算EMA
+        function calculateEMA(data, period) {
+            const closes = data.map(d => d.close);
+            const k = 2 / (period + 1);
+            const ema = [closes[0]];
+            for (let i = 1; i < closes.length; i++) {
+                ema.push(closes[i] * k + ema[i - 1] * (1 - k));
+            }
+            return ema;
+        }
+
+        // 计算MACD
+        function calculateMACD(data) {
+            const closes = data.map(d => d.close);
+            const ema12 = calculateEMA(data, 12);
+            const ema26 = calculateEMA(data, 26);
+            const dif = ema12.map((val, i) => val - ema26[i]);
+            
+            // 计算DEA (DIF的9日EMA)
+            const k = 2 / 10;
+            const dea = [dif[0]];
+            for (let i = 1; i < dif.length; i++) {
+                dea.push(dif[i] * k + dea[i - 1] * (1 - k));
+            }
+            
+            const macd = dif.map((val, i) => (val - dea[i]) * 2);
+            return { dif, dea, macd };
+        }
+
+        // 计算KDJ
+        function calculateKDJ(data, period = 9) {
+            const rsv = [];
+            const k = [50];
+            const d = [50];
+            const j = [];
+
+            for (let i = 0; i < data.length; i++) {
+                const start = Math.max(0, i - period + 1);
+                const slice = data.slice(start, i + 1);
+                const high = Math.max(...slice.map(d => d.high));
+                const low = Math.min(...slice.map(d => d.low));
+                const close = data[i].close;
+                
+                rsv[i] = high === low ? 50 : ((close - low) / (high - low)) * 100;
+                
+                if (i > 0) {
+                    k[i] = k[i - 1] * 2/3 + rsv[i] * 1/3;
+                    d[i] = d[i - 1] * 2/3 + k[i] * 1/3;
+                }
+                j[i] = 3 * k[i] - 2 * d[i];
+            }
+            
+            return { k, d, j };
+        }
+
+        // 计算RSI
+        function calculateRSI(data, period = 14) {
+            const closes = data.map(d => d.close);
+            const rsi = [];
+            
+            for (let i = 0; i < closes.length; i++) {
+                if (i < period) {
+                    rsi.push(null);
+                    continue;
+                }
+                
+                let gains = 0, losses = 0;
+                for (let j = i - period + 1; j <= i; j++) {
+                    const change = closes[j] - closes[j - 1];
+                    if (change > 0) gains += change;
+                    else losses -= change;
+                }
+                
+                const avgGain = gains / period;
+                const avgLoss = losses / period;
+                const rs = avgGain / (avgLoss || 1);
+                rsi.push(100 - (100 / (1 + rs)));
+            }
+            
+            return rsi;
+        }
+
+        // 计算布林带
+        function calculateBollinger(data, period = 20, stdDev = 2) {
+            const closes = data.map(d => d.close);
+            const middle = [];
+            const upper = [];
+            const lower = [];
+
+            for (let i = 0; i < data.length; i++) {
+                if (i < period - 1) {
+                    middle.push(null);
+                    upper.push(null);
+                    lower.push(null);
+                    continue;
+                }
+
+                const slice = closes.slice(i - period + 1, i + 1);
+                const mean = slice.reduce((a, b) => a + b) / period;
+                const variance = slice.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / period;
+                const std = Math.sqrt(variance);
+
+                middle.push(mean);
+                upper.push(mean + stdDev * std);
+                lower.push(mean - stdDev * std);
+            }
+
+            return { middle, upper, lower };
+        }
+
+        // 计算威廉指标
+        function calculateWR(data, period = 14) {
+            const wr = [];
+            for (let i = 0; i < data.length; i++) {
+                if (i < period - 1) {
+                    wr.push(null);
+                    continue;
+                }
+                
+                const slice = data.slice(i - period + 1, i + 1);
+                const highest = Math.max(...slice.map(d => d.high));
+                const lowest = Math.min(...slice.map(d => d.low));
+                const close = data[i].close;
+                
+                wr.push(((highest - close) / (highest - lowest)) * -100);
+            }
+            return wr;
+        }
+
+        // 计算CCI
+        function calculateCCI(data, period = 14) {
+            const cci = [];
+            const tp = data.map(d => (d.high + d.low + d.close) / 3);
+            
+            for (let i = 0; i < data.length; i++) {
+                if (i < period - 1) {
+                    cci.push(null);
+                    continue;
+                }
+                
+                const slice = tp.slice(i - period + 1, i + 1);
+                const ma = slice.reduce((a, b) => a + b) / period;
+                const md = slice.reduce((sum, val) => sum + Math.abs(val - ma), 0) / period;
+                
+                cci.push((tp[i] - ma) / (0.015 * md));
+            }
+            return cci;
+        }
+
+        // 计算DMI
+        function calculateDMI(data, period = 14) {
+            const pdi = [];
+            const mdi = [];
+            const adx = [];
+            const dx = [];
+            
+            let trSum = 0, pdmSum = 0, mdmSum = 0;
+            
+            for (let i = 1; i < data.length; i++) {
+                const tr = Math.max(
+                    data[i].high - data[i].low,
+                    Math.abs(data[i].high - data[i - 1].close),
+                    Math.abs(data[i].low - data[i - 1].close)
+                );
+                
+                const pdm = Math.max(data[i].high - data[i - 1].high, 0);
+                const mdm = Math.max(data[i - 1].low - data[i].low, 0);
+                
+                if (i < period) {
+                    trSum += tr;
+                    pdmSum += pdm;
+                    mdmSum += mdm;
+                    pdi.push(null);
+                    mdi.push(null);
+                    adx.push(null);
+                    continue;
+                }
+                
+                if (i === period) {
+                    trSum += tr;
+                    pdmSum += pdm;
+                    mdmSum += mdm;
+                } else {
+                    trSum = trSum - trSum / period + tr;
+                    pdmSum = pdmSum - pdmSum / period + pdm;
+                    mdmSum = mdmSum - mdmSum / period + mdm;
+                }
+                
+                const pdiVal = (pdmSum / trSum) * 100;
+                const mdiVal = (mdmSum / trSum) * 100;
+                const dxVal = Math.abs(pdiVal - mdiVal) / (pdiVal + mdiVal) * 100;
+                
+                pdi.push(pdiVal);
+                mdi.push(mdiVal);
+                dx.push(dxVal);
+                
+                if (i >= period * 2 - 1) {
+                    const adxSlice = dx.slice(i - period + 1, i + 1);
+                    adx.push(adxSlice.reduce((a, b) => a + b) / period);
+                } else {
+                    adx.push(null);
+                }
+            }
+            
+            return { pdi, mdi, adx };
+        }
+
+        // 计算OBV
+        function calculateOBV(data) {
+            const obv = [0];
+            for (let i = 1; i < data.length; i++) {
+                if (data[i].close > data[i - 1].close) {
+                    obv.push(obv[i - 1] + data[i].volume);
+                } else if (data[i].close < data[i - 1].close) {
+                    obv.push(obv[i - 1] - data[i].volume);
+                } else {
+                    obv.push(obv[i - 1]);
+                }
+            }
+            return obv;
+        }
+
+        // 计算量比
+        function calculateVolumeRatio(data) {
+            const ratio = [];
+            for (let i = 0; i < data.length; i++) {
+                if (i < 5) {
+                    ratio.push(null);
+                    continue;
+                }
+                const avgVolume = data.slice(i - 5, i).reduce((sum, d) => sum + d.volume, 0) / 5;
+                ratio.push(data[i].volume / (avgVolume || 1));
+            }
+            return ratio;
+        }
+
+        // 显示统计数据
+        function displayStats(data, indicators) {
+            const latest = data[data.length - 1];
+            const previous = data[data.length - 2];
+            const changePercent = ((latest.close - previous.close) / previous.close * 100);
+            const amplitude = ((latest.high - latest.low) / previous.close * 100);
+            const turnover = (latest.volume / 1000000).toFixed(2);
+
+            const html = `
+                <div class="stat-card ${changePercent > 0 ? 'bullish' : 'bearish'}">
+                    <div class="stat-label">最新价</div>
+                    <div class="stat-value">¥${latest.close.toFixed(2)}</div>
+                    <div class="stat-change">${changePercent > 0 ? '↑' : '↓'} ${Math.abs(changePercent).toFixed(2)}%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">今开</div>
+                    <div class="stat-value">¥${latest.open.toFixed(2)}</div>
+                    <div class="stat-change">最高 ¥${latest.high.toFixed(2)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">最低</div>
+                    <div class="stat-value">¥${latest.low.toFixed(2)}</div>
+                    <div class="stat-change">振幅 ${amplitude.toFixed(2)}%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">成交量</div>
+                    <div class="stat-value">${turnover}M</div>
+                    <div class="stat-change">量比 ${indicators.volumeRatio[indicators.volumeRatio.length - 1]?.toFixed(2) || '-'}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">MA5</div>
+                    <div class="stat-value">¥${indicators.ma5[indicators.ma5.length - 1]?.toFixed(2) || '-'}</div>
+                    <div class="stat-change">5日均线</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">MA20</div>
+                    <div class="stat-value">¥${indicators.ma20[indicators.ma20.length - 1]?.toFixed(2) || '-'}</div>
+                    <div class="stat-change">20日均线</div>
+                </div>
+            `;
+            
+            document.getElementById('statsGrid').innerHTML = html;
+        }
+
+        // 显示技术信号
+        function displaySignals(data, indicators) {
+            const signals = [];
+            const latest = data[data.length - 1];
+            const currentRSI = indicators.rsi[indicators.rsi.length - 1];
+            const currentMACD = indicators.macd.macd[indicators.macd.macd.length - 1];
+            const currentK = indicators.kdj.k[indicators.kdj.k.length - 1];
+            const currentD = indicators.kdj.d[indicators.kdj.d.length - 1];
+            const ma5 = indicators.ma5[indicators.ma5.length - 1];
+            const ma20 = indicators.ma20[indicators.ma20.length - 1];
+            const ma60 = indicators.ma60[indicators.ma60.length - 1];
+
+            // 趋势信号
+            let trendText = '';
+            if (ma5 > ma20 && ma20 > ma60) {
+                signals.push({ text: '多头排列', type: 'buy' });
+                trendText = '<span class="bullish-text">强势上涨</span>';
+            } else if (ma5 < ma20 && ma20 < ma60) {
+                signals.push({ text: '空头排列', type: 'sell' });
+                trendText = '<span class="bearish-text">弱势下跌</span>';
+            } else {
+                signals.push({ text: '震荡整理', type: 'neutral' });
+                trendText = '<span class="neutral-text">横盘震荡</span>';
+            }
+
+            // RSI信号
+            let rsiText = '';
+            if (currentRSI < 30) {
+                signals.push({ text: 'RSI超卖', type: 'buy' });
+                rsiText = `<span class="bullish-text">${currentRSI.toFixed(2)} (超卖)</span>`;
+            } else if (currentRSI > 70) {
+                signals.push({ text: 'RSI超买', type: 'sell' });
+                rsiText = `<span class="bearish-text">${currentRSI.toFixed(2)} (超买)</span>`;
+            } else {
+                rsiText = `<span class="neutral-text">${currentRSI.toFixed(2)}</span>`;
+            }
+
+            // MACD信号
+            let macdText = '';
+            const prevMACD = indicators.macd.macd[indicators.macd.macd.length - 2];
+            if (currentMACD > 0 && prevMACD < 0) {
+                signals.push({ text: 'MACD金叉', type: 'buy' });
+                macdText = '<span class="bullish-text">金叉</span>';
+            } else if (currentMACD < 0 && prevMACD > 0) {
+                signals.push({ text: 'MACD死叉', type: 'sell' });
+                macdText = '<span class="bearish-text">死叉</span>';
+            } else if (currentMACD > 0) {
+                macdText = '<span class="bullish-text">多头</span>';
+            } else {
+                macdText = '<span class="bearish-text">空头</span>';
+            }
+
+            // KDJ信号
+            let kdjText = '';
+            if (currentK < 20 && currentK > currentD) {
+                signals.push({ text: 'KDJ低位金叉', type: 'buy' });
+                kdjText = '<span class="bullish-text">低位金叉</span>';
+            } else if (currentK > 80 && currentK < currentD) {
+                signals.push({ text: 'KDJ高位死叉', type: 'sell' });
+                kdjText = '<span class="bearish-text">高位死叉</span>';
+            } else if (currentK > 80) {
+                kdjText = '<span class="bearish-text">超买</span>';
+            } else if (currentK < 20) {
+                kdjText = '<span class="bullish-text">超卖</span>';
+            } else {
+                kdjText = '<span class="neutral-text">中性</span>';
+            }
+
+            // 布林带信号
+            const upperBB = indicators.bollinger.upper[indicators.bollinger.upper.length - 1];
+            const lowerBB = indicators.bollinger.lower[indicators.bollinger.lower.length - 1];
+            const middleBB = indicators.bollinger.middle[indicators.bollinger.middle.length - 1];
+            
+            let bollingerText = '';
+            if (latest.close > upperBB) {
+                signals.push({ text: '突破上轨', type: 'sell' });
+                bollingerText = '<span class="bearish-text">上轨上方</span>';
+            } else if (latest.close < lowerBB) {
+                signals.push({ text: '触及下轨', type: 'buy' });
+                bollingerText = '<span class="bullish-text">下轨下方</span>';
+            } else if (latest.close > middleBB) {
+                bollingerText = '<span class="neutral-text">中轨上方</span>';
+            } else {
+                bollingerText = '<span class="neutral-text">中轨下方</span>';
+            }
+
+            // 显示信号
+            const signalsHTML = signals.map(s => 
+                `<div class="signal ${s.type}">${s.text}</div>`
+            ).join('');
+            document.getElementById('signals').innerHTML = signalsHTML;
+
+            // 显示指标面板
+            const panelHTML = `
+                <div class="indicator-row">
+                    <span class="indicator-name">趋势方向</span>
+                    <span class="indicator-value">${trendText}</span>
+                </div>
+                <div class="indicator-row">
+                    <span class="indicator-name">RSI(14)</span>
+                    <span class="indicator-value">${rsiText}</span>
+                </div>
+                <div class="indicator-row">
+                    <span class="indicator-name">MACD</span>
+                    <span class="indicator-value">${macdText}</span>
+                </div>
+                <div class="indicator-row">
+                    <span class="indicator-name">KDJ</span>
+                    <span class="indicator-value">${kdjText}</span>
+                </div>
+                <div class="indicator-row">
+                    <span class="indicator-name">布林带</span>
+                    <span class="indicator-value">${bollingerText}</span>
+                </div>
+            `;
+            document.getElementById('indicatorPanel').innerHTML = panelHTML;
+        }
+
+        // 绘制所有图表
+        function drawAllCharts(data, indicators) {
+            drawCandlestickChart(data, indicators);
+            drawBollingerChartLW(data, indicators);
+            drawMACDChart(data, indicators);
+            drawKDJChart(data, indicators);
+            drawRSIChart(data, indicators);
+            drawWRChart(data, indicators);
+            drawCCIChart(data, indicators);
+            drawDMIChart(data, indicators);
+            drawVolumeChart(data);
+            drawOBVChart(data, indicators);
+            drawVolumeRatioChart(data, indicators);
+            drawSupportResistanceChart(data);
+        }
+
+        // K线图
+        function drawCandlestickChart(data, indicators) {
+            const container = document.getElementById('candlestickChart');
+            container.innerHTML = '';
+            
+            const chart = LightweightCharts.createChart(container, {
+                width: container.clientWidth,
+                height: container.clientHeight,
+                layout: {
+                    background: { color: '#0f1429' },
+                    textColor: '#aaa',
+                },
+                grid: {
+                    vertLines: { color: '#2d3561' },
+                    horzLines: { color: '#2d3561' },
+                },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                },
+                rightPriceScale: {
+                    borderColor: '#2d3561',
+                },
+                timeScale: {
+                    borderColor: '#2d3561',
+                    timeVisible: true,
+                },
+            });
+
+            // K线
+            const candlestickSeries = chart.addCandlestickSeries({
+                upColor: '#22c55e',
+                downColor: '#ef4444',
+                borderUpColor: '#22c55e',
+                borderDownColor: '#ef4444',
+                wickUpColor: '#22c55e',
+                wickDownColor: '#ef4444',
+            });
+
+            const candleData = data.map(d => ({
+                time: d.date,
+                open: d.open,
+                high: d.high,
+                low: d.low,
+                close: d.close
+            }));
+            candlestickSeries.setData(candleData);
+
+            // 均线
+            const maLines = [
+                { data: indicators.ma5, color: '#22c55e', title: 'MA5' },
+                { data: indicators.ma10, color: '#f59e0b', title: 'MA10' },
+                { data: indicators.ma20, color: '#a855f7', title: 'MA20' },
+                { data: indicators.ma60, color: '#ec4899', title: 'MA60' }
+            ];
+
+            maLines.forEach(ma => {
+                if (ma.data.some(v => v !== null)) {
+                    const series = chart.addLineSeries({
+                        color: ma.color,
+                        lineWidth: 2,
+                        title: ma.title
+                    });
+                    const lineData = data.map((d, i) => ({
+                        time: d.date,
+                        value: ma.data[i]
+                    })).filter(d => d.value !== null);
+                    series.setData(lineData);
+                }
+            });
+
+            chart.timeScale().fitContent();
+            charts.candlestick = chart;
+
+            window.addEventListener('resize', () => {
+                if (charts.candlestick) {
+                    charts.candlestick.applyOptions({
+                        width: container.clientWidth,
+                        height: container.clientHeight
+                    });
+                }
+            });
+        }
+
+        // 布林带图表
+        function drawBollingerChartLW(data, indicators) {
+            const container = document.getElementById('bollingerChart');
+            container.innerHTML = '';
+            
+            const chart = LightweightCharts.createChart(container, {
+                width: container.clientWidth,
+                height: container.clientHeight,
+                layout: {
+                    background: { color: '#0f1429' },
+                    textColor: '#aaa',
+                },
+                grid: {
+                    vertLines: { color: '#2d3561' },
+                    horzLines: { color: '#2d3561' },
+                },
+                rightPriceScale: {
+                    borderColor: '#2d3561',
+                },
+                timeScale: {
+                    borderColor: '#2d3561',
+                },
+            });
+
+            // 价格线
+            const priceSeries = chart.addLineSeries({
+                color: '#4facfe',
+                lineWidth: 2
+            });
+            priceSeries.setData(data.map(d => ({ time: d.date, value: d.close })));
+
+            // 布林带
+            ['upper', 'middle', 'lower'].forEach((band, i) => {
+                const series = chart.addLineSeries({
+                    color: i === 0 ? '#ef4444' : i === 1 ? '#facc15' : '#22c55e',
+                    lineWidth: 1.5,
+                    lineStyle: i === 1 ? 0 : 2
+                });
+                const bandData = data.map((d, idx) => ({
+                    time: d.date,
+                    value: indicators.bollinger[band][idx]
+                })).filter(d => d.value !== null);
+                series.setData(bandData);
+            });
+
+            chart.timeScale().fitContent();
+            charts.bollinger = chart;
+        }
+
+        // 其他图表函数（使用Chart.js）
+        function drawMACDChart(data, indicators) {
+            const ctx = document.getElementById('macdChart').getContext('2d');
+            if (charts.macd) charts.macd.destroy();
+
+            const dates = data.map(d => d.date);
+            const colors = indicators.macd.macd.map(val => val >= 0 ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)');
+
+            charts.macd = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: 'MACD',
+                            data: indicators.macd.macd,
+                            backgroundColor: colors,
+                            borderWidth: 0
+                        },
+                        {
+                            label: 'DIF',
+                            data: indicators.macd.dif,
+                            type: 'line',
+                            borderColor: '#4facfe',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'DEA',
+                            data: indicators.macd.dea,
+                            type: 'line',
+                            borderColor: '#f59e0b',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        function drawKDJChart(data, indicators) {
+            const ctx = document.getElementById('kdjChart').getContext('2d');
+            if (charts.kdj) charts.kdj.destroy();
+
+            charts.kdj = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [
+                        {
+                            label: 'K',
+                            data: indicators.kdj.k,
+                            borderColor: '#4facfe',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'D',
+                            data: indicators.kdj.d,
+                            borderColor: '#f59e0b',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'J',
+                            data: indicators.kdj.j,
+                            borderColor: '#a855f7',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: { ...getChartOptions(), scales: { ...getChartOptions().scales, y: { ...getChartOptions().scales.y, min: 0, max: 100 } } }
+            });
+        }
+
+        function drawRSIChart(data, indicators) {
+            const ctx = document.getElementById('rsiChart').getContext('2d');
+            if (charts.rsi) charts.rsi.destroy();
+
+            charts.rsi = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [
+                        {
+                            label: 'RSI(6)',
+                            data: indicators.rsi6,
+                            borderColor: '#22c55e',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'RSI(12)',
+                            data: indicators.rsi12,
+                            borderColor: '#f59e0b',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'RSI(14)',
+                            data: indicators.rsi,
+                            borderColor: '#4facfe',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: { ...getChartOptions(), scales: { ...getChartOptions().scales, y: { ...getChartOptions().scales.y, min: 0, max: 100 } } }
+            });
+        }
+
+        function drawWRChart(data, indicators) {
+            const ctx = document.getElementById('wrChart').getContext('2d');
+            if (charts.wr) charts.wr.destroy();
+
+            charts.wr = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'WR(14)',
+                        data: indicators.wr,
+                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: { ...getChartOptions(), scales: { ...getChartOptions().scales, y: { ...getChartOptions().scales.y, min: -100, max: 0 } } }
+            });
+        }
+
+        function drawCCIChart(data, indicators) {
+            const ctx = document.getElementById('cciChart').getContext('2d');
+            if (charts.cci) charts.cci.destroy();
+
+            charts.cci = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'CCI(14)',
+                        data: indicators.cci,
+                        borderColor: '#ec4899',
+                        backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        function drawDMIChart(data, indicators) {
+            const ctx = document.getElementById('dmiChart').getContext('2d');
+            if (charts.dmi) charts.dmi.destroy();
+
+            charts.dmi = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [
+                        {
+                            label: 'PDI',
+                            data: indicators.dmi.pdi,
+                            borderColor: '#22c55e',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'MDI',
+                            data: indicators.dmi.mdi,
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'ADX',
+                            data: indicators.dmi.adx,
+                            borderColor: '#4facfe',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        function drawVolumeChart(data) {
+            const ctx = document.getElementById('volumeChart').getContext('2d');
+            if (charts.volume) charts.volume.destroy();
+
+            const colors = data.map((d, i) => {
+                if (i === 0) return '#4facfe';
+                return d.close >= d.open ? '#22c55e' : '#ef4444';
+            });
+
+            charts.volume = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: '成交量',
+                        data: data.map(d => d.volume),
+                        backgroundColor: colors,
+                        borderWidth: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        function drawOBVChart(data, indicators) {
+            const ctx = document.getElementById('obvChart').getContext('2d');
+            if (charts.obv) charts.obv.destroy();
+
+            charts.obv = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'OBV',
+                        data: indicators.obv,
+                        borderColor: '#4facfe',
+                        backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        function drawVolumeRatioChart(data, indicators) {
+            const ctx = document.getElementById('volumeRatioChart').getContext('2d');
+            if (charts.volumeRatio) charts.volumeRatio.destroy();
+
+            const colors = indicators.volumeRatio.map(r => {
+                if (!r) return '#4facfe';
+                return r > 1 ? '#22c55e' : '#ef4444';
+            });
+
+            charts.volumeRatio = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: '量比',
+                        data: indicators.volumeRatio,
+                        backgroundColor: colors,
+                        borderWidth: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        function drawSupportResistanceChart(data) {
+            const container = document.getElementById('supportResistanceChart');
+            container.innerHTML = '';
+            
+            // 计算支撑压力位
+            const highs = data.map(d => d.high);
+            const lows = data.map(d => d.low);
+            const resistance = Math.max(...highs.slice(-20));
+            const support = Math.min(...lows.slice(-20));
+            
+            const chart = LightweightCharts.createChart(container, {
+                width: container.clientWidth,
+                height: container.clientHeight,
+                layout: {
+                    background: { color: '#0f1429' },
+                    textColor: '#aaa',
+                },
+                grid: {
+                    vertLines: { color: '#2d3561' },
+                    horzLines: { color: '#2d3561' },
+                },
+            });
+
+            const priceSeries = chart.addCandlestickSeries({
+                upColor: '#22c55e',
+                downColor: '#ef4444',
+                borderUpColor: '#22c55e',
+                borderDownColor: '#ef4444',
+                wickUpColor: '#22c55e',
+                wickDownColor: '#ef4444',
+            });
+
+            priceSeries.setData(data.map(d => ({
+                time: d.date,
+                open: d.open,
+                high: d.high,
+                low: d.low,
+                close: d.close
+            })));
+
+            // 支撑线
+            const supportSeries = chart.addLineSeries({
+                color: '#22c55e',
+                lineWidth: 2,
+                lineStyle: 2
+            });
+            supportSeries.setData(data.map(d => ({ time: d.date, value: support })));
+
+            // 压力线
+            const resistanceSeries = chart.addLineSeries({
+                color: '#ef4444',
+                lineWidth: 2,
+                lineStyle: 2
+            });
+            resistanceSeries.setData(data.map(d => ({ time: d.date, value: resistance })));
+
+            chart.timeScale().fitContent();
+            charts.supportResistance = chart;
+        }
+
+        // 形态识别
+        function displayPatterns(data) {
+            const patterns = [];
+            const len = data.length;
+            
+            // 检测最近的K线形态
+            if (len >= 3) {
+                const d1 = data[len - 3];
+                const d2 = data[len - 2];
+                const d3 = data[len - 1];
+                
+                // 早晨之星
+                if (d1.close < d1.open && 
+                    Math.abs(d2.close - d2.open) < (d1.open - d1.close) * 0.3 &&
+                    d3.close > d3.open &&
+                    d3.close > (d1.open + d1.close) / 2) {
+                    patterns.push({ name: '早晨之星', type: 'buy', desc: '底部反转信号，预示上涨' });
+                }
+                
+                // 黄昏之星
+                if (d1.close > d1.open && 
+                    Math.abs(d2.close - d2.open) < (d1.close - d1.open) * 0.3 &&
+                    d3.close < d3.open &&
+                    d3.close < (d1.open + d1.close) / 2) {
+                    patterns.push({ name: '黄昏之星', type: 'sell', desc: '顶部反转信号，预示下跌' });
+                }
+            }
+            
+            // 锤子线
+            if (len >= 1) {
+                const d = data[len - 1];
+                const body = Math.abs(d.close - d.open);
+                const lowerShadow = Math.min(d.open, d.close) - d.low;
+                const upperShadow = d.high - Math.max(d.open, d.close);
+                
+                if (lowerShadow > body * 2 && upperShadow < body * 0.3) {
+                    patterns.push({ name: '锤子线', type: 'buy', desc: '底部反转信号' });
+                }
+                
+                if (upperShadow > body * 2 && lowerShadow < body * 0.3) {
+                    patterns.push({ name: '倒锤子线', type: 'sell', desc: '顶部反转信号' });
+                }
+            }
+            
+            let html = '';
+            if (patterns.length > 0) {
+                html = patterns.map(p => `
+                    <div class="signal ${p.type}" style="display: block; margin-bottom: 10px; padding: 15px;">
+                        <strong>${p.name}</strong><br>
+                        <span style="font-size: 13px; opacity: 0.9;">${p.desc}</span>
+                    </div>
+                `).join('');
+            } else {
+                html = '<div class="info-box"><p>暂未识别到明显的K线形态</p></div>';
+            }
+            
+            document.getElementById('patternResults').innerHTML = html;
+            
+            // 趋势分析
+            const ma20 = calculateMA(data, 20);
+            const trend = ma20[ma20.length - 1] > ma20[ma20.length - 20] ? '上升' : '下降';
+            document.getElementById('trendAnalysis').innerHTML = `
+                <div class="info-box">
+                    <h3>趋势方向</h3>
+                    <p>当前20日均线呈<strong>${trend}趋势</strong></p>
+                    <p>MA20: ${ma20[ma20.length - 1]?.toFixed(2)}</p>
+                </div>
+            `;
+        }
+
+        // 通用图表配置
+        function getChartOptions() {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { color: '#aaa' }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#2d3561' },
+                        ticks: { color: '#aaa', maxTicksLimit: 10 }
+                    },
+                    y: {
+                        grid: { color: '#2d3561' },
+                        ticks: { color: '#aaa' }
+                    }
+                }
+            };
+        }
+    </script>
+</body>
+</html>
