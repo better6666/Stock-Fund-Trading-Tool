@@ -646,56 +646,131 @@
         let stockData = null;
         let currentSymbol = '';
 
-        // 热门股票列表
+        // 热门股票列表（扩展版）
         const stockList = [
-            // 美股
-            { name: '苹果', code: 'AAPL', market: '美股' },
-            { name: '微软', code: 'MSFT', market: '美股' },
-            { name: '谷歌', code: 'GOOGL', market: '美股' },
-            { name: '亚马逊', code: 'AMZN', market: '美股' },
-            { name: '特斯拉', code: 'TSLA', market: '美股' },
-            { name: '英伟达', code: 'NVDA', market: '美股' },
-            { name: '脸书', code: 'META', market: '美股' },
-            { name: '奈飞', code: 'NFLX', market: '美股' },
-            // A股
-            { name: '贵州茅台', code: '600519.SS', market: 'A股' },
-            { name: '腾讯控股', code: '0700.HK', market: '港股' },
-            { name: '阿里巴巴', code: '9988.HK', market: '港股' },
-            { name: '中国平安', code: '601318.SS', market: 'A股' },
-            { name: '招商银行', code: '600036.SS', market: 'A股' },
-            { name: '五粮液', code: '000858.SZ', market: 'A股' },
-            { name: '宁德时代', code: '300750.SZ', market: 'A股' },
-            { name: '比亚迪', code: '002594.SZ', market: 'A股' },
-            { name: '美的集团', code: '000333.SZ', market: 'A股' },
-            { name: '格力电器', code: '000651.SZ', market: 'A股' },
-            { name: '中国移动', code: '600941.SS', market: 'A股' },
-            { name: '工商银行', code: '601398.SS', market: 'A股' }
+            // 美股科技
+            { name: '苹果', code: 'AAPL', market: '美股', category: '科技' },
+            { name: '微软', code: 'MSFT', market: '美股', category: '科技' },
+            { name: '谷歌', code: 'GOOGL', market: '美股', category: '科技' },
+            { name: '亚马逊', code: 'AMZN', market: '美股', category: '科技' },
+            { name: '特斯拉', code: 'TSLA', market: '美股', category: '汽车' },
+            { name: '英伟达', code: 'NVDA', market: '美股', category: '科技' },
+            { name: '脸书', code: 'META', market: '美股', category: '科技' },
+            { name: '奈飞', code: 'NFLX', market: '美股', category: '媒体' },
+            { name: '英特尔', code: 'INTC', market: '美股', category: '科技' },
+            { name: 'AMD', code: 'AMD', market: '美股', category: '科技' },
+            { name: '台积电', code: 'TSM', market: '美股', category: '科技' },
+            { name: '迪士尼', code: 'DIS', market: '美股', category: '媒体' },
+            { name: '可口可乐', code: 'KO', market: '美股', category: '消费' },
+            { name: '百事可乐', code: 'PEP', market: '美股', category: '消费' },
+            { name: '麦当劳', code: 'MCD', market: '美股', category: '消费' },
+            { name: '耐克', code: 'NKE', market: '美股', category: '消费' },
+            { name: '星巴克', code: 'SBUX', market: '美股', category: '消费' },
+            { name: '波音', code: 'BA', market: '美股', category: '工业' },
+            { name: '埃克森美孚', code: 'XOM', market: '美股', category: '能源' },
+            { name: '雪佛龙', code: 'CVX', market: '美股', category: '能源' },
+            // 美股金融
+            { name: '摩根大通', code: 'JPM', market: '美股', category: '金融' },
+            { name: '美国银行', code: 'BAC', market: '美股', category: '金融' },
+            { name: '富国银行', code: 'WFC', market: '美股', category: '金融' },
+            { name: '高盛', code: 'GS', market: '美股', category: '金融' },
+            { name: '伯克希尔', code: 'BRK-B', market: '美股', category: '金融' },
+            { name: '维萨', code: 'V', market: '美股', category: '金融' },
+            { name: '万事达', code: 'MA', market: '美股', category: '金融' },
+            // A股主板
+            { name: '贵州茅台', code: '600519.SS', market: 'A股', category: '消费' },
+            { name: '中国平安', code: '601318.SS', market: 'A股', category: '金融' },
+            { name: '招商银行', code: '600036.SS', market: 'A股', category: '金融' },
+            { name: '五粮液', code: '000858.SZ', market: 'A股', category: '消费' },
+            { name: '美的集团', code: '000333.SZ', market: 'A股', category: '家电' },
+            { name: '格力电器', code: '000651.SZ', market: 'A股', category: '家电' },
+            { name: '中国移动', code: '600941.SS', market: 'A股', category: '通信' },
+            { name: '工商银行', code: '601398.SS', market: 'A股', category: '金融' },
+            { name: '建设银行', code: '601939.SS', market: 'A股', category: '金融' },
+            { name: '中国石油', code: '601857.SS', market: 'A股', category: '能源' },
+            { name: '中国石化', code: '600028.SS', market: 'A股', category: '能源' },
+            { name: '海天味业', code: '603288.SS', market: 'A股', category: '消费' },
+            { name: '恒瑞医药', code: '600276.SS', market: 'A股', category: '医药' },
+            { name: '药明康德', code: '603259.SS', market: 'A股', category: '医药' },
+            { name: '隆基绿能', code: '601012.SS', market: 'A股', category: '新能源' },
+            { name: '三一重工', code: '600031.SS', market: 'A股', category: '机械' },
+            // 创业板/科创板
+            { name: '宁德时代', code: '300750.SZ', market: 'A股', category: '新能源' },
+            { name: '比亚迪', code: '002594.SZ', market: 'A股', category: '汽车' },
+            { name: '迈瑞医疗', code: '300760.SZ', market: 'A股', category: '医疗' },
+            { name: '东方财富', code: '300059.SZ', market: 'A股', category: '金融' },
+            { name: '汇川技术', code: '300124.SZ', market: 'A股', category: '工控' },
+            // 港股
+            { name: '腾讯控股', code: '0700.HK', market: '港股', category: '科技' },
+            { name: '阿里巴巴', code: '9988.HK', market: '港股', category: '科技' },
+            { name: '美团', code: '3690.HK', market: '港股', category: '互联网' },
+            { name: '京东', code: '9618.HK', market: '港股', category: '电商' },
+            { name: '小米集团', code: '1810.HK', market: '港股', category: '科技' },
+            { name: '比亚迪股份', code: '1211.HK', market: '港股', category: '汽车' },
+            { name: '中国移动', code: '0941.HK', market: '港股', category: '通信' }
         ];
 
-        // 热门基金列表（使用ETF代码）
+        // 热门基金列表（扩展版 - 使用ETF代码）
         const fundList = [
-            // 美国ETF
-            { name: '标普500ETF', code: 'SPY', market: '美国' },
-            { name: '纳斯达克100ETF', code: 'QQQ', market: '美国' },
-            { name: '道琼斯ETF', code: 'DIA', market: '美国' },
-            { name: '罗素2000ETF', code: 'IWM', market: '美国' },
-            { name: '科技股ETF', code: 'XLK', market: '美国' },
-            { name: '金融股ETF', code: 'XLF', market: '美国' },
-            { name: '医疗股ETF', code: 'XLV', market: '美国' },
-            { name: '能源股ETF', code: 'XLE', market: '美国' },
-            { name: '新兴市场ETF', code: 'EEM', market: '美国' },
-            { name: '中国ETF', code: 'FXI', market: '美国' },
-            { name: '黄金ETF', code: 'GLD', market: '美国' },
-            { name: '白银ETF', code: 'SLV', market: '美国' },
-            // 中国ETF
-            { name: '沪深300ETF', code: '510300.SS', market: '中国' },
-            { name: '中证500ETF', code: '510500.SS', market: '中国' },
-            { name: '创业板ETF', code: '159915.SZ', market: '中国' },
-            { name: '科创50ETF', code: '588000.SS', market: '中国' },
-            { name: '恒生ETF', code: '159920.SZ', market: '中国' },
-            { name: '红利ETF', code: '510880.SS', market: '中国' },
-            { name: '消费ETF', code: '159928.SZ', market: '中国' },
-            { name: '医药ETF', code: '512010.SS', market: '中国' }
+            // 美国宽基指数ETF
+            { name: '标普500ETF', code: 'SPY', market: '美国', category: '宽基指数' },
+            { name: '纳斯达克100ETF', code: 'QQQ', market: '美国', category: '宽基指数' },
+            { name: '道琼斯ETF', code: 'DIA', market: '美国', category: '宽基指数' },
+            { name: '罗素2000ETF', code: 'IWM', market: '美国', category: '宽基指数' },
+            { name: '标普400中盘ETF', code: 'MDY', market: '美国', category: '宽基指数' },
+            // 美国行业ETF
+            { name: '科技股ETF', code: 'XLK', market: '美国', category: '行业' },
+            { name: '金融股ETF', code: 'XLF', market: '美国', category: '行业' },
+            { name: '医疗股ETF', code: 'XLV', market: '美国', category: '行业' },
+            { name: '能源股ETF', code: 'XLE', market: '美国', category: '行业' },
+            { name: '消费ETF', code: 'XLP', market: '美国', category: '行业' },
+            { name: '工业ETF', code: 'XLI', market: '美国', category: '行业' },
+            { name: '房地产ETF', code: 'XLRE', market: '美国', category: '行业' },
+            { name: '公用事业ETF', code: 'XLU', market: '美国', category: '行业' },
+            { name: '材料ETF', code: 'XLB', market: '美国', category: '行业' },
+            { name: '通信ETF', code: 'XLC', market: '美国', category: '行业' },
+            // 美国主题ETF
+            { name: '半导体ETF', code: 'SOXX', market: '美国', category: '主题' },
+            { name: '生物科技ETF', code: 'IBB', market: '美国', category: '主题' },
+            { name: '云计算ETF', code: 'SKYY', market: '美国', category: '主题' },
+            { name: '网络安全ETF', code: 'HACK', market: '美国', category: '主题' },
+            { name: '清洁能源ETF', code: 'ICLN', market: '美国', category: '主题' },
+            { name: '电动车ETF', code: 'DRIV', market: '美国', category: '主题' },
+            // 国际市场ETF
+            { name: '新兴市场ETF', code: 'EEM', market: '美国', category: '国际' },
+            { name: '中国ETF', code: 'FXI', market: '美国', category: '国际' },
+            { name: '欧洲ETF', code: 'VGK', market: '美国', category: '国际' },
+            { name: '日本ETF', code: 'EWJ', market: '美国', category: '国际' },
+            { name: '印度ETF', code: 'INDA', market: '美国', category: '国际' },
+            // 商品ETF
+            { name: '黄金ETF', code: 'GLD', market: '美国', category: '商品' },
+            { name: '白银ETF', code: 'SLV', market: '美国', category: '商品' },
+            { name: '石油ETF', code: 'USO', market: '美国', category: '商品' },
+            { name: '天然气ETF', code: 'UNG', market: '美国', category: '商品' },
+            // 债券ETF
+            { name: '美国国债ETF', code: 'TLT', market: '美国', category: '债券' },
+            { name: '公司债ETF', code: 'LQD', market: '美国', category: '债券' },
+            { name: '高收益债ETF', code: 'HYG', market: '美国', category: '债券' },
+            // 中国宽基ETF
+            { name: '沪深300ETF', code: '510300.SS', market: '中国', category: '宽基指数' },
+            { name: '中证500ETF', code: '510500.SS', market: '中国', category: '宽基指数' },
+            { name: '创业板ETF', code: '159915.SZ', market: '中国', category: '宽基指数' },
+            { name: '科创50ETF', code: '588000.SS', market: '中国', category: '宽基指数' },
+            { name: '上证50ETF', code: '510050.SS', market: '中国', category: '宽基指数' },
+            { name: '深证100ETF', code: '159901.SZ', market: '中国', category: '宽基指数' },
+            // 中国行业ETF
+            { name: '消费ETF', code: '159928.SZ', market: '中国', category: '行业' },
+            { name: '医药ETF', code: '512010.SS', market: '中国', category: '行业' },
+            { name: '券商ETF', code: '512000.SS', market: '中国', category: '行业' },
+            { name: '银行ETF', code: '512800.SS', market: '中国', category: '行业' },
+            { name: '军工ETF', code: '512660.SS', market: '中国', category: '行业' },
+            { name: '芯片ETF', code: '512760.SS', market: '中国', category: '行业' },
+            { name: '新能源车ETF', code: '515030.SS', market: '中国', category: '行业' },
+            { name: '光伏ETF', code: '515790.SS', market: '中国', category: '行业' },
+            // 中国其他ETF
+            { name: '恒生ETF', code: '159920.SZ', market: '中国', category: '港股' },
+            { name: '红利ETF', code: '510880.SS', market: '中国', category: '策略' },
+            { name: 'H股ETF', code: '510900.SS', market: '中国', category: '港股' }
         ];
 
         // 初始化页面
@@ -951,23 +1026,56 @@
             throw new Error(`所有数据源都无法访问。最后错误: ${lastError?.message || '未知错误'}`);
         }
 
-        // 获取公司基本面信息
+        // 获取公司基本面信息（带多数据源）
         async function fetchCompanyInfo(symbol) {
-            try {
-                // 获取报价信息
-                const quoteUrl = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${symbol}?modules=summaryDetail,defaultKeyStatistics,financialData,price`;
-                const response = await fetch(quoteUrl);
-                const json = await response.json();
-                
-                if (json.quoteSummary && json.quoteSummary.result && json.quoteSummary.result[0]) {
-                    const data = json.quoteSummary.result[0];
-                    displayCompanyInfo(data, symbol);
-                    displayFundamentals(data);
+            const fundamentalSources = [
+                {
+                    name: 'Yahoo Quote Direct',
+                    fetch: async () => {
+                        const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${symbol}?modules=summaryDetail,defaultKeyStatistics,financialData,price`;
+                        const response = await fetch(url);
+                        return await response.json();
+                    }
+                },
+                {
+                    name: 'Yahoo Quote via Proxy 1',
+                    fetch: async () => {
+                        const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${symbol}?modules=summaryDetail,defaultKeyStatistics,financialData,price`;
+                        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                        const response = await fetch(proxyUrl);
+                        return await response.json();
+                    }
+                },
+                {
+                    name: 'Yahoo Quote via Proxy 2',
+                    fetch: async () => {
+                        const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${symbol}?modules=summaryDetail,defaultKeyStatistics,financialData,price`;
+                        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+                        const response = await fetch(proxyUrl);
+                        return await response.json();
+                    }
                 }
-            } catch (error) {
-                console.error('Company info error:', error);
-                // 如果获取失败，显示基本信息
-                displayBasicInfo(symbol);
+            ];
+            
+            for (let i = 0; i < fundamentalSources.length; i++) {
+                try {
+                    console.log(`🔄 尝试基本面数据源 ${i + 1}/${fundamentalSources.length}: ${fundamentalSources[i].name}`);
+                    const json = await fundamentalSources[i].fetch();
+                    
+                    if (json.quoteSummary && json.quoteSummary.result && json.quoteSummary.result[0]) {
+                        const data = json.quoteSummary.result[0];
+                        console.log(`✅ 基本面数据获取成功！使用 ${fundamentalSources[i].name}`);
+                        displayCompanyInfo(data, symbol);
+                        displayFundamentals(data);
+                        return;
+                    }
+                } catch (error) {
+                    console.warn(`❌ ${fundamentalSources[i].name} 失败:`, error.message);
+                    if (i === fundamentalSources.length - 1) {
+                        console.warn('所有基本面数据源都失败，显示基本信息');
+                        displayBasicInfo(symbol);
+                    }
+                }
             }
         }
 
@@ -1213,7 +1321,9 @@
             const closes = data.map(d => d.close);
             return closes.map((_, i) => {
                 if (i < period - 1) return null;
-                const sum = closes.slice(i - period + 1, i + 1).reduce((a, b) => a + b);
+                const slice = closes.slice(i - period + 1, i + 1);
+                if (slice.length === 0) return null;
+                const sum = slice.reduce((a, b) => a + b, 0);
                 return sum / period;
             });
         }
@@ -1316,7 +1426,13 @@
                 }
 
                 const slice = closes.slice(i - period + 1, i + 1);
-                const mean = slice.reduce((a, b) => a + b) / period;
+                if (slice.length === 0) {
+                    middle.push(null);
+                    upper.push(null);
+                    lower.push(null);
+                    continue;
+                }
+                const mean = slice.reduce((a, b) => a + b, 0) / period;
                 const variance = slice.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / period;
                 const std = Math.sqrt(variance);
 
@@ -1359,7 +1475,11 @@
                 }
                 
                 const slice = tp.slice(i - period + 1, i + 1);
-                const ma = slice.reduce((a, b) => a + b) / period;
+                if (slice.length === 0) {
+                    cci.push(null);
+                    continue;
+                }
+                const ma = slice.reduce((a, b) => a + b, 0) / period;
                 const md = slice.reduce((sum, val) => sum + Math.abs(val - ma), 0) / period;
                 
                 cci.push((tp[i] - ma) / (0.015 * md));
@@ -1373,6 +1493,14 @@
             const mdi = [];
             const adx = [];
             const dx = [];
+            
+            if (data.length < period + 1) {
+                return { 
+                    pdi: data.map(() => null), 
+                    mdi: data.map(() => null), 
+                    adx: data.map(() => null) 
+                };
+            }
             
             let trSum = 0, pdmSum = 0, mdmSum = 0;
             
@@ -1406,17 +1534,21 @@
                     mdmSum = mdmSum - mdmSum / period + mdm;
                 }
                 
-                const pdiVal = (pdmSum / trSum) * 100;
-                const mdiVal = (mdmSum / trSum) * 100;
-                const dxVal = Math.abs(pdiVal - mdiVal) / (pdiVal + mdiVal) * 100;
+                const pdiVal = (pdmSum / (trSum || 1)) * 100;
+                const mdiVal = (mdmSum / (trSum || 1)) * 100;
+                const dxVal = Math.abs(pdiVal - mdiVal) / ((pdiVal + mdiVal) || 1) * 100;
                 
                 pdi.push(pdiVal);
                 mdi.push(mdiVal);
                 dx.push(dxVal);
                 
                 if (i >= period * 2 - 1) {
-                    const adxSlice = dx.slice(i - period + 1, i + 1);
-                    adx.push(adxSlice.reduce((a, b) => a + b) / period);
+                    const adxSlice = dx.slice(i - period + 1, i + 1).filter(v => v !== null);
+                    if (adxSlice.length > 0) {
+                        adx.push(adxSlice.reduce((a, b) => a + b, 0) / adxSlice.length);
+                    } else {
+                        adx.push(null);
+                    }
                 } else {
                     adx.push(null);
                 }
