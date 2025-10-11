@@ -168,10 +168,13 @@
             background: #0f1429;
             border-radius: 8px;
             padding: 15px;
-            height: 500px;
+            height: 600px;
         }
         .chart-container.small {
-            height: 350px;
+            height: 450px;
+        }
+        .chart-container.large {
+            height: 700px;
         }
         .chart-grid {
             display: grid;
@@ -443,7 +446,20 @@
                         <option value="yahoo">Yahoo Finance（全球市场）</option>
                         <option value="sina">新浪财经（A股实时）</option>
                     </select>
+                    <select id="klineType">
+                        <option value="1m">1分钟</option>
+                        <option value="5m">5分钟</option>
+                        <option value="15m">15分钟</option>
+                        <option value="30m">30分钟</option>
+                        <option value="60m">60分钟</option>
+                        <option value="120m">120分钟</option>
+                        <option value="1d" selected>日K</option>
+                        <option value="1wk">周K</option>
+                        <option value="1mo">月K</option>
+                    </select>
                     <select id="timeRange">
+                        <option value="1d">1天</option>
+                        <option value="5d">5天</option>
                         <option value="1mo">1个月</option>
                         <option value="3mo" selected>3个月</option>
                         <option value="6mo">6个月</option>
@@ -453,6 +469,20 @@
                     </select>
                     <button onclick="fetchStockData()" id="searchBtn">🔍 获取数据</button>
                 </div>
+                <div style="margin-top: 15px;">
+                    <h4 style="color: #4facfe; font-size: 14px; margin-bottom: 10px;">⚡ 快速周期切换</h4>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button onclick="quickSelectPeriod('1m', '1d')" style="padding: 8px 16px; font-size: 13px;">1分钟</button>
+                        <button onclick="quickSelectPeriod('5m', '1d')" style="padding: 8px 16px; font-size: 13px;">5分钟</button>
+                        <button onclick="quickSelectPeriod('15m', '5d')" style="padding: 8px 16px; font-size: 13px;">15分钟</button>
+                        <button onclick="quickSelectPeriod('30m', '5d')" style="padding: 8px 16px; font-size: 13px;">30分钟</button>
+                        <button onclick="quickSelectPeriod('60m', '1mo')" style="padding: 8px 16px; font-size: 13px;">60分钟</button>
+                        <button onclick="quickSelectPeriod('120m', '1mo')" style="padding: 8px 16px; font-size: 13px;">120分钟</button>
+                        <button onclick="quickSelectPeriod('1d', '3mo')" style="padding: 8px 16px; font-size: 13px; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">日K</button>
+                        <button onclick="quickSelectPeriod('1wk', '1y')" style="padding: 8px 16px; font-size: 13px;">周K</button>
+                        <button onclick="quickSelectPeriod('1mo', '5y')" style="padding: 8px 16px; font-size: 13px;">月K</button>
+                    </div>
+                </div>
                 <div style="margin-top: 10px; font-size: 12px; color: #888;">
                     <strong>提示：</strong>
                     美股直接输入代码（如 AAPL），
@@ -460,7 +490,7 @@
                     深圳加 .SZ（如 000001.SZ），
                     港股加 .HK（如 0700.HK）
                     <br>
-                    <span style="color: #facc15;">⚠️ 如果数据获取失败，请：1) 检查网络连接 2) 按F12打开控制台查看详细错误 3) 尝试其他股票代码</span>
+                    <span style="color: #facc15;">💡 快速周期切换：先选择股票，然后点击上方的周期按钮即可快速切换不同周期的K线图</span>
                 </div>
             </div>
         </div>
@@ -487,6 +517,20 @@
             <!-- 实时数据 -->
             <div class="stats-grid" id="statsGrid"></div>
 
+            <!-- 当前周期信息 -->
+            <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 14px; opacity: 0.9;">当前周期</div>
+                        <div style="font-size: 24px; font-weight: bold; margin-top: 5px;" id="currentPeriodDisplay">日K线 - 3个月</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 14px; opacity: 0.9;">数据条数</div>
+                        <div style="font-size: 24px; font-weight: bold; margin-top: 5px;" id="dataCountDisplay">-</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 技术信号 -->
             <div class="card">
                 <h2>🎯 综合技术信号</h2>
@@ -506,14 +550,14 @@
             <div id="overview" class="content active">
                 <div class="card">
                     <h2>📊 K线图与均线系统</h2>
-                    <div class="chart-container">
+                    <div class="chart-container large">
                         <div id="candlestickChart"></div>
                     </div>
                 </div>
 
                 <div class="card">
                     <h2>📈 布林带分析（Bollinger Bands）</h2>
-                    <div class="chart-container small">
+                    <div class="chart-container">
                         <div id="bollingerChart"></div>
                     </div>
                 </div>
@@ -581,6 +625,76 @@
                             <canvas id="dmiChart"></canvas>
                         </div>
                     </div>
+
+                    <div class="card">
+                        <h2>🎯 SAR抛物线指标</h2>
+                        <div class="info-box">
+                            <p>点位在价格下方为看涨，上方为看跌。SAR转向时提供明确的止损或反转信号。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="sarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📊 TRIX指标</h2>
+                        <div class="info-box">
+                            <p>三重指数平滑移动平均，过滤短期噪音。上穿零轴看多，下穿看空。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="trixChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📊 ATR波动率指标</h2>
+                        <div class="info-box">
+                            <p>衡量市场波动性，值越大波动越剧烈。常用于设置动态止损位。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="atrChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📊 Stoch随机指标</h2>
+                        <div class="info-box">
+                            <p>快速随机指标，K线和D线。>80超买，<20超卖。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="stochChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📊 MOM动量指标</h2>
+                        <div class="info-box">
+                            <p>衡量价格变化速度。穿越零轴为趋势改变，与价格背离为反转信号。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="momChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>💰 MFI资金流量指标</h2>
+                        <div class="info-box">
+                            <p>成交量加权的RSI，衡量资金流入流出力度。>80超买，<20超卖。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="mfiChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📈 一目均衡表 (Ichimoku)</h2>
+                        <div class="info-box">
+                            <p>综合趋势系统，包含转换线、基准线、先行带（云层）。价格在云层上方为多头，下方为空头。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="ichimokuChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -613,6 +727,46 @@
                     </div>
                     <div class="chart-container small">
                         <canvas id="volumeRatioChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📊 VR成交量比率</h2>
+                    <div class="info-box">
+                        <p>成交量与价格变动关系。VR>160超买，<40超卖。</p>
+                    </div>
+                    <div class="chart-container small">
+                        <canvas id="vrChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📈 BRAR人气意愿指标</h2>
+                    <div class="info-box">
+                        <p>BR反映人气，AR反映意愿。BR、AR>150超买，<50超卖。</p>
+                    </div>
+                    <div class="chart-container small">
+                        <canvas id="brarChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>⚡ CR能量指标</h2>
+                    <div class="info-box">
+                        <p>衡量人气与价格动量。>300超买，<40超卖。</p>
+                    </div>
+                    <div class="chart-container small">
+                        <canvas id="crChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📊 A/D Line集散线</h2>
+                    <div class="info-box">
+                        <p>衡量资金流入流出。ADL与价格同向运动确认趋势，背离预示反转。</p>
+                    </div>
+                    <div class="chart-container small">
+                        <canvas id="adlChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -854,11 +1008,24 @@
             setTimeout(() => errorDiv.classList.remove('active'), 10000);
         }
 
+        // 快速选择周期
+        function quickSelectPeriod(klineType, range) {
+            if (!document.getElementById('stockCode').value.trim()) {
+                showError('请先选择或输入股票代码');
+                return;
+            }
+            
+            document.getElementById('klineType').value = klineType;
+            document.getElementById('timeRange').value = range;
+            fetchStockData();
+        }
+
         // 获取股票数据
         async function fetchStockData() {
             const stockCode = document.getElementById('stockCode').value.trim();
             const dataSource = document.getElementById('dataSource').value;
             const timeRange = document.getElementById('timeRange').value;
+            const klineType = document.getElementById('klineType').value;
 
             if (!stockCode) {
                 showError('请输入股票代码');
@@ -868,7 +1035,18 @@
             console.log('=== 开始获取数据 ===');
             console.log('股票代码:', stockCode);
             console.log('数据源:', dataSource);
+            console.log('K线周期:', klineType);
             console.log('时间范围:', timeRange);
+
+            // 根据K线类型调整时间范围
+            let adjustedRange = timeRange;
+            if (klineType.includes('m')) {
+                // 分时数据，限制时间范围
+                if (!['1d', '5d', '1mo'].includes(timeRange)) {
+                    adjustedRange = '5d';
+                    console.log('⚠️ 分时数据自动调整时间范围为5天');
+                }
+            }
 
             document.getElementById('loading').classList.add('active');
             document.getElementById('searchBtn').disabled = true;
@@ -877,7 +1055,7 @@
             try {
                 let data;
                 if (dataSource === 'yahoo') {
-                    data = await fetchFromYahoo(stockCode, timeRange);
+                    data = await fetchFromYahoo(stockCode, adjustedRange, klineType);
                 } else if (dataSource === 'sina') {
                     data = await fetchFromSina(stockCode);
                 } else {
@@ -927,64 +1105,143 @@
             }
         ];
 
-        // 获取数据（使用稳定的代理）
-        async function fetchFromYahoo(symbol, range) {
-            try {
-                console.log(`📊 正在获取 ${symbol} 的数据...`);
-                
-                const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
-                const period2 = Math.floor(Date.now() / 1000);
-                const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                
-                const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP错误: ${response.status}`);
-                }
-                
-                const json = await response.json();
-                
-                if (json.chart && json.chart.result && json.chart.result[0]) {
-                    const result = json.chart.result[0];
-                    
-                    if (!result.timestamp || result.timestamp.length === 0) {
-                        throw new Error('没有可用的历史数据');
-                    }
-                    
-                    const timestamps = result.timestamp;
-                    const quotes = result.indicators.quote[0];
-                    
-                    const data = timestamps.map((time, i) => ({
-                        date: new Date(time * 1000).toISOString().split('T')[0],
-                        open: quotes.open[i] || quotes.close[i],
-                        high: quotes.high[i] || quotes.close[i],
-                        low: quotes.low[i] || quotes.close[i],
-                        close: quotes.close[i],
-                        volume: quotes.volume[i] || 0
-                    })).filter(d => d.close !== null && d.close !== undefined);
-                    
-                    if (data.length === 0) {
-                        throw new Error('过滤后没有有效数据');
-                    }
-                    
-                    console.log(`✅ 成功获取 ${data.length} 条数据`);
-                    
-                    // 静默获取基本面信息
-                    fetchCompanyInfo(symbol).catch(() => {
-                        displayBasicInfo(symbol);
-                    });
-                    
-                    return data;
-                } else if (json.chart && json.chart.error) {
-                    throw new Error(json.chart.error.description || '数据获取失败');
-                }
-                
-                throw new Error('未找到数据，请检查股票代码');
-            } catch (error) {
-                console.error('❌ 数据获取失败:', error.message);
-                throw error;
+        // 多数据源配置（更多选择）
+        const multiDataSources = [
+            {
+                name: 'AllOrigins Proxy',
+                getUrl: (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+            },
+            {
+                name: 'CORS Anywhere',
+                getUrl: (url) => `https://cors-anywhere.herokuapp.com/${url}`
+            },
+            {
+                name: 'ThingProxy',
+                getUrl: (url) => `https://thingproxy.freeboard.io/fetch/${url}`
+            },
+            {
+                name: 'CORS.SH',
+                getUrl: (url) => `https://cors.sh/${url}`
             }
+        ];
+
+        // 获取数据（支持所有K线周期，多数据源）
+        async function fetchFromYahoo(symbol, range, interval = '1d') {
+            const klineTypeMap = {
+                '1m': '1分钟',
+                '5m': '5分钟',
+                '15m': '15分钟',
+                '30m': '30分钟',
+                '60m': '60分钟',
+                '120m': '120分钟',
+                '1d': '日K',
+                '1wk': '周K',
+                '1mo': '月K'
+            };
+            
+            console.log(`📊 正在获取 ${symbol} 的${klineTypeMap[interval]}数据...`);
+            
+            const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
+            const period2 = Math.floor(Date.now() / 1000);
+            const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=${interval}`;
+            
+            // 尝试多个数据源
+            for (let i = 0; i < multiDataSources.length; i++) {
+                try {
+                    const source = multiDataSources[i];
+                    console.log(`🔄 尝试数据源 ${i + 1}/${multiDataSources.length}: ${source.name}`);
+                    
+                    const proxyUrl = source.getUrl(yahooUrl);
+                    const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    const json = await response.json();
+                    
+                    if (json.chart && json.chart.result && json.chart.result[0]) {
+                        const result = json.chart.result[0];
+                        
+                        if (!result.timestamp || result.timestamp.length === 0) {
+                            throw new Error('没有可用的历史数据');
+                        }
+                        
+                        const timestamps = result.timestamp;
+                        const quotes = result.indicators.quote[0];
+                        
+                        // 根据周期格式化时间
+                        const formatTime = (timestamp) => {
+                            const date = new Date(timestamp * 1000);
+                            if (interval.includes('m')) {
+                                // 分钟级别显示 月-日 时:分
+                                return date.toLocaleString('zh-CN', { 
+                                    month: '2-digit', 
+                                    day: '2-digit', 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                }).replace(/\//g, '-');
+                            } else if (interval === '1wk') {
+                                return date.toISOString().split('T')[0];
+                            } else if (interval === '1mo') {
+                                return date.toISOString().substring(0, 7);
+                            } else {
+                                return date.toISOString().split('T')[0];
+                            }
+                        };
+                        
+                        const data = timestamps.map((time, i) => ({
+                            date: formatTime(time),
+                            timestamp: time,
+                            open: quotes.open[i] || quotes.close[i],
+                            high: quotes.high[i] || quotes.close[i],
+                            low: quotes.low[i] || quotes.close[i],
+                            close: quotes.close[i],
+                            volume: quotes.volume[i] || 0
+                        })).filter(d => d.close !== null && d.close !== undefined);
+                        
+                        if (data.length === 0) {
+                            throw new Error('过滤后没有有效数据');
+                        }
+                        
+                        console.log(`✅ 成功！使用 ${source.name}，获取 ${data.length} 条${klineTypeMap[interval]}数据`);
+                        
+                        // 更新周期显示
+                        const rangeMap = {
+                            '1d': '1天', '5d': '5天', '1mo': '1个月', '3mo': '3个月',
+                            '6mo': '6个月', '1y': '1年', '2y': '2年', '5y': '5年'
+                        };
+                        document.getElementById('currentPeriodDisplay').textContent = 
+                            `${klineTypeMap[interval]} - ${rangeMap[range] || range}`;
+                        document.getElementById('dataCountDisplay').textContent = data.length + ' 条';
+                        
+                        // 静默获取基本面信息（仅日K及以上周期）
+                        if (!interval.includes('m')) {
+                            fetchCompanyInfo(symbol).catch(() => {
+                                displayBasicInfo(symbol);
+                            });
+                        } else {
+                            displayBasicInfo(symbol);
+                        }
+                        
+                        return data;
+                    } else if (json.chart && json.chart.error) {
+                        throw new Error(json.chart.error.description || '数据获取失败');
+                    }
+                    
+                    throw new Error('未找到数据');
+                } catch (error) {
+                    console.warn(`❌ ${multiDataSources[i].name} 失败:`, error.message);
+                    
+                    // 如果不是最后一个数据源，继续尝试
+                    if (i < multiDataSources.length - 1) {
+                        console.log('继续尝试下一个数据源...');
+                        continue;
+                    }
+                }
+            }
+            
+            throw new Error('所有数据源都无法访问，请检查网络或稍后重试');
         }
 
         // 获取公司基本面信息（带多数据源，静默失败）
@@ -1235,26 +1492,47 @@
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // 计算所有技术指标
+        // 计算所有技术指标（完整版）
         function calculateAllIndicators(data) {
             return {
+                // 均线系统
                 ma5: calculateMA(data, 5),
                 ma10: calculateMA(data, 10),
                 ma20: calculateMA(data, 20),
                 ma30: calculateMA(data, 30),
                 ma60: calculateMA(data, 60),
                 ma120: calculateMA(data, 120),
+                ema12: calculateEMA(data, 12),
+                ema26: calculateEMA(data, 26),
+                // 趋势指标
                 macd: calculateMACD(data),
+                bollinger: calculateBollinger(data, 20, 2),
+                sar: calculateSAR(data),
+                trix: calculateTRIX(data),
+                // 摆动指标
                 kdj: calculateKDJ(data),
                 rsi: calculateRSI(data, 14),
                 rsi6: calculateRSI(data, 6),
                 rsi12: calculateRSI(data, 12),
-                bollinger: calculateBollinger(data, 20, 2),
                 wr: calculateWR(data, 14),
                 cci: calculateCCI(data, 14),
+                stoch: calculateStoch(data, 14),
+                mom: calculateMOM(data, 10),
+                // 趋向指标
                 dmi: calculateDMI(data, 14),
+                // 成交量能量指标
                 obv: calculateOBV(data),
-                volumeRatio: calculateVolumeRatio(data)
+                volumeRatio: calculateVolumeRatio(data),
+                vr: calculateVR(data),
+                mfi: calculateMFI(data, 14),
+                adl: calculateADL(data),
+                // 波动率指标
+                atr: calculateATR(data, 14),
+                // 人气指标
+                brar: calculateBRAR(data),
+                cr: calculateCR(data),
+                // 一目均衡表
+                ichimoku: calculateIchimoku(data)
             };
         }
 
@@ -1528,6 +1806,364 @@
             return ratio;
         }
 
+        // 计算SAR (抛物线指标)
+        function calculateSAR(data, af = 0.02, maxAf = 0.2) {
+            const sar = [];
+            if (data.length < 2) return data.map(() => null);
+            
+            let isUpTrend = data[1].close > data[0].close;
+            let currentSar = isUpTrend ? data[0].low : data[0].high;
+            let ep = isUpTrend ? data[0].high : data[0].low;
+            let currentAf = af;
+            
+            sar.push(currentSar);
+            
+            for (let i = 1; i < data.length; i++) {
+                const prevSar = currentSar;
+                currentSar = prevSar + currentAf * (ep - prevSar);
+                
+                if (isUpTrend) {
+                    currentSar = Math.min(currentSar, data[i - 1].low, i > 1 ? data[i - 2].low : data[i - 1].low);
+                    if (data[i].low < currentSar) {
+                        isUpTrend = false;
+                        currentSar = ep;
+                        ep = data[i].low;
+                        currentAf = af;
+                    } else {
+                        if (data[i].high > ep) {
+                            ep = data[i].high;
+                            currentAf = Math.min(currentAf + af, maxAf);
+                        }
+                    }
+                } else {
+                    currentSar = Math.max(currentSar, data[i - 1].high, i > 1 ? data[i - 2].high : data[i - 1].high);
+                    if (data[i].high > currentSar) {
+                        isUpTrend = true;
+                        currentSar = ep;
+                        ep = data[i].high;
+                        currentAf = af;
+                    } else {
+                        if (data[i].low < ep) {
+                            ep = data[i].low;
+                            currentAf = Math.min(currentAf + af, maxAf);
+                        }
+                    }
+                }
+                
+                sar.push(currentSar);
+            }
+            
+            return sar;
+        }
+
+        // 计算TRIX (三重指数平滑移动平均)
+        function calculateTRIX(data, period = 12) {
+            const closes = data.map(d => d.close);
+            const ema1 = calculateEMAFromArray(closes, period);
+            const ema2 = calculateEMAFromArray(ema1, period);
+            const ema3 = calculateEMAFromArray(ema2, period);
+            
+            const trix = ema3.map((val, i) => {
+                if (i === 0 || !ema3[i - 1] || ema3[i - 1] === 0) return null;
+                return ((val - ema3[i - 1]) / ema3[i - 1]) * 100;
+            });
+            
+            return trix;
+        }
+
+        // 辅助函数：从数组计算EMA
+        function calculateEMAFromArray(arr, period) {
+            const k = 2 / (period + 1);
+            const ema = [];
+            let prevEma = null;
+            
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i] === null || arr[i] === undefined) {
+                    ema.push(null);
+                } else if (prevEma === null) {
+                    ema.push(arr[i]);
+                    prevEma = arr[i];
+                } else {
+                    const val = arr[i] * k + prevEma * (1 - k);
+                    ema.push(val);
+                    prevEma = val;
+                }
+            }
+            return ema;
+        }
+
+        // 计算Stoch (随机指标)
+        function calculateStoch(data, period = 14) {
+            const k = [];
+            const d = [];
+            
+            for (let i = 0; i < data.length; i++) {
+                if (i < period - 1) {
+                    k.push(null);
+                    d.push(null);
+                    continue;
+                }
+                
+                const slice = data.slice(i - period + 1, i + 1);
+                const high = Math.max(...slice.map(d => d.high));
+                const low = Math.min(...slice.map(d => d.low));
+                const close = data[i].close;
+                
+                const kVal = high === low ? 50 : ((close - low) / (high - low)) * 100;
+                k.push(kVal);
+                
+                // D是K的3日SMA
+                if (i >= period + 1) {
+                    const kSlice = k.slice(i - 2, i + 1).filter(v => v !== null);
+                    const dVal = kSlice.reduce((a, b) => a + b, 0) / kSlice.length;
+                    d.push(dVal);
+                } else {
+                    d.push(null);
+                }
+            }
+            
+            return { k, d };
+        }
+
+        // 计算VR (成交量比率)
+        function calculateVR(data, period = 26) {
+            const vr = [];
+            
+            for (let i = 0; i < data.length; i++) {
+                if (i < period || i === 0) {
+                    vr.push(null);
+                    continue;
+                }
+                
+                let upVolume = 0;
+                let downVolume = 0;
+                let flatVolume = 0;
+                
+                for (let j = i - period + 1; j <= i; j++) {
+                    if (data[j].close > data[j - 1].close) {
+                        upVolume += data[j].volume;
+                    } else if (data[j].close < data[j - 1].close) {
+                        downVolume += data[j].volume;
+                    } else {
+                        flatVolume += data[j].volume;
+                    }
+                }
+                
+                vr.push((upVolume + flatVolume / 2) / (downVolume + flatVolume / 2 || 1) * 100);
+            }
+            
+            return vr;
+        }
+
+        // 计算ATR (平均真实波幅)
+        function calculateATR(data, period = 14) {
+            const tr = [];
+            
+            for (let i = 0; i < data.length; i++) {
+                if (i === 0) {
+                    tr.push(data[i].high - data[i].low);
+                } else {
+                    const high = data[i].high;
+                    const low = data[i].low;
+                    const prevClose = data[i - 1].close;
+                    
+                    tr.push(Math.max(
+                        high - low,
+                        Math.abs(high - prevClose),
+                        Math.abs(low - prevClose)
+                    ));
+                }
+            }
+            
+            const atr = [];
+            for (let i = 0; i < data.length; i++) {
+                if (i < period - 1) {
+                    atr.push(null);
+                } else if (i === period - 1) {
+                    const slice = tr.slice(0, period);
+                    atr.push(slice.reduce((a, b) => a + b, 0) / period);
+                } else {
+                    atr.push((atr[i - 1] * (period - 1) + tr[i]) / period);
+                }
+            }
+            
+            return atr;
+        }
+
+        // 计算BRAR (人气意愿指标)
+        function calculateBRAR(data, period = 26) {
+            const br = [];
+            const ar = [];
+            
+            for (let i = 0; i < data.length; i++) {
+                if (i < period || i === 0) {
+                    br.push(null);
+                    ar.push(null);
+                    continue;
+                }
+                
+                let sumHC = 0;  // 最高-昨收
+                let sumCL = 0;  // 昨收-最低
+                let sumHO = 0;  // 最高-今开
+                let sumOL = 0;  // 今开-最低
+                
+                for (let j = i - period + 1; j <= i; j++) {
+                    sumHC += data[j].high - data[j - 1].close;
+                    sumCL += data[j - 1].close - data[j].low;
+                    sumHO += data[j].high - data[j].open;
+                    sumOL += data[j].open - data[j].low;
+                }
+                
+                br.push(sumHC / (sumCL || 1) * 100);
+                ar.push((sumHO + sumOL) / (sumHC + sumCL || 1) * 100);
+            }
+            
+            return { br, ar };
+        }
+
+        // 计算CR (能量指标)
+        function calculateCR(data, period = 26) {
+            const cr = [];
+            
+            for (let i = 0; i < data.length; i++) {
+                if (i < period || i === 0) {
+                    cr.push(null);
+                    continue;
+                }
+                
+                let sumP = 0;
+                let sumM = 0;
+                
+                for (let j = i - period + 1; j <= i; j++) {
+                    const mid = (data[j - 1].high + data[j - 1].low + data[j - 1].close) / 3;
+                    sumP += Math.max(0, data[j].high - mid);
+                    sumM += Math.max(0, mid - data[j].low);
+                }
+                
+                cr.push(sumP / (sumM || 1) * 100);
+            }
+            
+            return cr;
+        }
+
+        // 计算MOM (动量指标)
+        function calculateMOM(data, period = 10) {
+            const closes = data.map(d => d.close);
+            return closes.map((close, i) => {
+                if (i < period) return null;
+                return close - closes[i - period];
+            });
+        }
+
+        // 计算MFI (资金流量指标 - Money Flow Index)
+        function calculateMFI(data, period = 14) {
+            const mfi = [];
+            const typicalPrice = data.map(d => (d.high + d.low + d.close) / 3);
+            const rawMoneyFlow = data.map((d, i) => typicalPrice[i] * d.volume);
+            
+            for (let i = 0; i < data.length; i++) {
+                if (i < period) {
+                    mfi.push(null);
+                    continue;
+                }
+                
+                let positiveFlow = 0;
+                let negativeFlow = 0;
+                
+                for (let j = i - period + 1; j <= i; j++) {
+                    if (j === 0) continue;
+                    if (typicalPrice[j] > typicalPrice[j - 1]) {
+                        positiveFlow += rawMoneyFlow[j];
+                    } else if (typicalPrice[j] < typicalPrice[j - 1]) {
+                        negativeFlow += rawMoneyFlow[j];
+                    }
+                }
+                
+                if (negativeFlow === 0) {
+                    mfi.push(100);
+                } else {
+                    const moneyRatio = positiveFlow / negativeFlow;
+                    mfi.push(100 - (100 / (1 + moneyRatio)));
+                }
+            }
+            
+            return mfi;
+        }
+
+        // 计算A/D Line (集散线 - Accumulation/Distribution Line)
+        function calculateADL(data) {
+            const adl = [0];
+            
+            for (let i = 1; i < data.length; i++) {
+                const high = data[i].high;
+                const low = data[i].low;
+                const close = data[i].close;
+                const volume = data[i].volume;
+                
+                let clv = 0;
+                if (high !== low) {
+                    clv = ((close - low) - (high - close)) / (high - low);
+                }
+                
+                adl.push(adl[i - 1] + clv * volume);
+            }
+            
+            return adl;
+        }
+
+        // 计算Ichimoku (一目均衡表)
+        function calculateIchimoku(data) {
+            const tenkan = [];  // 转换线 (9日)
+            const kijun = [];   // 基准线 (26日)
+            const senkouA = []; // 先行带A
+            const senkouB = []; // 先行带B (52日)
+            const chikou = [];  // 延迟线
+            
+            for (let i = 0; i < data.length; i++) {
+                // 转换线 (9日高低点中值)
+                if (i < 8) {
+                    tenkan.push(null);
+                } else {
+                    const slice = data.slice(i - 8, i + 1);
+                    const high = Math.max(...slice.map(d => d.high));
+                    const low = Math.min(...slice.map(d => d.low));
+                    tenkan.push((high + low) / 2);
+                }
+                
+                // 基准线 (26日高低点中值)
+                if (i < 25) {
+                    kijun.push(null);
+                } else {
+                    const slice = data.slice(i - 25, i + 1);
+                    const high = Math.max(...slice.map(d => d.high));
+                    const low = Math.min(...slice.map(d => d.low));
+                    kijun.push((high + low) / 2);
+                }
+                
+                // 先行带A ((转换线+基准线)/2，向前移26日)
+                if (tenkan[i] !== null && kijun[i] !== null) {
+                    senkouA.push((tenkan[i] + kijun[i]) / 2);
+                } else {
+                    senkouA.push(null);
+                }
+                
+                // 先行带B (52日高低点中值，向前移26日)
+                if (i < 51) {
+                    senkouB.push(null);
+                } else {
+                    const slice = data.slice(i - 51, i + 1);
+                    const high = Math.max(...slice.map(d => d.high));
+                    const low = Math.min(...slice.map(d => d.low));
+                    senkouB.push((high + low) / 2);
+                }
+                
+                // 延迟线 (当日收盘价，向后移26日)
+                chikou.push(data[i].close);
+            }
+            
+            return { tenkan, kijun, senkouA, senkouB, chikou };
+        }
+
         // 显示统计数据
         function displayStats(data, indicators) {
             const latest = data[data.length - 1];
@@ -1692,147 +2328,192 @@
 
         // 绘制所有图表
         function drawAllCharts(data, indicators) {
+            // K线和趋势
             drawCandlestickChart(data, indicators);
             drawBollingerChartLW(data, indicators);
+            
+            // 趋势指标
             drawMACDChart(data, indicators);
+            drawSARChart(data, indicators);
+            drawTRIXChart(data, indicators);
+            
+            // 摆动指标
             drawKDJChart(data, indicators);
             drawRSIChart(data, indicators);
             drawWRChart(data, indicators);
             drawCCIChart(data, indicators);
+            drawStochChart(data, indicators);
+            drawMOMChart(data, indicators);
+            drawMFIChart(data, indicators);
+            
+            // 趋向指标
             drawDMIChart(data, indicators);
+            drawIchimokuChart(data, indicators);
+            
+            // 成交量指标
             drawVolumeChart(data);
             drawOBVChart(data, indicators);
             drawVolumeRatioChart(data, indicators);
+            drawVRChart(data, indicators);
+            drawBRARChart(data, indicators);
+            drawCRChart(data, indicators);
+            drawADLChart(data, indicators);
+            
+            // 波动率指标
+            drawATRChart(data, indicators);
+            
+            // 形态分析
             drawSupportResistanceChart(data);
         }
 
-        // K线图（使用Chart.js实现，更稳定）
+        // K线图（真正的蜡烛图 - 使用Canvas绘制）
         function drawCandlestickChart(data, indicators) {
             const container = document.getElementById('candlestickChart');
             container.innerHTML = '<canvas id="candleCanvas"></canvas>';
             
-            const ctx = document.getElementById('candleCanvas').getContext('2d');
-            if (charts.candlestick) charts.candlestick.destroy();
-
-            const dates = data.map(d => d.date);
+            const canvas = document.getElementById('candleCanvas');
+            const ctx = canvas.getContext('2d');
             
-            // 创建K线的高低点数据
-            const candleData = data.map(d => ({
-                x: d.date,
-                o: d.open,
-                h: d.high,
-                l: d.low,
-                c: d.close
-            }));
-
-            charts.candlestick = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: dates,
-                    datasets: [
-                        {
-                            label: '最高价',
-                            data: data.map(d => d.high),
-                            borderColor: 'rgba(79, 172, 254, 0.3)',
-                            backgroundColor: 'rgba(79, 172, 254, 0.05)',
-                            borderWidth: 1,
-                            fill: true,
-                            pointRadius: 0,
-                            tension: 0.1
-                        },
-                        {
-                            label: '最低价',
-                            data: data.map(d => d.low),
-                            borderColor: 'rgba(79, 172, 254, 0.3)',
-                            backgroundColor: 'rgba(79, 172, 254, 0.05)',
-                            borderWidth: 1,
-                            fill: '-1',
-                            pointRadius: 0,
-                            tension: 0.1
-                        },
-                        {
-                            label: '收盘价',
-                            data: data.map(d => d.close),
-                            borderColor: '#4facfe',
-                            borderWidth: 3,
-                            fill: false,
-                            pointRadius: 0,
-                            tension: 0.1
-                        },
-                        {
-                            label: 'MA5',
-                            data: indicators.ma5,
-                            borderColor: '#22c55e',
-                            borderWidth: 2,
-                            fill: false,
-                            pointRadius: 0
-                        },
-                        {
-                            label: 'MA10',
-                            data: indicators.ma10,
-                            borderColor: '#f59e0b',
-                            borderWidth: 2,
-                            fill: false,
-                            pointRadius: 0
-                        },
-                        {
-                            label: 'MA20',
-                            data: indicators.ma20,
-                            borderColor: '#a855f7',
-                            borderWidth: 2,
-                            fill: false,
-                            pointRadius: 0
-                        },
-                        {
-                            label: 'MA60',
-                            data: indicators.ma60,
-                            borderColor: '#ec4899',
-                            borderWidth: 2,
-                            fill: false,
-                            pointRadius: 0
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false,
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            labels: { color: '#aaa' }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const idx = context.dataIndex;
-                                    const d = data[idx];
-                                    if (context.dataset.label === '收盘价') {
-                                        return [
-                                            `开: ${d.open.toFixed(2)}`,
-                                            `高: ${d.high.toFixed(2)}`,
-                                            `低: ${d.low.toFixed(2)}`,
-                                            `收: ${d.close.toFixed(2)}`
-                                        ];
-                                    }
-                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { color: '#2d3561' },
-                            ticks: { color: '#aaa', maxTicksLimit: 15 }
-                        },
-                        y: {
-                            grid: { color: '#2d3561' },
-                            ticks: { color: '#aaa' }
+            // 设置canvas尺寸
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            
+            // 计算绘图区域
+            const padding = { top: 40, right: 80, bottom: 60, left: 60 };
+            const chartWidth = canvas.width - padding.left - padding.right;
+            const chartHeight = canvas.height - padding.top - padding.bottom;
+            
+            // 计算价格范围
+            const allPrices = data.flatMap(d => [d.high, d.low]);
+            const maxPrice = Math.max(...allPrices);
+            const minPrice = Math.min(...allPrices);
+            const priceRange = maxPrice - minPrice;
+            
+            // 辅助函数：价格转Y坐标
+            const priceToY = (price) => {
+                return padding.top + chartHeight - ((price - minPrice) / priceRange) * chartHeight;
+            };
+            
+            // 辅助函数：索引转X坐标
+            const indexToX = (index) => {
+                const candleWidth = chartWidth / data.length;
+                return padding.left + index * candleWidth + candleWidth / 2;
+            };
+            
+            // 清空画布
+            ctx.fillStyle = '#0f1429';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制网格
+            ctx.strokeStyle = '#2d3561';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding.top + (chartHeight / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(padding.left + chartWidth, y);
+                ctx.stroke();
+                
+                // 价格标签
+                const price = maxPrice - (priceRange / 5) * i;
+                ctx.fillStyle = '#aaa';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(price.toFixed(2), padding.left - 10, y + 4);
+            }
+            
+            // 绘制K线
+            const candleWidth = Math.max(2, chartWidth / data.length - 2);
+            data.forEach((d, i) => {
+                const x = indexToX(i);
+                const openY = priceToY(d.open);
+                const closeY = priceToY(d.close);
+                const highY = priceToY(d.high);
+                const lowY = priceToY(d.low);
+                
+                const isUp = d.close >= d.open;
+                const color = isUp ? '#22c55e' : '#ef4444';
+                
+                // 绘制影线（上下影线）
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x, highY);
+                ctx.lineTo(x, lowY);
+                ctx.stroke();
+                
+                // 绘制实体
+                ctx.fillStyle = color;
+                const bodyHeight = Math.abs(closeY - openY);
+                const bodyY = Math.min(openY, closeY);
+                ctx.fillRect(x - candleWidth / 2, bodyY, candleWidth, Math.max(1, bodyHeight));
+            });
+            
+            // 绘制均线
+            const maLines = [
+                { data: indicators.ma5, color: '#22c55e', label: 'MA5' },
+                { data: indicators.ma10, color: '#f59e0b', label: 'MA10' },
+                { data: indicators.ma20, color: '#a855f7', label: 'MA20' },
+                { data: indicators.ma60, color: '#ec4899', label: 'MA60' }
+            ];
+            
+            maLines.forEach(ma => {
+                ctx.strokeStyle = ma.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                let started = false;
+                data.forEach((d, i) => {
+                    if (ma.data[i] !== null) {
+                        const x = indexToX(i);
+                        const y = priceToY(ma.data[i]);
+                        if (!started) {
+                            ctx.moveTo(x, y);
+                            started = true;
+                        } else {
+                            ctx.lineTo(x, y);
                         }
                     }
+                });
+                ctx.stroke();
+            });
+            
+            // 绘制图例
+            let legendX = padding.left;
+            const legendY = 20;
+            maLines.forEach(ma => {
+                ctx.fillStyle = ma.color;
+                ctx.fillRect(legendX, legendY - 5, 15, 3);
+                ctx.fillStyle = '#aaa';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(ma.label, legendX + 20, legendY);
+                legendX += 80;
+            });
+            
+            // 绘制日期（只显示部分）
+            ctx.fillStyle = '#aaa';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'center';
+            const dateStep = Math.ceil(data.length / 8);
+            for (let i = 0; i < data.length; i += dateStep) {
+                const x = indexToX(i);
+                const date = data[i].date.substring(5); // 只显示月-日
+                ctx.fillText(date, x, canvas.height - padding.bottom + 20);
+            }
+            
+            // 绘制标题
+            ctx.fillStyle = '#4facfe';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('K线图与均线系统', padding.left, 25);
+            
+            // 保存到charts对象
+            charts.candlestick = { canvas, redraw: () => drawCandlestickChart(data, indicators) };
+            
+            // 响应式
+            window.addEventListener('resize', () => {
+                if (charts.candlestick && charts.candlestick.redraw) {
+                    charts.candlestick.redraw();
                 }
             });
         }
@@ -2290,6 +2971,322 @@
             `;
         }
 
+        // 绘制SAR图表
+        function drawSARChart(data, indicators) {
+            const ctx = document.getElementById('sarChart').getContext('2d');
+            if (charts.sar) charts.sar.destroy();
+
+            charts.sar = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [
+                        {
+                            label: '收盘价',
+                            data: data.map(d => d.close),
+                            borderColor: '#4facfe',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'SAR',
+                            data: indicators.sar,
+                            borderColor: '#f59e0b',
+                            borderWidth: 0,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#f59e0b',
+                            showLine: false
+                        }
+                    ]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制TRIX图表
+        function drawTRIXChart(data, indicators) {
+            const ctx = document.getElementById('trixChart').getContext('2d');
+            if (charts.trix) charts.trix.destroy();
+
+            charts.trix = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'TRIX',
+                        data: indicators.trix,
+                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制Stoch图表
+        function drawStochChart(data, indicators) {
+            const ctx = document.getElementById('stochChart').getContext('2d');
+            if (charts.stoch) charts.stoch.destroy();
+
+            charts.stoch = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [
+                        {
+                            label: '%K',
+                            data: indicators.stoch.k,
+                            borderColor: '#4facfe',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '%D',
+                            data: indicators.stoch.d,
+                            borderColor: '#f59e0b',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: { ...getChartOptions(), scales: { ...getChartOptions().scales, y: { ...getChartOptions().scales.y, min: 0, max: 100 } } }
+            });
+        }
+
+        // 绘制ATR图表
+        function drawATRChart(data, indicators) {
+            const ctx = document.getElementById('atrChart').getContext('2d');
+            if (charts.atr) charts.atr.destroy();
+
+            charts.atr = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'ATR(14)',
+                        data: indicators.atr,
+                        borderColor: '#ec4899',
+                        backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制VR图表
+        function drawVRChart(data, indicators) {
+            const ctx = document.getElementById('vrChart').getContext('2d');
+            if (charts.vr) charts.vr.destroy();
+
+            charts.vr = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'VR',
+                        data: indicators.vr,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制BRAR图表
+        function drawBRARChart(data, indicators) {
+            const ctx = document.getElementById('brarChart').getContext('2d');
+            if (charts.brar) charts.brar.destroy();
+
+            charts.brar = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [
+                        {
+                            label: 'BR',
+                            data: indicators.brar.br,
+                            borderColor: '#22c55e',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'AR',
+                            data: indicators.brar.ar,
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制CR图表
+        function drawCRChart(data, indicators) {
+            const ctx = document.getElementById('crChart').getContext('2d');
+            if (charts.cr) charts.cr.destroy();
+
+            charts.cr = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'CR',
+                        data: indicators.cr,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制MOM图表
+        function drawMOMChart(data, indicators) {
+            const ctx = document.getElementById('momChart').getContext('2d');
+            if (charts.mom) charts.mom.destroy();
+
+            charts.mom = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'MOM(10)',
+                        data: indicators.mom,
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制MFI图表
+        function drawMFIChart(data, indicators) {
+            const ctx = document.getElementById('mfiChart').getContext('2d');
+            if (charts.mfi) charts.mfi.destroy();
+
+            charts.mfi = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'MFI(14)',
+                        data: indicators.mfi,
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: { ...getChartOptions(), scales: { ...getChartOptions().scales, y: { ...getChartOptions().scales.y, min: 0, max: 100 } } }
+            });
+        }
+
+        // 绘制ADL图表
+        function drawADLChart(data, indicators) {
+            const ctx = document.getElementById('adlChart').getContext('2d');
+            if (charts.adl) charts.adl.destroy();
+
+            charts.adl = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'A/D Line',
+                        data: indicators.adl,
+                        borderColor: '#14b8a6',
+                        backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制Ichimoku图表
+        function drawIchimokuChart(data, indicators) {
+            const ctx = document.getElementById('ichimokuChart').getContext('2d');
+            if (charts.ichimoku) charts.ichimoku.destroy();
+
+            charts.ichimoku = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [
+                        {
+                            label: '收盘价',
+                            data: data.map(d => d.close),
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '转换线',
+                            data: indicators.ichimoku.tenkan,
+                            borderColor: '#ef4444',
+                            borderWidth: 1.5,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '基准线',
+                            data: indicators.ichimoku.kijun,
+                            borderColor: '#3b82f6',
+                            borderWidth: 1.5,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '先行带A',
+                            data: indicators.ichimoku.senkouA,
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            borderWidth: 1,
+                            fill: '+1',
+                            pointRadius: 0
+                        },
+                        {
+                            label: '先行带B',
+                            data: indicators.ichimoku.senkouB,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 1,
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: getChartOptions()
+            });
+        }
+
         // 通用图表配置
         function getChartOptions() {
             return {
@@ -2298,17 +3295,17 @@
                 plugins: {
                     legend: {
                         display: true,
-                        labels: { color: '#aaa' }
+                        labels: { color: '#aaa', font: { size: 11 } }
                     }
                 },
                 scales: {
                     x: {
                         grid: { color: '#2d3561' },
-                        ticks: { color: '#aaa', maxTicksLimit: 10 }
+                        ticks: { color: '#aaa', maxTicksLimit: 12, font: { size: 10 } }
                     },
                     y: {
                         grid: { color: '#2d3561' },
-                        ticks: { color: '#aaa' }
+                        ticks: { color: '#aaa', font: { size: 10 } }
                     }
                 }
             };
