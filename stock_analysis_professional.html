@@ -911,145 +911,93 @@
             }
         }
 
-        // 多数据源配置（自动切换，无需手动配置）
+        // 数据源配置（只保留最稳定的）
         const dataSources = [
             {
-                name: 'Yahoo Finance Direct',
-                fetch: async (symbol, range) => {
-                    const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
-                    const period2 = Math.floor(Date.now() / 1000);
-                    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
-                    const response = await fetch(url);
-                    return await response.json();
-                }
-            },
-            {
-                name: 'Yahoo Finance via CORS Proxy 1',
+                name: 'Yahoo Finance via CORS Proxy',
                 fetch: async (symbol, range) => {
                     const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
                     const period2 = Math.floor(Date.now() / 1000);
                     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
                     const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                    const response = await fetch(proxyUrl);
-                    return await response.json();
-                }
-            },
-            {
-                name: 'Yahoo Finance via CORS Proxy 2',
-                fetch: async (symbol, range) => {
-                    const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
-                    const period2 = Math.floor(Date.now() / 1000);
-                    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
-                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-                    const response = await fetch(proxyUrl);
-                    return await response.json();
-                }
-            },
-            {
-                name: 'Yahoo Finance via CORS Proxy 3',
-                fetch: async (symbol, range) => {
-                    const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
-                    const period2 = Math.floor(Date.now() / 1000);
-                    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
-                    const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
-                    const response = await fetch(proxyUrl);
+                    const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
                     return await response.json();
                 }
             }
         ];
 
-        // 自动尝试多个数据源
+        // 获取数据（使用稳定的代理）
         async function fetchFromYahoo(symbol, range) {
-            let lastError = null;
-            
-            for (let i = 0; i < dataSources.length; i++) {
-                const source = dataSources[i];
-                try {
-                    console.log(`🔄 尝试数据源 ${i + 1}/${dataSources.length}: ${source.name}`);
-                    
-                    const json = await source.fetch(symbol, range);
-                    console.log('Response:', json);
-                    
-                    if (json.chart && json.chart.result && json.chart.result[0]) {
-                        const result = json.chart.result[0];
-                        
-                        if (!result.timestamp || result.timestamp.length === 0) {
-                            throw new Error('没有可用的历史数据');
-                        }
-                        
-                        const timestamps = result.timestamp;
-                        const quotes = result.indicators.quote[0];
-                        
-                        const data = timestamps.map((time, i) => ({
-                            date: new Date(time * 1000).toISOString().split('T')[0],
-                            open: quotes.open[i] || quotes.close[i],
-                            high: quotes.high[i] || quotes.close[i],
-                            low: quotes.low[i] || quotes.close[i],
-                            close: quotes.close[i],
-                            volume: quotes.volume[i] || 0
-                        })).filter(d => d.close !== null && d.close !== undefined);
-                        
-                        if (data.length === 0) {
-                            throw new Error('过滤后没有有效数据');
-                        }
-                        
-                        console.log(`✅ 成功！使用 ${source.name}，获取 ${data.length} 条数据`);
-                        
-                        // 获取基本面信息
-                        fetchCompanyInfo(symbol).catch(err => {
-                            console.warn('Failed to fetch company info:', err);
-                            displayBasicInfo(symbol);
-                        });
-                        
-                        return data;
-                    } else if (json.chart && json.chart.error) {
-                        throw new Error(json.chart.error.description || '数据获取失败');
-                    }
-                    
-                    throw new Error('未找到数据');
-                } catch (error) {
-                    console.warn(`❌ ${source.name} 失败:`, error.message);
-                    lastError = error;
-                    
-                    // 如果不是最后一个数据源，继续尝试下一个
-                    if (i < dataSources.length - 1) {
-                        console.log('继续尝试下一个数据源...');
-                        continue;
-                    }
+            try {
+                console.log(`📊 正在获取 ${symbol} 的数据...`);
+                
+                const period1 = Math.floor(Date.now() / 1000) - getRangeSeconds(range);
+                const period2 = Math.floor(Date.now() / 1000);
+                const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=1d`;
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                
+                const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP错误: ${response.status}`);
                 }
+                
+                const json = await response.json();
+                
+                if (json.chart && json.chart.result && json.chart.result[0]) {
+                    const result = json.chart.result[0];
+                    
+                    if (!result.timestamp || result.timestamp.length === 0) {
+                        throw new Error('没有可用的历史数据');
+                    }
+                    
+                    const timestamps = result.timestamp;
+                    const quotes = result.indicators.quote[0];
+                    
+                    const data = timestamps.map((time, i) => ({
+                        date: new Date(time * 1000).toISOString().split('T')[0],
+                        open: quotes.open[i] || quotes.close[i],
+                        high: quotes.high[i] || quotes.close[i],
+                        low: quotes.low[i] || quotes.close[i],
+                        close: quotes.close[i],
+                        volume: quotes.volume[i] || 0
+                    })).filter(d => d.close !== null && d.close !== undefined);
+                    
+                    if (data.length === 0) {
+                        throw new Error('过滤后没有有效数据');
+                    }
+                    
+                    console.log(`✅ 成功获取 ${data.length} 条数据`);
+                    
+                    // 静默获取基本面信息
+                    fetchCompanyInfo(symbol).catch(() => {
+                        displayBasicInfo(symbol);
+                    });
+                    
+                    return data;
+                } else if (json.chart && json.chart.error) {
+                    throw new Error(json.chart.error.description || '数据获取失败');
+                }
+                
+                throw new Error('未找到数据，请检查股票代码');
+            } catch (error) {
+                console.error('❌ 数据获取失败:', error.message);
+                throw error;
             }
-            
-            // 所有数据源都失败了
-            console.error('❌ 所有数据源都失败了');
-            throw new Error(`所有数据源都无法访问。最后错误: ${lastError?.message || '未知错误'}`);
         }
 
-        // 获取公司基本面信息（带多数据源）
+        // 获取公司基本面信息（带多数据源，静默失败）
         async function fetchCompanyInfo(symbol) {
+            // 只使用成功率高的代理
             const fundamentalSources = [
-                {
-                    name: 'Yahoo Quote Direct',
-                    fetch: async () => {
-                        const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${symbol}?modules=summaryDetail,defaultKeyStatistics,financialData,price`;
-                        const response = await fetch(url);
-                        return await response.json();
-                    }
-                },
                 {
                     name: 'Yahoo Quote via Proxy 1',
                     fetch: async () => {
                         const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${symbol}?modules=summaryDetail,defaultKeyStatistics,financialData,price`;
                         const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                        const response = await fetch(proxyUrl);
-                        return await response.json();
-                    }
-                },
-                {
-                    name: 'Yahoo Quote via Proxy 2',
-                    fetch: async () => {
-                        const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${symbol}?modules=summaryDetail,defaultKeyStatistics,financialData,price`;
-                        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-                        const response = await fetch(proxyUrl);
+                        const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+                        if (!response.ok) throw new Error('HTTP ' + response.status);
                         return await response.json();
                     }
                 }
@@ -1057,22 +1005,18 @@
             
             for (let i = 0; i < fundamentalSources.length; i++) {
                 try {
-                    console.log(`🔄 尝试基本面数据源 ${i + 1}/${fundamentalSources.length}: ${fundamentalSources[i].name}`);
                     const json = await fundamentalSources[i].fetch();
                     
                     if (json.quoteSummary && json.quoteSummary.result && json.quoteSummary.result[0]) {
                         const data = json.quoteSummary.result[0];
-                        console.log(`✅ 基本面数据获取成功！使用 ${fundamentalSources[i].name}`);
+                        console.log(`✅ 基本面数据获取成功`);
                         displayCompanyInfo(data, symbol);
                         displayFundamentals(data);
                         return;
                     }
                 } catch (error) {
-                    console.warn(`❌ ${fundamentalSources[i].name} 失败:`, error.message);
-                    if (i === fundamentalSources.length - 1) {
-                        console.warn('所有基本面数据源都失败，显示基本信息');
-                        displayBasicInfo(symbol);
-                    }
+                    // 静默失败，不显示错误
+                    displayBasicInfo(symbol);
                 }
             }
         }
