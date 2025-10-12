@@ -15,11 +15,179 @@
             font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
             background: #0a0e27;
             color: #fff;
-            padding: 20px;
+            padding: 10px;
         }
         .container {
             max-width: 1800px;
             margin: 0 auto;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            .header {
+                padding: 20px 15px !important;
+            }
+            .header h1 {
+                font-size: 22px !important;
+            }
+            .header p {
+                font-size: 11px !important;
+            }
+            .search-section {
+                padding: 15px !important;
+            }
+            .search-bar {
+                flex-direction: column;
+                gap: 10px !important;
+            }
+            .search-input {
+                min-width: 100% !important;
+                font-size: 16px !important;
+                padding: 12px !important;
+            }
+            select {
+                width: 100%;
+                font-size: 16px !important;
+                padding: 12px !important;
+            }
+            button {
+                width: 100%;
+                padding: 14px !important;
+                font-size: 15px !important;
+            }
+            .category-btn {
+                padding: 12px !important;
+                font-size: 14px !important;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .stat-card {
+                padding: 15px !important;
+            }
+            .stat-value {
+                font-size: 24px !important;
+            }
+            .chart-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .stock-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+            }
+            .stock-item {
+                padding: 12px !important;
+            }
+            .stock-name {
+                font-size: 13px !important;
+            }
+            .tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            .tab {
+                white-space: nowrap;
+                font-size: 13px;
+                padding: 12px 20px;
+                min-width: 120px;
+            }
+            .card {
+                padding: 15px !important;
+            }
+            .card h2 {
+                font-size: 18px !important;
+            }
+            .chart-container {
+                height: 400px !important;
+                padding: 10px !important;
+            }
+            .chart-container.large {
+                height: 500px !important;
+            }
+            .chart-container.small {
+                height: 350px !important;
+            }
+            .info-box {
+                padding: 12px !important;
+                font-size: 13px !important;
+            }
+            .company-info {
+                grid-template-columns: 1fr !important;
+            }
+            .fundamentals-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .header h1 {
+                font-size: 28px !important;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+            .chart-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .stock-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+            .chart-container {
+                height: 500px !important;
+            }
+            .chart-container.large {
+                height: 650px !important;
+            }
+            .chart-container.small {
+                height: 400px !important;
+            }
+            .company-info {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .fundamentals-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        
+        @media (min-width: 1025px) and (max-width: 1440px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            .stock-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .company-info {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .fundamentals-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (min-width: 1441px) {
+            .stats-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            .chart-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stock-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            .company-info {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .fundamentals-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
         .header {
             background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
@@ -119,9 +287,49 @@
         }
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
+        }
+        
+        /* 添加触摸优化 */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+        
+        button, .tab, .stock-item, .category-btn {
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        
+        .period-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .period-btn {
+            padding: 10px 18px;
+            font-size: 13px;
+            min-width: auto;
+            flex: 0 0 auto;
+        }
+        
+        .period-btn-active {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+        }
+        
+        @media (max-width: 768px) {
+            .period-buttons {
+                gap: 6px;
+            }
+            .period-btn {
+                padding: 10px 14px !important;
+                font-size: 12px !important;
+                flex: 1 1 calc(33.333% - 6px);
+                min-width: 0;
+            }
         }
         .stat-card {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -174,7 +382,10 @@
             height: 450px;
         }
         .chart-container.large {
-            height: 700px;
+            height: 800px;
+        }
+        #candlestickChart {
+            min-height: 800px;
         }
         .chart-grid {
             display: grid;
@@ -471,16 +682,16 @@
                 </div>
                 <div style="margin-top: 15px;">
                     <h4 style="color: #4facfe; font-size: 14px; margin-bottom: 10px;">⚡ 快速周期切换</h4>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button onclick="quickSelectPeriod('1m', '1d')" style="padding: 8px 16px; font-size: 13px;">1分钟</button>
-                        <button onclick="quickSelectPeriod('5m', '1d')" style="padding: 8px 16px; font-size: 13px;">5分钟</button>
-                        <button onclick="quickSelectPeriod('15m', '5d')" style="padding: 8px 16px; font-size: 13px;">15分钟</button>
-                        <button onclick="quickSelectPeriod('30m', '5d')" style="padding: 8px 16px; font-size: 13px;">30分钟</button>
-                        <button onclick="quickSelectPeriod('60m', '1mo')" style="padding: 8px 16px; font-size: 13px;">60分钟</button>
-                        <button onclick="quickSelectPeriod('120m', '1mo')" style="padding: 8px 16px; font-size: 13px;">120分钟</button>
-                        <button onclick="quickSelectPeriod('1d', '3mo')" style="padding: 8px 16px; font-size: 13px; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">日K</button>
-                        <button onclick="quickSelectPeriod('1wk', '1y')" style="padding: 8px 16px; font-size: 13px;">周K</button>
-                        <button onclick="quickSelectPeriod('1mo', '5y')" style="padding: 8px 16px; font-size: 13px;">月K</button>
+                    <div class="period-buttons">
+                        <button onclick="quickSelectPeriod('1m', '1d')" class="period-btn">1分钟</button>
+                        <button onclick="quickSelectPeriod('5m', '1d')" class="period-btn">5分钟</button>
+                        <button onclick="quickSelectPeriod('15m', '5d')" class="period-btn">15分钟</button>
+                        <button onclick="quickSelectPeriod('30m', '5d')" class="period-btn">30分钟</button>
+                        <button onclick="quickSelectPeriod('60m', '1mo')" class="period-btn">60分钟</button>
+                        <button onclick="quickSelectPeriod('120m', '1mo')" class="period-btn">120分钟</button>
+                        <button onclick="quickSelectPeriod('1d', '3mo')" class="period-btn period-btn-active">日K</button>
+                        <button onclick="quickSelectPeriod('1wk', '1y')" class="period-btn">周K</button>
+                        <button onclick="quickSelectPeriod('1mo', '5y')" class="period-btn">月K</button>
                     </div>
                 </div>
                 <div style="margin-top: 10px; font-size: 12px; color: #888;">
@@ -2374,14 +2585,22 @@
             const canvas = document.getElementById('candleCanvas');
             const ctx = canvas.getContext('2d');
             
-            // 设置canvas尺寸
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight;
+            // 设置canvas尺寸（使用高分辨率）
+            const dpr = window.devicePixelRatio || 1;
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+            ctx.scale(dpr, dpr);
             
-            // 计算绘图区域
-            const padding = { top: 40, right: 80, bottom: 60, left: 60 };
-            const chartWidth = canvas.width - padding.left - padding.right;
-            const chartHeight = canvas.height - padding.top - padding.bottom;
+            const width = rect.width;
+            const height = rect.height;
+            
+            // 计算绘图区域（优化padding，扩大K线区域）
+            const padding = { top: 60, right: 80, bottom: 80, left: 70 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
             
             // 计算价格范围
             const allPrices = data.flatMap(d => [d.high, d.low]);
@@ -2402,7 +2621,7 @@
             
             // 清空画布
             ctx.fillStyle = '#0f1429';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(0, 0, width, height);
             
             // 绘制网格
             ctx.strokeStyle = '#2d3561';
@@ -2417,13 +2636,13 @@
                 // 价格标签
                 const price = maxPrice - (priceRange / 5) * i;
                 ctx.fillStyle = '#aaa';
-                ctx.font = '12px Arial';
+                ctx.font = '14px Arial';
                 ctx.textAlign = 'right';
-                ctx.fillText(price.toFixed(2), padding.left - 10, y + 4);
+                ctx.fillText(price.toFixed(2), padding.left - 10, y + 5);
             }
             
-            // 绘制K线
-            const candleWidth = Math.max(2, chartWidth / data.length - 2);
+            // 绘制K线（蜡烛更粗）
+            const candleWidth = Math.max(4, Math.min(12, chartWidth / data.length - 3));
             data.forEach((d, i) => {
                 const x = indexToX(i);
                 const openY = priceToY(d.open);
@@ -2434,32 +2653,38 @@
                 const isUp = d.close >= d.open;
                 const color = isUp ? '#22c55e' : '#ef4444';
                 
-                // 绘制影线（上下影线）
+                // 绘制影线（上下影线，加粗）
                 ctx.strokeStyle = color;
-                ctx.lineWidth = 1;
+                ctx.lineWidth = 2;
                 ctx.beginPath();
                 ctx.moveTo(x, highY);
                 ctx.lineTo(x, lowY);
                 ctx.stroke();
                 
-                // 绘制实体
+                // 绘制实体（K线主体）
                 ctx.fillStyle = color;
                 const bodyHeight = Math.abs(closeY - openY);
                 const bodyY = Math.min(openY, closeY);
-                ctx.fillRect(x - candleWidth / 2, bodyY, candleWidth, Math.max(1, bodyHeight));
+                
+                // 如果实体太小，至少显示2px
+                if (bodyHeight < 2) {
+                    ctx.fillRect(x - candleWidth / 2, bodyY - 1, candleWidth, 2);
+                } else {
+                    ctx.fillRect(x - candleWidth / 2, bodyY, candleWidth, bodyHeight);
+                }
             });
             
-            // 绘制均线
+            // 绘制均线（加粗）
             const maLines = [
-                { data: indicators.ma5, color: '#22c55e', label: 'MA5' },
-                { data: indicators.ma10, color: '#f59e0b', label: 'MA10' },
-                { data: indicators.ma20, color: '#a855f7', label: 'MA20' },
-                { data: indicators.ma60, color: '#ec4899', label: 'MA60' }
+                { data: indicators.ma5, color: '#22c55e', label: 'MA5', width: 2.5 },
+                { data: indicators.ma10, color: '#f59e0b', label: 'MA10', width: 2.5 },
+                { data: indicators.ma20, color: '#a855f7', label: 'MA20', width: 2.5 },
+                { data: indicators.ma60, color: '#ec4899', label: 'MA60', width: 2.5 }
             ];
             
             maLines.forEach(ma => {
                 ctx.strokeStyle = ma.color;
-                ctx.lineWidth = 2;
+                ctx.lineWidth = ma.width;
                 ctx.beginPath();
                 let started = false;
                 data.forEach((d, i) => {
@@ -2477,45 +2702,52 @@
                 ctx.stroke();
             });
             
-            // 绘制图例
+            // 绘制图例（更大更清晰）
             let legendX = padding.left;
-            const legendY = 20;
+            const legendY = 30;
             maLines.forEach(ma => {
                 ctx.fillStyle = ma.color;
-                ctx.fillRect(legendX, legendY - 5, 15, 3);
-                ctx.fillStyle = '#aaa';
-                ctx.font = '12px Arial';
+                ctx.fillRect(legendX, legendY - 6, 20, 4);
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 14px Arial';
                 ctx.textAlign = 'left';
-                ctx.fillText(ma.label, legendX + 20, legendY);
-                legendX += 80;
+                ctx.fillText(ma.label, legendX + 25, legendY);
+                legendX += 100;
             });
             
-            // 绘制日期（只显示部分）
+            // 绘制日期（更清晰）
             ctx.fillStyle = '#aaa';
-            ctx.font = '11px Arial';
+            ctx.font = '12px Arial';
             ctx.textAlign = 'center';
-            const dateStep = Math.ceil(data.length / 8);
+            const dateStep = Math.ceil(data.length / 10);
             for (let i = 0; i < data.length; i += dateStep) {
                 const x = indexToX(i);
                 const date = data[i].date.substring(5); // 只显示月-日
-                ctx.fillText(date, x, canvas.height - padding.bottom + 20);
+                ctx.fillText(date, x, height - 25);
             }
             
-            // 绘制标题
+            // 绘制标题（更大）
             ctx.fillStyle = '#4facfe';
-            ctx.font = 'bold 16px Arial';
+            ctx.font = 'bold 18px Arial';
             ctx.textAlign = 'left';
-            ctx.fillText('K线图与均线系统', padding.left, 25);
+            ctx.fillText('K线图与均线系统 (红涨绿跌)', padding.left, 20);
             
             // 保存到charts对象
             charts.candlestick = { canvas, redraw: () => drawCandlestickChart(data, indicators) };
             
-            // 响应式
-            window.addEventListener('resize', () => {
-                if (charts.candlestick && charts.candlestick.redraw) {
-                    charts.candlestick.redraw();
-                }
-            });
+            // 响应式（防抖）
+            let resizeTimeout;
+            const resizeHandler = () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    if (charts.candlestick && charts.candlestick.redraw) {
+                        charts.candlestick.redraw();
+                    }
+                }, 250);
+            };
+            
+            window.removeEventListener('resize', resizeHandler);
+            window.addEventListener('resize', resizeHandler);
         }
 
         // 布林带图表（使用Chart.js）
