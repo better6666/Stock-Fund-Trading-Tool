@@ -176,9 +176,6 @@
             .stats-grid {
                 grid-template-columns: repeat(6, 1fr);
             }
-            .chart-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
             .stock-grid {
                 grid-template-columns: repeat(6, 1fr);
             }
@@ -360,14 +357,15 @@
         }
         .card {
             background: #1a1f3a;
-            padding: 20px;
+            padding: 25px;
             border-radius: 12px;
             border: 1px solid #2d3561;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            overflow: hidden;
         }
         .card h2 {
             font-size: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             color: #4facfe;
             display: flex;
             align-items: center;
@@ -378,6 +376,8 @@
             border-radius: 8px;
             padding: 15px;
             height: 650px;
+            position: relative;
+            overflow: hidden;
         }
         .chart-container.small {
             height: 500px;
@@ -385,13 +385,33 @@
         .chart-container.large {
             height: 850px;
         }
+        .chart-container canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
         #candlestickChart {
             min-height: 800px;
         }
+        #bollingerChart {
+            width: 100%;
+            height: 100%;
+        }
         .chart-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
             gap: 20px;
+        }
+        
+        @media (max-width: 1440px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (min-width: 1441px) {
+            .chart-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         .signals {
             display: flex;
@@ -485,20 +505,30 @@
         }
         .info-box {
             background: #0f1429;
-            padding: 15px;
+            padding: 18px;
             border-radius: 8px;
             border-left: 4px solid #4facfe;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            clear: both;
+            overflow: auto;
         }
         .info-box h3 {
             font-size: 16px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #4facfe;
         }
         .info-box p {
             font-size: 14px;
             color: #aaa;
-            line-height: 1.6;
+            line-height: 1.8;
+            margin-bottom: 8px;
+        }
+        .info-box ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .info-box li {
+            margin: 8px 0;
         }
         .company-info {
             display: grid;
@@ -843,8 +873,8 @@
 
                 <div class="card">
                     <h2>📈 布林带分析（Bollinger Bands）</h2>
-                    <div class="chart-container">
-                        <div id="bollingerChart"></div>
+                    <div class="chart-container large">
+                        <canvas id="bollingerChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -857,7 +887,7 @@
                         <div class="info-box">
                             <p>平滑异同移动平均线，用于判断买卖时机。DIF上穿DEA为金叉（买入），下穿为死叉（卖出）。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="macdChart"></canvas>
                         </div>
                     </div>
@@ -867,7 +897,7 @@
                         <div class="info-box">
                             <p>随机摆动指标，K值>80超买，<20超卖。J值最敏感，可提前发现转折点。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="kdjChart"></canvas>
                         </div>
                     </div>
@@ -877,7 +907,7 @@
                         <div class="info-box">
                             <p>相对强弱指数，>70超买区域，<30超卖区域。50为强弱分界线。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="rsiChart"></canvas>
                         </div>
                     </div>
@@ -887,7 +917,7 @@
                         <div class="info-box">
                             <p>威廉超买超卖指标，>-20为超买，<-80为超卖。与价格形成背离时为反转信号。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="wrChart"></canvas>
                         </div>
                     </div>
@@ -897,7 +927,7 @@
                         <div class="info-box">
                             <p>商品路径指标，>100为超买，<-100为超卖。穿越0轴为趋势改变信号。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="cciChart"></canvas>
                         </div>
                     </div>
@@ -907,7 +937,7 @@
                         <div class="info-box">
                             <p>动向指标，PDI上穿MDI看多，下穿看空。ADX>25表示趋势强劲。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="dmiChart"></canvas>
                         </div>
                     </div>
@@ -917,7 +947,7 @@
                         <div class="info-box">
                             <p>点位在价格下方为看涨，上方为看跌。SAR转向时提供明确的止损或反转信号。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="sarChart"></canvas>
                         </div>
                     </div>
@@ -927,7 +957,7 @@
                         <div class="info-box">
                             <p>三重指数平滑移动平均，过滤短期噪音。上穿零轴看多，下穿看空。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="trixChart"></canvas>
                         </div>
                     </div>
@@ -937,7 +967,7 @@
                         <div class="info-box">
                             <p>衡量市场波动性，值越大波动越剧烈。常用于设置动态止损位。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="atrChart"></canvas>
                         </div>
                     </div>
@@ -947,7 +977,7 @@
                         <div class="info-box">
                             <p>快速随机指标，K线和D线。>80超买，<20超卖。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="stochChart"></canvas>
                         </div>
                     </div>
@@ -957,7 +987,7 @@
                         <div class="info-box">
                             <p>衡量价格变化速度。穿越零轴为趋势改变，与价格背离为反转信号。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="momChart"></canvas>
                         </div>
                     </div>
@@ -967,7 +997,7 @@
                         <div class="info-box">
                             <p>成交量加权的RSI，衡量资金流入流出力度。>80超买，<20超卖。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="mfiChart"></canvas>
                         </div>
                     </div>
@@ -977,7 +1007,7 @@
                         <div class="info-box">
                             <p>综合趋势系统，包含转换线、基准线、先行带（云层）。价格在云层上方为多头，下方为空头。</p>
                         </div>
-                        <div class="chart-container small">
+                        <div class="chart-container">
                             <canvas id="ichimokuChart"></canvas>
                         </div>
                     </div>
@@ -991,7 +1021,7 @@
                     <div class="info-box">
                         <p>价涨量增为正常上涨，价涨量缩需谨慎。价跌量增为杀跌，价跌量缩为自然回调。</p>
                     </div>
-                    <div class="chart-container small">
+                    <div class="chart-container">
                         <canvas id="volumeChart"></canvas>
                     </div>
                 </div>
@@ -1001,7 +1031,7 @@
                     <div class="info-box">
                         <p>累积能量线，价升量增OBV上升，价跌量增OBV下降。OBV与价格背离为反转信号。</p>
                     </div>
-                    <div class="chart-container small">
+                    <div class="chart-container">
                         <canvas id="obvChart"></canvas>
                     </div>
                 </div>
@@ -1011,7 +1041,7 @@
                     <div class="info-box">
                         <p>当日每分钟平均成交量与过去5日每分钟平均成交量的比值。>1放量，<1缩量。</p>
                     </div>
-                    <div class="chart-container small">
+                    <div class="chart-container">
                         <canvas id="volumeRatioChart"></canvas>
                     </div>
                 </div>
@@ -1021,7 +1051,7 @@
                     <div class="info-box">
                         <p>成交量与价格变动关系。VR>160超买，<40超卖。</p>
                     </div>
-                    <div class="chart-container small">
+                    <div class="chart-container">
                         <canvas id="vrChart"></canvas>
                     </div>
                 </div>
@@ -1031,7 +1061,7 @@
                     <div class="info-box">
                         <p>BR反映人气，AR反映意愿。BR、AR>150超买，<50超卖。</p>
                     </div>
-                    <div class="chart-container small">
+                    <div class="chart-container">
                         <canvas id="brarChart"></canvas>
                     </div>
                 </div>
@@ -1041,7 +1071,7 @@
                     <div class="info-box">
                         <p>衡量人气与价格动量。>300超买，<40超卖。</p>
                     </div>
-                    <div class="chart-container small">
+                    <div class="chart-container">
                         <canvas id="crChart"></canvas>
                     </div>
                 </div>
@@ -1051,7 +1081,7 @@
                     <div class="info-box">
                         <p>衡量资金流入流出。ADL与价格同向运动确认趋势，背离预示反转。</p>
                     </div>
-                    <div class="chart-container small">
+                    <div class="chart-container">
                         <canvas id="adlChart"></canvas>
                     </div>
                 </div>
@@ -1065,15 +1095,15 @@
                 </div>
 
                 <div class="card">
-                    <h2>📊 支撑压力位</h2>
-                    <div class="chart-container small">
-                        <div id="supportResistanceChart"></div>
-                    </div>
+                    <h2>📈 趋势线分析</h2>
+                    <div id="trendAnalysis"></div>
                 </div>
 
                 <div class="card">
-                    <h2>📈 趋势线分析</h2>
-                    <div id="trendAnalysis"></div>
+                    <h2>📊 支撑压力位</h2>
+                    <div class="chart-container">
+                        <canvas id="supportResistanceChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3287,10 +3317,7 @@
 
         // 布林带图表（使用Chart.js）
         function drawBollingerChartLW(data, indicators) {
-            const container = document.getElementById('bollingerChart');
-            container.innerHTML = '<canvas id="bollingerCanvas"></canvas>';
-            
-            const ctx = document.getElementById('bollingerCanvas').getContext('2d');
+            const ctx = document.getElementById('bollingerChart').getContext('2d');
             if (charts.bollinger) charts.bollinger.destroy();
 
             const dates = data.map(d => d.date);
@@ -3616,10 +3643,7 @@
         }
 
         function drawSupportResistanceChart(data) {
-            const container = document.getElementById('supportResistanceChart');
-            container.innerHTML = '<canvas id="supportResistanceCanvas"></canvas>';
-            
-            const ctx = document.getElementById('supportResistanceCanvas').getContext('2d');
+            const ctx = document.getElementById('supportResistanceChart').getContext('2d');
             if (charts.supportResistance) charts.supportResistance.destroy();
 
             // 计算支撑压力位
