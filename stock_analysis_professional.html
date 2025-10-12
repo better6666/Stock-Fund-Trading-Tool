@@ -860,6 +860,10 @@
                 <div class="tab" onclick="switchTab('technical')">📊 技术指标</div>
                 <div class="tab" onclick="switchTab('volume')">📦 量价分析</div>
                 <div class="tab" onclick="switchTab('pattern')">🔍 形态识别</div>
+                <div class="tab" onclick="switchTab('compare')">🔄 多股对比</div>
+                <div class="tab" onclick="switchTab('backtest')">⚡ 策略回测</div>
+                <div class="tab" onclick="switchTab('screener')">🎯 智能选股</div>
+                <div class="tab" onclick="switchTab('portfolio')">💼 投资组合</div>
             </div>
 
             <!-- 总览 -->
@@ -1106,6 +1110,111 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 多股对比 -->
+            <div id="compare" class="content">
+                <div class="card">
+                    <h2>🔄 多股票对比分析</h2>
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #4facfe; margin-bottom: 10px;">选择要对比的股票（最多4只）</h4>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <input type="text" id="compareStock1" placeholder="股票1（如AAPL）" style="flex: 1; min-width: 200px; padding: 12px; background: #0f1429; border: 2px solid #2d3561; color: #fff; border-radius: 8px;">
+                            <input type="text" id="compareStock2" placeholder="股票2（如MSFT）" style="flex: 1; min-width: 200px; padding: 12px; background: #0f1429; border: 2px solid #2d3561; color: #fff; border-radius: 8px;">
+                            <input type="text" id="compareStock3" placeholder="股票3（如GOOGL）" style="flex: 1; min-width: 200px; padding: 12px; background: #0f1429; border: 2px solid #2d3561; color: #fff; border-radius: 8px;">
+                            <input type="text" id="compareStock4" placeholder="股票4（如AMZN）" style="flex: 1; min-width: 200px; padding: 12px; background: #0f1429; border: 2px solid #2d3561; color: #fff; border-radius: 8px;">
+                        </div>
+                        <button onclick="compareStocks()" style="margin-top: 15px;">开始对比</button>
+                    </div>
+                    <div id="compareResults"></div>
+                </div>
+            </div>
+
+            <!-- 策略回测 -->
+            <div id="backtest" class="content">
+                <div class="card">
+                    <h2>⚡ 量化策略回测</h2>
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #4facfe; margin-bottom: 15px;">设置回测参数</h4>
+                        <div class="input-group">
+                            <div class="input-field">
+                                <label>初始资金（元）</label>
+                                <input type="number" id="initialCapital" value="100000" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
+                            </div>
+                            <div class="input-field">
+                                <label>买入信号（RSI）</label>
+                                <input type="number" id="buySignal" value="30" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
+                            </div>
+                            <div class="input-field">
+                                <label>卖出信号（RSI）</label>
+                                <input type="number" id="sellSignal" value="70" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
+                            </div>
+                            <div class="input-field">
+                                <label>手续费率（%）</label>
+                                <input type="number" id="commission" value="0.1" step="0.01" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
+                            </div>
+                        </div>
+                        <button onclick="runBacktest()" style="margin-top: 15px;">运行回测</button>
+                    </div>
+                    <div id="backtestResults"></div>
+                </div>
+            </div>
+
+            <!-- 智能选股 -->
+            <div id="screener" class="content">
+                <div class="card">
+                    <h2>🎯 智能选股器</h2>
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #4facfe; margin-bottom: 15px;">设置筛选条件</h4>
+                        <div class="input-group">
+                            <div class="input-field">
+                                <label>市盈率 P/E（最大）</label>
+                                <input type="number" id="maxPE" placeholder="如25" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
+                            </div>
+                            <div class="input-field">
+                                <label>净资产收益率 ROE（最小%）</label>
+                                <input type="number" id="minROE" placeholder="如15" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
+                            </div>
+                            <div class="input-field">
+                                <label>RSI（最大）</label>
+                                <input type="number" id="maxRSI" value="70" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
+                            </div>
+                            <div class="input-field">
+                                <label>RSI（最小）</label>
+                                <input type="number" id="minRSI" value="30" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
+                            </div>
+                        </div>
+                        <button onclick="screenStocks()" style="margin-top: 15px;">开始筛选</button>
+                    </div>
+                    <div id="screenerResults"></div>
+                </div>
+            </div>
+
+            <!-- 投资组合 -->
+            <div id="portfolio" class="content">
+                <div class="card">
+                    <h2>💼 我的投资组合</h2>
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #4facfe; margin-bottom: 15px;">添加持仓</h4>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+                            <div class="input-field" style="flex: 1; min-width: 150px;">
+                                <label>股票代码</label>
+                                <input type="text" id="portfolioSymbol" placeholder="如AAPL" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
+                            </div>
+                            <div class="input-field" style="flex: 1; min-width: 120px;">
+                                <label>持仓数量</label>
+                                <input type="number" id="portfolioShares" placeholder="股数" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
+                            </div>
+                            <div class="input-field" style="flex: 1; min-width: 120px;">
+                                <label>成本价</label>
+                                <input type="number" id="portfolioCost" placeholder="买入价" step="0.01" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
+                            </div>
+                            <button onclick="addToPortfolio()" style="flex: 0; padding: 12px 24px;">添加持仓</button>
+                        </div>
+                    </div>
+                    <div id="portfolioSummary"></div>
+                    <div id="portfolioList"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1113,6 +1222,8 @@
         let charts = {};
         let stockData = null;
         let currentSymbol = '';
+        let portfolio = []; // 投资组合数据（内存存储）
+        let compareData = {}; // 多股对比数据
 
         // 热门股票列表（扩展版）
         const stockList = [
@@ -4101,6 +4212,468 @@
                 }
             };
         }
+
+        // ========== 高级功能：多股对比 ==========
+        async function compareStocks() {
+            const symbols = [
+                document.getElementById('compareStock1').value.trim(),
+                document.getElementById('compareStock2').value.trim(),
+                document.getElementById('compareStock3').value.trim(),
+                document.getElementById('compareStock4').value.trim()
+            ].filter(s => s);
+
+            if (symbols.length < 2) {
+                showError('请至少输入2只股票进行对比');
+                return;
+            }
+
+            document.getElementById('loading').classList.add('active');
+            compareData = {};
+
+            try {
+                // 并行获取所有股票数据
+                const promises = symbols.map(symbol => 
+                    fetchFromYahoo(symbol, '3mo', '1d').then(data => {
+                        compareData[symbol] = data;
+                        return { symbol, data };
+                    }).catch(err => {
+                        console.warn(`${symbol} 获取失败:`, err);
+                        return null;
+                    })
+                );
+
+                await Promise.all(promises);
+
+                // 显示对比结果
+                displayCompareResults(symbols);
+            } catch (error) {
+                showError('对比分析失败: ' + error.message);
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+
+        function displayCompareResults(symbols) {
+            const validSymbols = symbols.filter(s => compareData[s] && compareData[s].length > 0);
+
+            if (validSymbols.length === 0) {
+                document.getElementById('compareResults').innerHTML = '<div class="info-box"><p>没有获取到有效数据</p></div>';
+                return;
+            }
+
+            let html = '';
+
+            // 价格走势对比
+            html += '<div class="card"><h2>📈 价格走势对比（归一化）</h2>';
+            html += '<div class="chart-container"><canvas id="compareChart"></canvas></div></div>';
+
+            // 涨跌幅对比
+            const stats = validSymbols.map(symbol => {
+                const data = compareData[symbol];
+                const first = data[0].close;
+                const last = data[data.length - 1].close;
+                const change = ((last - first) / first * 100).toFixed(2);
+                const volume = data.reduce((sum, d) => sum + d.volume, 0) / data.length;
+
+                return { symbol, change, volume, latest: last };
+            });
+
+            html += '<div class="card"><h2>📊 核心数据对比</h2><table class="financial-table"><thead><tr>';
+            html += '<th>股票代码</th><th>最新价</th><th>涨跌幅</th><th>平均成交量</th></tr></thead><tbody>';
+
+            stats.forEach(s => {
+                const color = s.change >= 0 ? '#22c55e' : '#ef4444';
+                html += `<tr>
+                    <td><strong>${s.symbol}</strong></td>
+                    <td>¥${s.latest.toFixed(2)}</td>
+                    <td style="color: ${color}; font-weight: bold;">${s.change >= 0 ? '+' : ''}${s.change}%</td>
+                    <td>${(s.volume / 1000000).toFixed(2)}M</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table></div>';
+
+            document.getElementById('compareResults').innerHTML = html;
+
+            // 绘制对比图表
+            const ctx = document.getElementById('compareChart').getContext('2d');
+            if (charts.compare) charts.compare.destroy();
+
+            const colors = ['#4facfe', '#22c55e', '#f59e0b', '#ef4444'];
+            const datasets = validSymbols.map((symbol, i) => {
+                const data = compareData[symbol];
+                const normalized = data.map((d, idx) => (d.close / data[0].close - 1) * 100);
+                return {
+                    label: symbol,
+                    data: normalized,
+                    borderColor: colors[i],
+                    borderWidth: 2.5,
+                    fill: false,
+                    pointRadius: 0
+                };
+            });
+
+            charts.compare = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: compareData[validSymbols[0]].map(d => d.date),
+                    datasets: datasets
+                },
+                options: {
+                    ...getChartOptions(),
+                    plugins: {
+                        ...getChartOptions().plugins,
+                        title: {
+                            display: true,
+                            text: '相对涨跌幅对比（%）',
+                            color: '#aaa'
+                        }
+                    }
+                }
+            });
+        }
+
+        // ========== 高级功能：策略回测 ==========
+        function runBacktest() {
+            if (!stockData || stockData.length < 30) {
+                showError('请先获取股票数据（至少30天）');
+                return;
+            }
+
+            const initialCapital = parseFloat(document.getElementById('initialCapital').value);
+            const buyRSI = parseFloat(document.getElementById('buySignal').value);
+            const sellRSI = parseFloat(document.getElementById('sellSignal').value);
+            const commissionRate = parseFloat(document.getElementById('commission').value) / 100;
+
+            // 计算RSI
+            const indicators = calculateAllIndicators(stockData);
+            const rsi = indicators.rsi;
+
+            // 回测逻辑
+            let capital = initialCapital;
+            let shares = 0;
+            let trades = [];
+            let equity = [initialCapital];
+
+            stockData.forEach((d, i) => {
+                if (i < 14 || !rsi[i]) {
+                    equity.push(shares > 0 ? shares * d.close + capital : capital);
+                    return;
+                }
+
+                // 买入信号
+                if (shares === 0 && rsi[i] < buyRSI && rsi[i - 1] >= buyRSI) {
+                    const buyPrice = d.close;
+                    const cost = capital * 0.95; // 使用95%资金
+                    shares = Math.floor(cost / buyPrice / (1 + commissionRate));
+                    const totalCost = shares * buyPrice * (1 + commissionRate);
+                    capital -= totalCost;
+                    trades.push({
+                        date: d.date,
+                        type: 'buy',
+                        price: buyPrice,
+                        shares: shares,
+                        capital: capital
+                    });
+                }
+                // 卖出信号
+                else if (shares > 0 && rsi[i] > sellRSI && rsi[i - 1] <= sellRSI) {
+                    const sellPrice = d.close;
+                    const proceeds = shares * sellPrice * (1 - commissionRate);
+                    capital += proceeds;
+                    trades.push({
+                        date: d.date,
+                        type: 'sell',
+                        price: sellPrice,
+                        shares: shares,
+                        capital: capital
+                    });
+                    shares = 0;
+                }
+
+                equity.push(shares > 0 ? shares * d.close + capital : capital);
+            });
+
+            // 如果最后还持有，按最后价格计算
+            if (shares > 0) {
+                const lastPrice = stockData[stockData.length - 1].close;
+                capital += shares * lastPrice * (1 - commissionRate);
+            }
+
+            // 计算回测指标
+            const finalCapital = capital;
+            const totalReturn = ((finalCapital - initialCapital) / initialCapital * 100).toFixed(2);
+            const buyAndHoldReturn = ((stockData[stockData.length - 1].close - stockData[0].close) / stockData[0].close * 100).toFixed(2);
+            const winTrades = trades.filter((t, i, arr) => {
+                if (t.type === 'sell' && i > 0) {
+                    const buyTrade = arr[i - 1];
+                    return t.price > buyTrade.price;
+                }
+                return false;
+            }).length;
+            const totalTrades = trades.filter(t => t.type === 'sell').length;
+            const winRate = totalTrades > 0 ? (winTrades / totalTrades * 100).toFixed(2) : 0;
+
+            // 显示回测结果
+            let html = `
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-card ${totalReturn >= 0 ? 'bullish' : 'bearish'}">
+                        <div class="stat-label">策略收益率</div>
+                        <div class="stat-value">${totalReturn >= 0 ? '+' : ''}${totalReturn}%</div>
+                        <div class="stat-change">最终资金: ¥${finalCapital.toFixed(2)}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">买入持有收益</div>
+                        <div class="stat-value">${buyAndHoldReturn >= 0 ? '+' : ''}${buyAndHoldReturn}%</div>
+                        <div class="stat-change">对比基准</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">交易次数</div>
+                        <div class="stat-value">${totalTrades}</div>
+                        <div class="stat-change">买卖对: ${totalTrades}</div>
+                    </div>
+                    <div class="stat-card ${winRate >= 50 ? 'bullish' : 'bearish'}">
+                        <div class="stat-label">胜率</div>
+                        <div class="stat-value">${winRate}%</div>
+                        <div class="stat-change">赢/总: ${winTrades}/${totalTrades}</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📈 资金曲线</h2>
+                    <div class="chart-container"><canvas id="equityChart"></canvas></div>
+                </div>
+
+                <div class="card">
+                    <h2>📋 交易记录</h2>
+                    <table class="financial-table">
+                        <thead><tr><th>日期</th><th>操作</th><th>价格</th><th>数量</th><th>资金余额</th></tr></thead>
+                        <tbody>
+            `;
+
+            trades.forEach(t => {
+                const typeText = t.type === 'buy' ? '<span style="color: #22c55e;">买入</span>' : '<span style="color: #ef4444;">卖出</span>';
+                html += `<tr>
+                    <td>${t.date}</td>
+                    <td>${typeText}</td>
+                    <td>¥${t.price.toFixed(2)}</td>
+                    <td>${t.shares}</td>
+                    <td>¥${t.capital.toFixed(2)}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table></div>';
+
+            document.getElementById('backtestResults').innerHTML = html;
+
+            // 绘制资金曲线
+            const ctx = document.getElementById('equityChart').getContext('2d');
+            if (charts.equity) charts.equity.destroy();
+
+            charts.equity = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: stockData.map(d => d.date),
+                    datasets: [{
+                        label: '策略资金',
+                        data: equity,
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        borderWidth: 2.5,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // ========== 高级功能：智能选股 ==========
+        async function screenStocks() {
+            const maxPE = parseFloat(document.getElementById('maxPE').value);
+            const minROE = parseFloat(document.getElementById('minROE').value);
+            const maxRSI = parseFloat(document.getElementById('maxRSI').value);
+            const minRSI = parseFloat(document.getElementById('minRSI').value);
+
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('screenerResults').innerHTML = '<div class="info-box"><p>正在筛选股票池...</p></div>';
+
+            try {
+                const results = [];
+
+                // 从股票列表中筛选
+                for (let stock of stockList.slice(0, 20)) { // 限制前20只避免太慢
+                    try {
+                        const data = await fetchFromYahoo(stock.code, '1mo', '1d');
+                        const indicators = calculateAllIndicators(data);
+                        const currentRSI = indicators.rsi[indicators.rsi.length - 1];
+
+                        // 获取基本面（简化版）
+                        const符合RSI = (!minRSI || currentRSI >= minRSI) && (!maxRSI || currentRSI <= maxRSI);
+
+                        if (符合RSI) {
+                            results.push({
+                                symbol: stock.code,
+                                name: stock.name,
+                                price: data[data.length - 1].close,
+                                rsi: currentRSI,
+                                change: ((data[data.length - 1].close - data[data.length - 2].close) / data[data.length - 2].close * 100).toFixed(2)
+                            });
+                        }
+                    } catch (err) {
+                        console.warn(`${stock.code} 筛选失败`);
+                    }
+                }
+
+                // 显示结果
+                if (results.length === 0) {
+                    document.getElementById('screenerResults').innerHTML = '<div class="info-box"><p>没有找到符合条件的股票</p></div>';
+                } else {
+                    let html = `<div class="card"><h2>✅ 筛选结果（${results.length}只）</h2>`;
+                    html += '<table class="financial-table"><thead><tr><th>股票</th><th>代码</th><th>最新价</th><th>涨跌幅</th><th>RSI</th><th>操作</th></tr></thead><tbody>';
+
+                    results.forEach(r => {
+                        const color = r.change >= 0 ? '#22c55e' : '#ef4444';
+                        html += `<tr>
+                            <td><strong>${r.name}</strong></td>
+                            <td>${r.symbol}</td>
+                            <td>¥${r.price.toFixed(2)}</td>
+                            <td style="color: ${color};">${r.change >= 0 ? '+' : ''}${r.change}%</td>
+                            <td>${r.rsi.toFixed(2)}</td>
+                            <td><button onclick="document.getElementById('stockCode').value='${r.symbol}';fetchStockData();" style="padding: 6px 12px; font-size: 12px;">查看</button></td>
+                        </tr>`;
+                    });
+
+                    html += '</tbody></table></div>';
+                    document.getElementById('screenerResults').innerHTML = html;
+                }
+            } catch (error) {
+                showError('筛选失败: ' + error.message);
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+
+        // ========== 高级功能：投资组合管理 ==========
+        function addToPortfolio() {
+            const symbol = document.getElementById('portfolioSymbol').value.trim();
+            const shares = parseFloat(document.getElementById('portfolioShares').value);
+            const cost = parseFloat(document.getElementById('portfolioCost').value);
+
+            if (!symbol || !shares || !cost) {
+                showError('请填写完整信息');
+                return;
+            }
+
+            portfolio.push({
+                symbol,
+                shares,
+                cost,
+                addDate: new Date().toLocaleDateString('zh-CN')
+            });
+
+            document.getElementById('portfolioSymbol').value = '';
+            document.getElementById('portfolioShares').value = '';
+            document.getElementById('portfolioCost').value = '';
+
+            updatePortfolio();
+        }
+
+        async function updatePortfolio() {
+            if (portfolio.length === 0) {
+                document.getElementById('portfolioList').innerHTML = '<div class="info-box"><p>暂无持仓，请添加</p></div>';
+                document.getElementById('portfolioSummary').innerHTML = '';
+                return;
+            }
+
+            document.getElementById('loading').classList.add('active');
+
+            try {
+                // 获取所有持仓的当前价格
+                const promises = portfolio.map(p => 
+                    fetchFromYahoo(p.symbol, '1d', '1d').then(data => {
+                        const currentPrice = data[data.length - 1].close;
+                        return {
+                            ...p,
+                            currentPrice,
+                            marketValue: currentPrice * p.shares,
+                            cost: p.cost * p.shares,
+                            profit: (currentPrice - p.cost) * p.shares,
+                            profitPercent: ((currentPrice - p.cost) / p.cost * 100).toFixed(2)
+                        };
+                    }).catch(() => ({ ...p, currentPrice: p.cost, marketValue: p.cost * p.shares, costValue: p.cost * p.shares, profit: 0, profitPercent: 0 }))
+                );
+
+                const positions = await Promise.all(promises);
+
+                // 计算总计
+                const totalCost = positions.reduce((sum, p) => sum + p.cost, 0);
+                const totalMarketValue = positions.reduce((sum, p) => sum + p.marketValue, 0);
+                const totalProfit = totalMarketValue - totalCost;
+                const totalReturn = ((totalProfit / totalCost) * 100).toFixed(2);
+
+                // 显示汇总
+                let summaryHTML = `
+                    <div class="stats-grid" style="margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-label">总成本</div>
+                            <div class="stat-value">¥${totalCost.toFixed(2)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">总市值</div>
+                            <div class="stat-value">¥${totalMarketValue.toFixed(2)}</div>
+                        </div>
+                        <div class="stat-card ${totalProfit >= 0 ? 'bullish' : 'bearish'}">
+                            <div class="stat-label">总盈亏</div>
+                            <div class="stat-value">${totalProfit >= 0 ? '+' : ''}¥${totalProfit.toFixed(2)}</div>
+                        </div>
+                        <div class="stat-card ${totalReturn >= 0 ? 'bullish' : 'bearish'}">
+                            <div class="stat-label">收益率</div>
+                            <div class="stat-value">${totalReturn >= 0 ? '+' : ''}${totalReturn}%</div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('portfolioSummary').innerHTML = summaryHTML;
+
+                // 显示持仓明细
+                let listHTML = '<div class="card"><h2>📋 持仓明细</h2><table class="financial-table"><thead><tr>';
+                listHTML += '<th>股票代码</th><th>持仓数量</th><th>成本价</th><th>现价</th><th>市值</th><th>盈亏</th><th>收益率</th><th>操作</th></tr></thead><tbody>';
+
+                positions.forEach((p, i) => {
+                    const color = p.profit >= 0 ? '#22c55e' : '#ef4444';
+                    listHTML += `<tr>
+                        <td><strong>${p.symbol}</strong></td>
+                        <td>${p.shares}</td>
+                        <td>¥${p.cost.toFixed(2)}</td>
+                        <td>¥${p.currentPrice.toFixed(2)}</td>
+                        <td>¥${p.marketValue.toFixed(2)}</td>
+                        <td style="color: ${color};">${p.profit >= 0 ? '+' : ''}¥${p.profit.toFixed(2)}</td>
+                        <td style="color: ${color}; font-weight: bold;">${p.profitPercent >= 0 ? '+' : ''}${p.profitPercent}%</td>
+                        <td><button onclick="removeFromPortfolio(${i})" style="padding: 6px 12px; font-size: 12px; background: #ef4444;">删除</button></td>
+                    </tr>`;
+                });
+
+                listHTML += '</tbody></table></div>';
+                document.getElementById('portfolioList').innerHTML = listHTML;
+
+            } catch (error) {
+                showError('组合更新失败: ' + error.message);
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+
+        function removeFromPortfolio(index) {
+            portfolio.splice(index, 1);
+            updatePortfolio();
+        }
+
+        // 初始化组合
+        window.addEventListener('load', () => {
+            if (portfolio.length > 0) {
+                updatePortfolio();
+            }
+        });
     </script>
 </body>
 </html>
