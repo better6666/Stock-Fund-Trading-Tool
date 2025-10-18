@@ -169,13 +169,13 @@
             background: #0f1429;
             border-radius: 8px;
             padding: 15px;
-            height: 600px;
+            height: 700px;
         }
         .chart-container.small {
-            height: 450px;
+            height: 550px;
         }
         .chart-container.large {
-            height: 700px;
+            height: 850px;
         }
         .chart-grid {
             display: grid;
@@ -452,6 +452,127 @@
             border-color: #22c55e;
             background: rgba(34, 197, 94, 0.1);
         }
+        
+        /* 响应式设计 - 平板 */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 15px;
+            }
+            .header h1 {
+                font-size: 28px;
+            }
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            .chart-container {
+                height: 500px;
+            }
+            .chart-container.small {
+                height: 400px;
+            }
+            .chart-container.large {
+                height: 600px;
+            }
+        }
+        
+        /* 响应式设计 - 手机 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+            .header p {
+                font-size: 12px;
+            }
+            .search-bar {
+                flex-direction: column;
+            }
+            .search-input {
+                min-width: 100%;
+            }
+            button {
+                width: 100%;
+                padding: 12px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .stat-card {
+                padding: 15px;
+            }
+            .stat-value {
+                font-size: 20px;
+            }
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-container {
+                height: 400px;
+                padding: 10px;
+            }
+            .chart-container.small {
+                height: 350px;
+            }
+            .chart-container.large {
+                height: 500px;
+            }
+            .tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            .tab {
+                white-space: nowrap;
+                font-size: 12px;
+                padding: 10px 16px;
+            }
+            .stock-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 8px;
+            }
+            .stock-item {
+                padding: 10px;
+            }
+            .stock-name {
+                font-size: 12px;
+            }
+            .stock-code {
+                font-size: 10px;
+            }
+            .download-btn {
+                width: 100%;
+                margin-right: 0;
+            }
+            .color-scheme-selector {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .color-option {
+                text-align: center;
+            }
+        }
+        
+        /* 超大屏幕优化 */
+        @media (min-width: 1920px) {
+            .container {
+                max-width: 2400px;
+            }
+            .chart-container {
+                height: 800px;
+            }
+            .chart-container.small {
+                height: 650px;
+            }
+            .chart-container.large {
+                height: 1000px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -569,6 +690,7 @@
                     <button class="download-btn" onclick="downloadKlineData()">🕯️ 下载K线数据(CSV)</button>
                     <button class="download-btn" onclick="downloadJSON()">💾 下载JSON格式</button>
                     <button class="download-btn" onclick="downloadReport()">📄 生成分析报告(TXT)</button>
+                    <button class="download-btn" onclick="downloadAllCharts()" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">🖼️ 下载所有图表(PNG)</button>
                 </div>
             </div>
 
@@ -763,6 +885,76 @@
                         </div>
                         <div class="chart-container small">
                             <canvas id="ichimokuChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📊 ROC变动率指标</h2>
+                        <div class="info-box">
+                            <p>衡量价格变动速度，>0上涨动能，<0下跌动能。与价格背离为反转信号。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="rocChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📉 BIAS乖离率</h2>
+                        <div class="info-box">
+                            <p>价格与均线的偏离度，>10%超买，<-10%超卖。极端值预示回归。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="biasChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>🧠 PSY心理线</h2>
+                        <div class="info-box">
+                            <p>市场情绪指标，>75%过度乐观，<25%过度悲观。反映投资者心理状态。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="psyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>⚡ EMV简易波动指标</h2>
+                        <div class="info-box">
+                            <p>衡量价格与成交量关系，正值容易上涨，负值容易下跌。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="emvChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📈 Aroon阿隆指标</h2>
+                        <div class="info-box">
+                            <p>识别趋势变化，AroonUp>70且AroonDown<30为强势上涨。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="aroonChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📊 DMA平行线差</h2>
+                        <div class="info-box">
+                            <p>双均线差值系统，DMA上穿AMA为买入，下穿为卖出。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="dmaChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📉 EXPMA指数平滑均线</h2>
+                        <div class="info-box">
+                            <p>快速响应价格变化的均线系统，短期线上穿长期线看多。</p>
+                        </div>
+                        <div class="chart-container small">
+                            <canvas id="expmaChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -1009,8 +1201,10 @@
             { name: '光伏ETF', code: '515790.SS', market: '中国', category: '行业' },
             // 中国其他ETF
             { name: '恒生ETF', code: '159920.SZ', market: '中国', category: '港股' },
+            { name: '恒生科技ETF', code: '513180.SS', market: '中国', category: '港股科技' },
             { name: '红利ETF', code: '510880.SS', market: '中国', category: '策略' },
-            { name: 'H股ETF', code: '510900.SS', market: '中国', category: '港股' }
+            { name: 'H股ETF', code: '510900.SS', market: '中国', category: '港股' },
+            { name: '黄金ETF', code: '518880.SS', market: '中国', category: '商品' }
         ];
 
         // 初始化页面
@@ -1098,8 +1292,12 @@
         
         // 下载完整数据（CSV格式）
         function downloadAllData() {
+            console.log('downloadAllData 被调用');
+            console.log('stockData:', stockData ? '有数据' : '无数据');
+            console.log('currentIndicators:', currentIndicators ? '有指标' : '无指标');
+            
             if (!stockData || !currentIndicators) {
-                alert('请先获取股票数据');
+                alert('❌ 请先选择股票/基金并获取数据后再下载！\n\n操作步骤：\n1. 选择股票或基金\n2. 点击"获取数据"按钮\n3. 等待数据加载完成\n4. 再点击下载按钮');
                 return;
             }
             
@@ -1118,8 +1316,9 @@
         
         // 下载所有指标（CSV格式）
         function downloadIndicators() {
+            console.log('downloadIndicators 被调用');
             if (!stockData || !currentIndicators) {
-                alert('请先获取股票数据');
+                alert('❌ 请先选择股票/基金并获取数据后再下载！');
                 return;
             }
             
@@ -1141,8 +1340,9 @@
         
         // 下载K线数据（CSV格式）
         function downloadKlineData() {
+            console.log('downloadKlineData 被调用');
             if (!stockData) {
-                alert('请先获取股票数据');
+                alert('❌ 请先选择股票/基金并获取数据后再下载！');
                 return;
             }
             
@@ -1156,8 +1356,9 @@
         
         // 下载JSON格式
         function downloadJSON() {
+            console.log('downloadJSON 被调用');
             if (!stockData || !currentIndicators) {
-                alert('请先获取股票数据');
+                alert('❌ 请先选择股票/基金并获取数据后再下载！');
                 return;
             }
             
@@ -1174,8 +1375,9 @@
         
         // 生成分析报告（TXT格式）
         function downloadReport() {
+            console.log('downloadReport 被调用');
             if (!stockData || !currentIndicators) {
-                alert('请先获取股票数据');
+                alert('❌ 请先选择股票/基金并获取数据后再下载！');
                 return;
             }
             
@@ -1223,6 +1425,90 @@
             report += `报告结束\n`;
             
             downloadFile(report, `${currentSymbol}_report.txt`, 'text/plain');
+        }
+        
+        // 下载所有图表（PNG格式）
+        function downloadAllCharts() {
+            console.log('downloadAllCharts 被调用');
+            if (!stockData || !currentIndicators) {
+                alert('❌ 请先选择股票/基金并获取数据后再下载图表！');
+                return;
+            }
+            
+            // 获取所有Chart.js图表并下载
+            const chartIds = [
+                'macdChart', 'kdjChart', 'rsiChart', 'wrChart', 'cciChart', 
+                'dmiChart', 'sarChart', 'trixChart', 'atrChart', 'stochChart',
+                'momChart', 'mfiChart', 'ichimokuChart', 'volumeChart', 'obvChart',
+                'volumeRatioChart', 'vrChart', 'brarChart', 'crChart', 'adlChart',
+                'rocChart', 'biasChart', 'psyChart', 'emvChart', 'aroonChart',
+                'dmaChart', 'expmaChart'
+            ];
+            
+            const chartNames = {
+                'macdChart': 'MACD指标',
+                'kdjChart': 'KDJ指标',
+                'rsiChart': 'RSI指标',
+                'wrChart': 'WR指标',
+                'cciChart': 'CCI指标',
+                'dmiChart': 'DMI指标',
+                'sarChart': 'SAR指标',
+                'trixChart': 'TRIX指标',
+                'atrChart': 'ATR指标',
+                'stochChart': 'Stoch指标',
+                'momChart': 'MOM指标',
+                'mfiChart': 'MFI指标',
+                'ichimokuChart': '一目均衡表',
+                'volumeChart': '成交量',
+                'obvChart': 'OBV指标',
+                'volumeRatioChart': '量比',
+                'vrChart': 'VR指标',
+                'brarChart': 'BRAR指标',
+                'crChart': 'CR指标',
+                'adlChart': 'ADL指标',
+                'rocChart': 'ROC变动率',
+                'biasChart': 'BIAS乖离率',
+                'psyChart': 'PSY心理线',
+                'emvChart': 'EMV简易波动',
+                'aroonChart': 'Aroon阿隆指标',
+                'dmaChart': 'DMA平行线差',
+                'expmaChart': 'EXPMA指数均线'
+            };
+            
+            let downloadCount = 0;
+            
+            chartIds.forEach((chartId, index) => {
+                const canvas = document.getElementById(chartId);
+                if (canvas && charts[chartId.replace('Chart', '')]) {
+                    // 延迟下载以避免浏览器阻止多个下载
+                    setTimeout(() => {
+                        try {
+                            const url = canvas.toDataURL('image/png');
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = `${currentSymbol}_${chartNames[chartId]}.png`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            downloadCount++;
+                            
+                            if (downloadCount === 1) {
+                                console.log(`✅ 开始下载图表，共 ${chartIds.filter(id => document.getElementById(id) && charts[id.replace('Chart', '')]).length} 张`);
+                            }
+                        } catch (error) {
+                            console.error(`下载 ${chartNames[chartId]} 失败:`, error);
+                        }
+                    }, index * 300); // 每个图表间隔300ms下载
+                }
+            });
+            
+            if (downloadCount === 0) {
+                setTimeout(() => {
+                    if (downloadCount === 0) {
+                        alert('没有可下载的图表，请确保已加载数据');
+                    }
+                }, 500);
+            }
         }
         
         // 通用下载函数
@@ -1779,7 +2065,22 @@
                 brar: calculateBRAR(data),
                 cr: calculateCR(data),
                 // 一目均衡表
-                ichimoku: calculateIchimoku(data)
+                ichimoku: calculateIchimoku(data),
+                // 新增高级指标
+                roc: calculateROC(data, 12),           // 变动率指标
+                bias: calculateBIAS(data, 6),          // 乖离率
+                psy: calculatePSY(data, 12),           // 心理线
+                emv: calculateEMV(data, 14),           // 简易波动指标
+                wvad: calculateWVAD(data),             // 威廉变异离散量
+                mass: calculateMASS(data, 25),         // 梅斯线
+                dpo: calculateDPO(data, 20),           // 区间震荡线
+                roc: calculateROC(data, 12),           // 变动率
+                aroon: calculateAroon(data, 25),       // 阿隆指标
+                bbw: calculateBBW(data, 20),           // 布林带宽度
+                env: calculateENV(data, 14, 6),        // ENV包络线
+                mi: calculateMI(data),                 // 动力指标
+                dma: calculateDMA(data, 10, 50),       // 平行线差指标
+                expma: calculateEXPMA(data, 12, 50)    // 指数平滑移动平均
             };
         }
 
@@ -2411,6 +2712,206 @@
             return { tenkan, kijun, senkouA, senkouB, chikou };
         }
 
+        // 计算ROC (Rate of Change 变动率指标)
+        function calculateROC(data, period = 12) {
+            const closes = data.map(d => d.close);
+            return closes.map((close, i) => {
+                if (i < period) return null;
+                return ((close - closes[i - period]) / closes[i - period]) * 100;
+            });
+        }
+
+        // 计算BIAS (乖离率)
+        function calculateBIAS(data, period = 6) {
+            const closes = data.map(d => d.close);
+            const ma = calculateMA(data, period);
+            return closes.map((close, i) => {
+                if (!ma[i]) return null;
+                return ((close - ma[i]) / ma[i]) * 100;
+            });
+        }
+
+        // 计算PSY (心理线指标)
+        function calculatePSY(data, period = 12) {
+            const psy = [];
+            for (let i = 0; i < data.length; i++) {
+                if (i < period) {
+                    psy.push(null);
+                    continue;
+                }
+                let upDays = 0;
+                for (let j = i - period + 1; j <= i; j++) {
+                    if (j > 0 && data[j].close > data[j - 1].close) {
+                        upDays++;
+                    }
+                }
+                psy.push((upDays / period) * 100);
+            }
+            return psy;
+        }
+
+        // 计算EMV (简易波动指标)
+        function calculateEMV(data, period = 14) {
+            const emvValues = [];
+            for (let i = 0; i < data.length; i++) {
+                if (i === 0) {
+                    emvValues.push(null);
+                    continue;
+                }
+                const midPoint = (data[i].high + data[i].low) / 2;
+                const prevMidPoint = (data[i - 1].high + data[i - 1].low) / 2;
+                const distanceMoved = midPoint - prevMidPoint;
+                const boxRatio = (data[i].volume / 1000000) / (data[i].high - data[i].low);
+                emvValues.push(distanceMoved / (boxRatio || 1));
+            }
+            
+            // 计算EMV的移动平均
+            const emvMA = [];
+            for (let i = 0; i < emvValues.length; i++) {
+                if (i < period - 1 || emvValues[i] === null) {
+                    emvMA.push(null);
+                    continue;
+                }
+                const slice = emvValues.slice(i - period + 1, i + 1).filter(v => v !== null);
+                emvMA.push(slice.reduce((a, b) => a + b, 0) / slice.length);
+            }
+            return emvMA;
+        }
+
+        // 计算WVAD (威廉变异离散量)
+        function calculateWVAD(data) {
+            const wvad = [0];
+            for (let i = 1; i < data.length; i++) {
+                const range = data[i].high - data[i].low;
+                if (range === 0) {
+                    wvad.push(wvad[i - 1]);
+                    continue;
+                }
+                const adv = ((data[i].close - data[i].low) - (data[i].high - data[i].close)) / range;
+                wvad.push(wvad[i - 1] + adv * data[i].volume);
+            }
+            return wvad;
+        }
+
+        // 计算MASS (梅斯线)
+        function calculateMASS(data, period = 25) {
+            const highLowDiff = data.map(d => d.high - d.low);
+            const ema9 = calculateEMAFromArray(highLowDiff, 9);
+            const ema9ofEma9 = calculateEMAFromArray(ema9, 9);
+            
+            const ratio = ema9.map((val, i) => {
+                if (!val || !ema9ofEma9[i] || ema9ofEma9[i] === 0) return null;
+                return val / ema9ofEma9[i];
+            });
+            
+            const mass = [];
+            for (let i = 0; i < ratio.length; i++) {
+                if (i < period - 1 || ratio[i] === null) {
+                    mass.push(null);
+                    continue;
+                }
+                const slice = ratio.slice(i - period + 1, i + 1).filter(v => v !== null);
+                mass.push(slice.reduce((a, b) => a + b, 0));
+            }
+            return mass;
+        }
+
+        // 计算DPO (区间震荡线)
+        function calculateDPO(data, period = 20) {
+            const closes = data.map(d => d.close);
+            const ma = calculateMA(data, period);
+            const shift = Math.floor(period / 2) + 1;
+            
+            return closes.map((close, i) => {
+                if (i < period - 1 || !ma[i - shift]) return null;
+                return close - ma[i - shift];
+            });
+        }
+
+        // 计算Aroon (阿隆指标)
+        function calculateAroon(data, period = 25) {
+            const aroonUp = [];
+            const aroonDown = [];
+            
+            for (let i = 0; i < data.length; i++) {
+                if (i < period - 1) {
+                    aroonUp.push(null);
+                    aroonDown.push(null);
+                    continue;
+                }
+                
+                const slice = data.slice(i - period + 1, i + 1);
+                let highestIdx = 0;
+                let lowestIdx = 0;
+                let highest = slice[0].high;
+                let lowest = slice[0].low;
+                
+                for (let j = 1; j < slice.length; j++) {
+                    if (slice[j].high >= highest) {
+                        highest = slice[j].high;
+                        highestIdx = j;
+                    }
+                    if (slice[j].low <= lowest) {
+                        lowest = slice[j].low;
+                        lowestIdx = j;
+                    }
+                }
+                
+                aroonUp.push(((period - (period - 1 - highestIdx)) / period) * 100);
+                aroonDown.push(((period - (period - 1 - lowestIdx)) / period) * 100);
+            }
+            
+            return { up: aroonUp, down: aroonDown };
+        }
+
+        // 计算BBW (布林带宽度)
+        function calculateBBW(data, period = 20) {
+            const bollinger = calculateBollinger(data, period, 2);
+            return bollinger.middle.map((mid, i) => {
+                if (!mid || mid === 0) return null;
+                return ((bollinger.upper[i] - bollinger.lower[i]) / mid) * 100;
+            });
+        }
+
+        // 计算ENV (包络线)
+        function calculateENV(data, period = 14, percent = 6) {
+            const ma = calculateMA(data, period);
+            const upper = ma.map(val => val ? val * (1 + percent / 100) : null);
+            const lower = ma.map(val => val ? val * (1 - percent / 100) : null);
+            return { upper, middle: ma, lower };
+        }
+
+        // 计算MI (动力指标)
+        function calculateMI(data) {
+            const mi = [0];
+            for (let i = 1; i < data.length; i++) {
+                const priceChange = data[i].close - data[i - 1].close;
+                mi.push(mi[i - 1] + priceChange);
+            }
+            return mi;
+        }
+
+        // 计算DMA (平行线差指标)
+        function calculateDMA(data, shortPeriod = 10, longPeriod = 50) {
+            const shortMA = calculateMA(data, shortPeriod);
+            const longMA = calculateMA(data, longPeriod);
+            const dma = shortMA.map((val, i) => {
+                if (!val || !longMA[i]) return null;
+                return val - longMA[i];
+            });
+            const ama = calculateEMAFromArray(dma.filter(v => v !== null), 10);
+            return { dma, ama };
+        }
+
+        // 计算EXPMA (指数平滑移动平均)
+        function calculateEXPMA(data, period1 = 12, period2 = 50) {
+            const closes = data.map(d => d.close);
+            return {
+                expma1: calculateEMAFromArray(closes, period1),
+                expma2: calculateEMAFromArray(closes, period2)
+            };
+        }
+
         // 显示统计数据
         function displayStats(data, indicators) {
             const latest = data[data.length - 1];
@@ -2613,6 +3114,15 @@
             
             // 波动率指标
             drawATRChart(data, indicators);
+            
+            // 新增高级指标
+            drawROCChart(data, indicators);
+            drawBIASChart(data, indicators);
+            drawPSYChart(data, indicators);
+            drawEMVChart(data, indicators);
+            drawAroonChart(data, indicators);
+            drawDMAChart(data, indicators);
+            drawEXPMAChart(data, indicators);
             
             // 形态分析
             drawSupportResistanceChart(data);
@@ -3530,6 +4040,202 @@
                             borderColor: '#f59e0b',
                             backgroundColor: 'rgba(245, 158, 11, 0.1)',
                             borderWidth: 1,
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制ROC图表
+        function drawROCChart(data, indicators) {
+            const ctx = document.getElementById('rocChart').getContext('2d');
+            if (charts.roc) charts.roc.destroy();
+            
+            charts.roc = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'ROC(12)',
+                        data: indicators.roc,
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制BIAS图表
+        function drawBIASChart(data, indicators) {
+            const ctx = document.getElementById('biasChart').getContext('2d');
+            if (charts.bias) charts.bias.destroy();
+            
+            charts.bias = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'BIAS(6)',
+                        data: indicators.bias,
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制PSY图表
+        function drawPSYChart(data, indicators) {
+            const ctx = document.getElementById('psyChart').getContext('2d');
+            if (charts.psy) charts.psy.destroy();
+            
+            charts.psy = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'PSY(12)',
+                        data: indicators.psy,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: { ...getChartOptions(), scales: { ...getChartOptions().scales, y: { ...getChartOptions().scales.y, min: 0, max: 100 } } }
+            });
+        }
+
+        // 绘制EMV图表
+        function drawEMVChart(data, indicators) {
+            const ctx = document.getElementById('emvChart').getContext('2d');
+            if (charts.emv) charts.emv.destroy();
+            
+            charts.emv = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'EMV(14)',
+                        data: indicators.emv,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制Aroon图表
+        function drawAroonChart(data, indicators) {
+            const ctx = document.getElementById('aroonChart').getContext('2d');
+            if (charts.aroon) charts.aroon.destroy();
+            
+            charts.aroon = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [
+                        {
+                            label: 'Aroon Up',
+                            data: indicators.aroon.up,
+                            borderColor: '#22c55e',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Aroon Down',
+                            data: indicators.aroon.down,
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: { ...getChartOptions(), scales: { ...getChartOptions().scales, y: { ...getChartOptions().scales.y, min: 0, max: 100 } } }
+            });
+        }
+
+        // 绘制DMA图表
+        function drawDMAChart(data, indicators) {
+            const ctx = document.getElementById('dmaChart').getContext('2d');
+            if (charts.dma) charts.dma.destroy();
+            
+            charts.dma = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [
+                        {
+                            label: 'DMA',
+                            data: indicators.dma.dma,
+                            borderColor: '#3b82f6',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'AMA',
+                            data: indicators.dma.ama,
+                            borderColor: '#f59e0b',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: getChartOptions()
+            });
+        }
+
+        // 绘制EXPMA图表
+        function drawEXPMAChart(data, indicators) {
+            const ctx = document.getElementById('expmaChart').getContext('2d');
+            if (charts.expma) charts.expma.destroy();
+            
+            charts.expma = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [
+                        {
+                            label: '收盘价',
+                            data: data.map(d => d.close),
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'EXPMA(12)',
+                            data: indicators.expma.expma1,
+                            borderColor: '#22c55e',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'EXPMA(50)',
+                            data: indicators.expma.expma2,
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
                             fill: false,
                             pointRadius: 0
                         }
