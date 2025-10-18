@@ -15,176 +15,11 @@
             font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
             background: #0a0e27;
             color: #fff;
-            padding: 10px;
+            padding: 20px;
         }
         .container {
             max-width: 1800px;
             margin: 0 auto;
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            body {
-                padding: 5px;
-            }
-            .header {
-                padding: 20px 15px !important;
-            }
-            .header h1 {
-                font-size: 22px !important;
-            }
-            .header p {
-                font-size: 11px !important;
-            }
-            .search-section {
-                padding: 15px !important;
-            }
-            .search-bar {
-                flex-direction: column;
-                gap: 10px !important;
-            }
-            .search-input {
-                min-width: 100% !important;
-                font-size: 16px !important;
-                padding: 12px !important;
-            }
-            select {
-                width: 100%;
-                font-size: 16px !important;
-                padding: 12px !important;
-            }
-            button {
-                width: 100%;
-                padding: 14px !important;
-                font-size: 15px !important;
-            }
-            .category-btn {
-                padding: 12px !important;
-                font-size: 14px !important;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 10px !important;
-            }
-            .stat-card {
-                padding: 15px !important;
-            }
-            .stat-value {
-                font-size: 24px !important;
-            }
-            .chart-grid {
-                grid-template-columns: 1fr !important;
-            }
-            .stock-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 8px !important;
-            }
-            .stock-item {
-                padding: 12px !important;
-            }
-            .stock-name {
-                font-size: 13px !important;
-            }
-            .tabs {
-                overflow-x: auto;
-                flex-wrap: nowrap;
-                -webkit-overflow-scrolling: touch;
-            }
-            .tab {
-                white-space: nowrap;
-                font-size: 13px;
-                padding: 12px 20px;
-                min-width: 120px;
-            }
-            .card {
-                padding: 15px !important;
-            }
-            .card h2 {
-                font-size: 18px !important;
-            }
-            .chart-container {
-                height: 400px !important;
-                padding: 10px !important;
-            }
-            .chart-container.large {
-                height: 500px !important;
-            }
-            .chart-container.small {
-                height: 350px !important;
-            }
-            .info-box {
-                padding: 12px !important;
-                font-size: 13px !important;
-            }
-            .company-info {
-                grid-template-columns: 1fr !important;
-            }
-            .fundamentals-grid {
-                grid-template-columns: 1fr !important;
-            }
-        }
-        
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .header h1 {
-                font-size: 28px !important;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(3, 1fr) !important;
-            }
-            .chart-grid {
-                grid-template-columns: 1fr !important;
-            }
-            .stock-grid {
-                grid-template-columns: repeat(4, 1fr) !important;
-            }
-            .chart-container {
-                height: 500px !important;
-            }
-            .chart-container.large {
-                height: 650px !important;
-            }
-            .chart-container.small {
-                height: 400px !important;
-            }
-            .company-info {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-            .fundamentals-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-        }
-        
-        @media (min-width: 1025px) and (max-width: 1440px) {
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            .chart-grid {
-                grid-template-columns: 1fr;
-            }
-            .stock-grid {
-                grid-template-columns: repeat(5, 1fr);
-            }
-            .company-info {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .fundamentals-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        
-        @media (min-width: 1441px) {
-            .stats-grid {
-                grid-template-columns: repeat(6, 1fr);
-            }
-            .stock-grid {
-                grid-template-columns: repeat(6, 1fr);
-            }
-            .company-info {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            .fundamentals-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
         }
         .header {
             background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
@@ -197,8 +32,8 @@
             font-size: 36px;
             margin-bottom: 10px;
             background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
-            -webkit-background-clip: text;
             background-clip: text;
+            -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .search-section {
@@ -285,49 +120,9 @@
         }
         .stats-grid {
             display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
-        }
-        
-        /* 添加触摸优化 */
-        * {
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-        }
-        
-        button, .tab, .stock-item, .category-btn {
-            -webkit-user-select: none;
-            user-select: none;
-            touch-action: manipulation;
-        }
-        
-        .period-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .period-btn {
-            padding: 10px 18px;
-            font-size: 13px;
-            min-width: auto;
-            flex: 0 0 auto;
-        }
-        
-        .period-btn-active {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
-        }
-        
-        @media (max-width: 768px) {
-            .period-buttons {
-                gap: 6px;
-            }
-            .period-btn {
-                padding: 10px 14px !important;
-                font-size: 12px !important;
-                flex: 1 1 calc(33.333% - 6px);
-                min-width: 0;
-            }
         }
         .stat-card {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -357,15 +152,14 @@
         }
         .card {
             background: #1a1f3a;
-            padding: 25px;
+            padding: 20px;
             border-radius: 12px;
             border: 1px solid #2d3561;
-            margin-bottom: 25px;
-            overflow: hidden;
+            margin-bottom: 20px;
         }
         .card h2 {
             font-size: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #4facfe;
             display: flex;
             align-items: center;
@@ -375,43 +169,18 @@
             background: #0f1429;
             border-radius: 8px;
             padding: 15px;
-            height: 650px;
-            position: relative;
-            overflow: hidden;
+            height: 600px;
         }
         .chart-container.small {
-            height: 500px;
+            height: 450px;
         }
         .chart-container.large {
-            height: 850px;
-        }
-        .chart-container canvas {
-            display: block;
-            width: 100% !important;
-            height: 100% !important;
-        }
-        #candlestickChart {
-            min-height: 800px;
-        }
-        #bollingerChart {
-            width: 100%;
-            height: 100%;
+            height: 700px;
         }
         .chart-grid {
             display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
             gap: 20px;
-        }
-        
-        @media (max-width: 1440px) {
-            .chart-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (min-width: 1441px) {
-            .chart-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
         .signals {
             display: flex;
@@ -505,30 +274,20 @@
         }
         .info-box {
             background: #0f1429;
-            padding: 18px;
+            padding: 15px;
             border-radius: 8px;
             border-left: 4px solid #4facfe;
-            margin-bottom: 20px;
-            clear: both;
-            overflow: auto;
+            margin-bottom: 15px;
         }
         .info-box h3 {
             font-size: 16px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #4facfe;
         }
         .info-box p {
             font-size: 14px;
             color: #aaa;
-            line-height: 1.8;
-            margin-bottom: 8px;
-        }
-        .info-box ul {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-        .info-box li {
-            margin: 8px 0;
+            line-height: 1.6;
         }
         .company-info {
             display: grid;
@@ -645,59 +404,53 @@
             font-weight: bold;
             color: #fff;
         }
-        .financial-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+        .download-section {
+            background: #1a1f3a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #2d3561;
+            margin-bottom: 20px;
         }
-        .financial-table th {
-            background: #0f1429;
-            padding: 12px;
-            text-align: left;
-            color: #4facfe;
-            font-size: 13px;
-            border-bottom: 2px solid #2d3561;
-        }
-        .financial-table td {
-            padding: 12px;
-            border-bottom: 1px solid #2d3561;
-            font-size: 14px;
-        }
-        .financial-table tr:hover {
-            background: #0f1429;
-        }
-        .news-item {
-            background: #0f1429;
-            padding: 15px;
+        .download-btn {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
             border-radius: 8px;
-            margin-bottom: 12px;
-            border-left: 3px solid #4facfe;
+            font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
         }
-        .news-item:hover {
-            background: #1a1f3a;
-            border-left-color: #22c55e;
-            transform: translateX(5px);
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.5);
         }
-        .news-title {
-            font-size: 15px;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-        .news-meta {
-            font-size: 12px;
-            color: #888;
+        .color-scheme-selector {
             display: flex;
-            gap: 15px;
-            margin-bottom: 8px;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
+            padding: 15px;
+            background: #0f1429;
+            border-radius: 8px;
         }
-        .news-summary {
-            font-size: 13px;
-            color: #aaa;
-            line-height: 1.6;
+        .color-option {
+            padding: 10px 20px;
+            border: 2px solid #2d3561;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .color-option:hover {
+            border-color: #4facfe;
+        }
+        .color-option.active {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
         }
     </style>
 </head>
@@ -741,14 +494,6 @@
                     <select id="dataSource">
                         <option value="yahoo">Yahoo Finance（全球市场）</option>
                         <option value="sina">新浪财经（A股实时）</option>
-                        <option value="eastmoney">东方财富（A股专业）</option>
-                        <option value="tencent">腾讯财经（国内数据）</option>
-                        <option value="netease">网易财经（A股港股）</option>
-                        <option value="alphavantage">Alpha Vantage（国际）</option>
-                        <option value="finnhub">Finnhub（全球股票）</option>
-                        <option value="polygon">Polygon.io（美股专业）</option>
-                        <option value="twelvedata">Twelve Data（全市场）</option>
-                        <option value="iexcloud">IEX Cloud（美股）</option>
                     </select>
                     <select id="klineType">
                         <option value="1m">1分钟</option>
@@ -775,16 +520,16 @@
                 </div>
                 <div style="margin-top: 15px;">
                     <h4 style="color: #4facfe; font-size: 14px; margin-bottom: 10px;">⚡ 快速周期切换</h4>
-                    <div class="period-buttons">
-                        <button onclick="quickSelectPeriod('1m', '1d')" class="period-btn">1分钟</button>
-                        <button onclick="quickSelectPeriod('5m', '1d')" class="period-btn">5分钟</button>
-                        <button onclick="quickSelectPeriod('15m', '5d')" class="period-btn">15分钟</button>
-                        <button onclick="quickSelectPeriod('30m', '5d')" class="period-btn">30分钟</button>
-                        <button onclick="quickSelectPeriod('60m', '1mo')" class="period-btn">60分钟</button>
-                        <button onclick="quickSelectPeriod('120m', '1mo')" class="period-btn">120分钟</button>
-                        <button onclick="quickSelectPeriod('1d', '3mo')" class="period-btn period-btn-active">日K</button>
-                        <button onclick="quickSelectPeriod('1wk', '1y')" class="period-btn">周K</button>
-                        <button onclick="quickSelectPeriod('1mo', '5y')" class="period-btn">月K</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button onclick="quickSelectPeriod('1m', '1d')" style="padding: 8px 16px; font-size: 13px;">1分钟</button>
+                        <button onclick="quickSelectPeriod('5m', '1d')" style="padding: 8px 16px; font-size: 13px;">5分钟</button>
+                        <button onclick="quickSelectPeriod('15m', '5d')" style="padding: 8px 16px; font-size: 13px;">15分钟</button>
+                        <button onclick="quickSelectPeriod('30m', '5d')" style="padding: 8px 16px; font-size: 13px;">30分钟</button>
+                        <button onclick="quickSelectPeriod('60m', '1mo')" style="padding: 8px 16px; font-size: 13px;">60分钟</button>
+                        <button onclick="quickSelectPeriod('120m', '1mo')" style="padding: 8px 16px; font-size: 13px;">120分钟</button>
+                        <button onclick="quickSelectPeriod('1d', '3mo')" style="padding: 8px 16px; font-size: 13px; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">日K</button>
+                        <button onclick="quickSelectPeriod('1wk', '1y')" style="padding: 8px 16px; font-size: 13px;">周K</button>
+                        <button onclick="quickSelectPeriod('1mo', '5y')" style="padding: 8px 16px; font-size: 13px;">月K</button>
                     </div>
                 </div>
                 <div style="margin-top: 10px; font-size: 12px; color: #888;">
@@ -796,6 +541,15 @@
                     <br>
                     <span style="color: #facc15;">💡 快速周期切换：先选择股票，然后点击上方的周期按钮即可快速切换不同周期的K线图</span>
                 </div>
+                <div class="color-scheme-selector">
+                    <strong style="color: #4facfe;">🎨 颜色方案：</strong>
+                    <div class="color-option active" onclick="setColorScheme('western')" id="westernScheme">
+                        🌍 国际惯例 (绿涨红跌)
+                    </div>
+                    <div class="color-option" onclick="setColorScheme('chinese')" id="chineseScheme">
+                        🇨🇳 中国A股 (红涨绿跌)
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -806,6 +560,18 @@
         </div>
 
         <div id="results" style="display: none;">
+            <!-- 下载功能区 -->
+            <div class="download-section">
+                <h2 style="color: #4facfe; font-size: 20px; margin-bottom: 15px;">📥 数据下载</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <button class="download-btn" onclick="downloadAllData()">📊 下载完整数据(CSV)</button>
+                    <button class="download-btn" onclick="downloadIndicators()">📈 下载所有指标(CSV)</button>
+                    <button class="download-btn" onclick="downloadKlineData()">🕯️ 下载K线数据(CSV)</button>
+                    <button class="download-btn" onclick="downloadJSON()">💾 下载JSON格式</button>
+                    <button class="download-btn" onclick="downloadReport()">📄 生成分析报告(TXT)</button>
+                </div>
+            </div>
+
             <!-- 基本信息 -->
             <div class="card" id="companyInfoCard">
                 <h2>📋 基本信息</h2>
@@ -816,18 +582,6 @@
             <div class="card" id="fundamentalsCard">
                 <h2>💰 基本面分析</h2>
                 <div class="fundamentals-grid" id="fundamentalsData"></div>
-            </div>
-
-            <!-- 财报数据 -->
-            <div class="card" id="financialReportsCard">
-                <h2>📊 财务报表</h2>
-                <div id="financialReports"></div>
-            </div>
-
-            <!-- 最新新闻 -->
-            <div class="card" id="newsCard">
-                <h2>📰 相关新闻</h2>
-                <div id="newsList"></div>
             </div>
 
             <!-- 实时数据 -->
@@ -860,10 +614,6 @@
                 <div class="tab" onclick="switchTab('technical')">📊 技术指标</div>
                 <div class="tab" onclick="switchTab('volume')">📦 量价分析</div>
                 <div class="tab" onclick="switchTab('pattern')">🔍 形态识别</div>
-                <div class="tab" onclick="switchTab('compare')">🔄 多股对比</div>
-                <div class="tab" onclick="switchTab('backtest')">⚡ 策略回测</div>
-                <div class="tab" onclick="switchTab('screener')">🎯 智能选股</div>
-                <div class="tab" onclick="switchTab('portfolio')">💼 投资组合</div>
             </div>
 
             <!-- 总览 -->
@@ -877,8 +627,8 @@
 
                 <div class="card">
                     <h2>📈 布林带分析（Bollinger Bands）</h2>
-                    <div class="chart-container large">
-                        <canvas id="bollingerChart"></canvas>
+                    <div class="chart-container">
+                        <div id="bollingerChart"></div>
                     </div>
                 </div>
             </div>
@@ -891,7 +641,7 @@
                         <div class="info-box">
                             <p>平滑异同移动平均线，用于判断买卖时机。DIF上穿DEA为金叉（买入），下穿为死叉（卖出）。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="macdChart"></canvas>
                         </div>
                     </div>
@@ -901,7 +651,7 @@
                         <div class="info-box">
                             <p>随机摆动指标，K值>80超买，<20超卖。J值最敏感，可提前发现转折点。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="kdjChart"></canvas>
                         </div>
                     </div>
@@ -911,7 +661,7 @@
                         <div class="info-box">
                             <p>相对强弱指数，>70超买区域，<30超卖区域。50为强弱分界线。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="rsiChart"></canvas>
                         </div>
                     </div>
@@ -921,7 +671,7 @@
                         <div class="info-box">
                             <p>威廉超买超卖指标，>-20为超买，<-80为超卖。与价格形成背离时为反转信号。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="wrChart"></canvas>
                         </div>
                     </div>
@@ -931,7 +681,7 @@
                         <div class="info-box">
                             <p>商品路径指标，>100为超买，<-100为超卖。穿越0轴为趋势改变信号。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="cciChart"></canvas>
                         </div>
                     </div>
@@ -941,7 +691,7 @@
                         <div class="info-box">
                             <p>动向指标，PDI上穿MDI看多，下穿看空。ADX>25表示趋势强劲。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="dmiChart"></canvas>
                         </div>
                     </div>
@@ -951,7 +701,7 @@
                         <div class="info-box">
                             <p>点位在价格下方为看涨，上方为看跌。SAR转向时提供明确的止损或反转信号。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="sarChart"></canvas>
                         </div>
                     </div>
@@ -961,7 +711,7 @@
                         <div class="info-box">
                             <p>三重指数平滑移动平均，过滤短期噪音。上穿零轴看多，下穿看空。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="trixChart"></canvas>
                         </div>
                     </div>
@@ -971,7 +721,7 @@
                         <div class="info-box">
                             <p>衡量市场波动性，值越大波动越剧烈。常用于设置动态止损位。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="atrChart"></canvas>
                         </div>
                     </div>
@@ -981,7 +731,7 @@
                         <div class="info-box">
                             <p>快速随机指标，K线和D线。>80超买，<20超卖。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="stochChart"></canvas>
                         </div>
                     </div>
@@ -991,7 +741,7 @@
                         <div class="info-box">
                             <p>衡量价格变化速度。穿越零轴为趋势改变，与价格背离为反转信号。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="momChart"></canvas>
                         </div>
                     </div>
@@ -1001,7 +751,7 @@
                         <div class="info-box">
                             <p>成交量加权的RSI，衡量资金流入流出力度。>80超买，<20超卖。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="mfiChart"></canvas>
                         </div>
                     </div>
@@ -1011,7 +761,7 @@
                         <div class="info-box">
                             <p>综合趋势系统，包含转换线、基准线、先行带（云层）。价格在云层上方为多头，下方为空头。</p>
                         </div>
-                        <div class="chart-container">
+                        <div class="chart-container small">
                             <canvas id="ichimokuChart"></canvas>
                         </div>
                     </div>
@@ -1025,7 +775,7 @@
                     <div class="info-box">
                         <p>价涨量增为正常上涨，价涨量缩需谨慎。价跌量增为杀跌，价跌量缩为自然回调。</p>
                     </div>
-                    <div class="chart-container">
+                    <div class="chart-container small">
                         <canvas id="volumeChart"></canvas>
                     </div>
                 </div>
@@ -1035,7 +785,7 @@
                     <div class="info-box">
                         <p>累积能量线，价升量增OBV上升，价跌量增OBV下降。OBV与价格背离为反转信号。</p>
                     </div>
-                    <div class="chart-container">
+                    <div class="chart-container small">
                         <canvas id="obvChart"></canvas>
                     </div>
                 </div>
@@ -1045,7 +795,7 @@
                     <div class="info-box">
                         <p>当日每分钟平均成交量与过去5日每分钟平均成交量的比值。>1放量，<1缩量。</p>
                     </div>
-                    <div class="chart-container">
+                    <div class="chart-container small">
                         <canvas id="volumeRatioChart"></canvas>
                     </div>
                 </div>
@@ -1055,7 +805,7 @@
                     <div class="info-box">
                         <p>成交量与价格变动关系。VR>160超买，<40超卖。</p>
                     </div>
-                    <div class="chart-container">
+                    <div class="chart-container small">
                         <canvas id="vrChart"></canvas>
                     </div>
                 </div>
@@ -1065,7 +815,7 @@
                     <div class="info-box">
                         <p>BR反映人气，AR反映意愿。BR、AR>150超买，<50超卖。</p>
                     </div>
-                    <div class="chart-container">
+                    <div class="chart-container small">
                         <canvas id="brarChart"></canvas>
                     </div>
                 </div>
@@ -1075,7 +825,7 @@
                     <div class="info-box">
                         <p>衡量人气与价格动量。>300超买，<40超卖。</p>
                     </div>
-                    <div class="chart-container">
+                    <div class="chart-container small">
                         <canvas id="crChart"></canvas>
                     </div>
                 </div>
@@ -1085,7 +835,7 @@
                     <div class="info-box">
                         <p>衡量资金流入流出。ADL与价格同向运动确认趋势，背离预示反转。</p>
                     </div>
-                    <div class="chart-container">
+                    <div class="chart-container small">
                         <canvas id="adlChart"></canvas>
                     </div>
                 </div>
@@ -1099,120 +849,15 @@
                 </div>
 
                 <div class="card">
+                    <h2>📊 支撑压力位</h2>
+                    <div class="chart-container small">
+                        <div id="supportResistanceChart"></div>
+                    </div>
+                </div>
+
+                <div class="card">
                     <h2>📈 趋势线分析</h2>
                     <div id="trendAnalysis"></div>
-                </div>
-
-                <div class="card">
-                    <h2>📊 支撑压力位</h2>
-                    <div class="chart-container">
-                        <canvas id="supportResistanceChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 多股对比 -->
-            <div id="compare" class="content">
-                <div class="card">
-                    <h2>🔄 多股票对比分析</h2>
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="color: #4facfe; margin-bottom: 10px;">选择要对比的股票（最多4只）</h4>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <input type="text" id="compareStock1" placeholder="股票1（如AAPL）" style="flex: 1; min-width: 200px; padding: 12px; background: #0f1429; border: 2px solid #2d3561; color: #fff; border-radius: 8px;">
-                            <input type="text" id="compareStock2" placeholder="股票2（如MSFT）" style="flex: 1; min-width: 200px; padding: 12px; background: #0f1429; border: 2px solid #2d3561; color: #fff; border-radius: 8px;">
-                            <input type="text" id="compareStock3" placeholder="股票3（如GOOGL）" style="flex: 1; min-width: 200px; padding: 12px; background: #0f1429; border: 2px solid #2d3561; color: #fff; border-radius: 8px;">
-                            <input type="text" id="compareStock4" placeholder="股票4（如AMZN）" style="flex: 1; min-width: 200px; padding: 12px; background: #0f1429; border: 2px solid #2d3561; color: #fff; border-radius: 8px;">
-                        </div>
-                        <button onclick="compareStocks()" style="margin-top: 15px;">开始对比</button>
-                    </div>
-                    <div id="compareResults"></div>
-                </div>
-            </div>
-
-            <!-- 策略回测 -->
-            <div id="backtest" class="content">
-                <div class="card">
-                    <h2>⚡ 量化策略回测</h2>
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="color: #4facfe; margin-bottom: 15px;">设置回测参数</h4>
-                        <div class="input-group">
-                            <div class="input-field">
-                                <label>初始资金（元）</label>
-                                <input type="number" id="initialCapital" value="100000" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
-                            </div>
-                            <div class="input-field">
-                                <label>买入信号（RSI）</label>
-                                <input type="number" id="buySignal" value="30" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
-                            </div>
-                            <div class="input-field">
-                                <label>卖出信号（RSI）</label>
-                                <input type="number" id="sellSignal" value="70" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
-                            </div>
-                            <div class="input-field">
-                                <label>手续费率（%）</label>
-                                <input type="number" id="commission" value="0.1" step="0.01" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
-                            </div>
-                        </div>
-                        <button onclick="runBacktest()" style="margin-top: 15px;">运行回测</button>
-                    </div>
-                    <div id="backtestResults"></div>
-                </div>
-            </div>
-
-            <!-- 智能选股 -->
-            <div id="screener" class="content">
-                <div class="card">
-                    <h2>🎯 智能选股器</h2>
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="color: #4facfe; margin-bottom: 15px;">设置筛选条件</h4>
-                        <div class="input-group">
-                            <div class="input-field">
-                                <label>市盈率 P/E（最大）</label>
-                                <input type="number" id="maxPE" placeholder="如25" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
-                            </div>
-                            <div class="input-field">
-                                <label>净资产收益率 ROE（最小%）</label>
-                                <input type="number" id="minROE" placeholder="如15" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
-                            </div>
-                            <div class="input-field">
-                                <label>RSI（最大）</label>
-                                <input type="number" id="maxRSI" value="70" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
-                            </div>
-                            <div class="input-field">
-                                <label>RSI（最小）</label>
-                                <input type="number" id="minRSI" value="30" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
-                            </div>
-                        </div>
-                        <button onclick="screenStocks()" style="margin-top: 15px;">开始筛选</button>
-                    </div>
-                    <div id="screenerResults"></div>
-                </div>
-            </div>
-
-            <!-- 投资组合 -->
-            <div id="portfolio" class="content">
-                <div class="card">
-                    <h2>💼 我的投资组合</h2>
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="color: #4facfe; margin-bottom: 15px;">添加持仓</h4>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
-                            <div class="input-field" style="flex: 1; min-width: 150px;">
-                                <label>股票代码</label>
-                                <input type="text" id="portfolioSymbol" placeholder="如AAPL" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
-                            </div>
-                            <div class="input-field" style="flex: 1; min-width: 120px;">
-                                <label>持仓数量</label>
-                                <input type="number" id="portfolioShares" placeholder="股数" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
-                            </div>
-                            <div class="input-field" style="flex: 1; min-width: 120px;">
-                                <label>成本价</label>
-                                <input type="number" id="portfolioCost" placeholder="买入价" step="0.01" style="width: 100%; padding: 10px; background: #0f1429; border: 1px solid #2d3561; color: #fff; border-radius: 6px;">
-                            </div>
-                            <button onclick="addToPortfolio()" style="flex: 0; padding: 12px 24px;">添加持仓</button>
-                        </div>
-                    </div>
-                    <div id="portfolioSummary"></div>
-                    <div id="portfolioList"></div>
                 </div>
             </div>
         </div>
@@ -1222,8 +867,24 @@
         let charts = {};
         let stockData = null;
         let currentSymbol = '';
-        let portfolio = []; // 投资组合数据（内存存储）
-        let compareData = {}; // 多股对比数据
+        let currentIndicators = null;
+        let colorScheme = 'western'; // 'western' = 绿涨红跌, 'chinese' = 红涨绿跌
+        
+        // 颜色配置
+        const colorConfig = {
+            western: {
+                up: '#22c55e',      // 绿色
+                down: '#ef4444',    // 红色
+                upBg: 'linear-gradient(135deg, #134e48 0%, #267871 100%)',
+                downBg: 'linear-gradient(135deg, #7b1e3d 0%, #a32952 100%)'
+            },
+            chinese: {
+                up: '#ef4444',      // 红色
+                down: '#22c55e',    // 绿色
+                upBg: 'linear-gradient(135deg, #7b1e3d 0%, #a32952 100%)',
+                downBg: 'linear-gradient(135deg, #134e48 0%, #267871 100%)'
+            }
+        };
 
         // 热门股票列表（扩展版）
         const stockList = [
@@ -1421,6 +1082,162 @@
             document.getElementById(tabName).classList.add('active');
         }
 
+        // 切换颜色方案
+        function setColorScheme(scheme) {
+            colorScheme = scheme;
+            document.getElementById('westernScheme').classList.remove('active');
+            document.getElementById('chineseScheme').classList.remove('active');
+            document.getElementById(scheme + 'Scheme').classList.add('active');
+            
+            // 如果已有数据，重新渲染
+            if (stockData && currentIndicators) {
+                displayStats(stockData, currentIndicators);
+                displaySignals(stockData, currentIndicators);
+            }
+        }
+        
+        // 下载完整数据（CSV格式）
+        function downloadAllData() {
+            if (!stockData || !currentIndicators) {
+                alert('请先获取股票数据');
+                return;
+            }
+            
+            let csv = 'Date,Open,High,Low,Close,Volume,MA5,MA10,MA20,MA30,MA60,RSI,MACD,Signal,KDJ_K,KDJ_D,KDJ_J\n';
+            
+            stockData.forEach((row, i) => {
+                csv += `${row.date},${row.open},${row.high},${row.low},${row.close},${row.volume},`;
+                csv += `${currentIndicators.ma5[i] || ''},${currentIndicators.ma10[i] || ''},`;
+                csv += `${currentIndicators.ma20[i] || ''},${currentIndicators.ma30[i] || ''},${currentIndicators.ma60[i] || ''},`;
+                csv += `${currentIndicators.rsi[i] || ''},${currentIndicators.macd.macd[i] || ''},${currentIndicators.macd.signal[i] || ''},`;
+                csv += `${currentIndicators.kdj.k[i] || ''},${currentIndicators.kdj.d[i] || ''},${currentIndicators.kdj.j[i] || ''}\n`;
+            });
+            
+            downloadFile(csv, `${currentSymbol}_complete_data.csv`, 'text/csv');
+        }
+        
+        // 下载所有指标（CSV格式）
+        function downloadIndicators() {
+            if (!stockData || !currentIndicators) {
+                alert('请先获取股票数据');
+                return;
+            }
+            
+            let csv = 'Date,RSI,MACD,MACD_Signal,MACD_Histogram,KDJ_K,KDJ_D,KDJ_J,WR,CCI,ADX,SAR,TRIX,ATR,MOM,MFI,OBV,VR,BR,AR,CR\n';
+            
+            stockData.forEach((row, i) => {
+                csv += `${row.date},`;
+                csv += `${currentIndicators.rsi[i] || ''},`;
+                csv += `${currentIndicators.macd.macd[i] || ''},${currentIndicators.macd.signal[i] || ''},${currentIndicators.macd.histogram[i] || ''},`;
+                csv += `${currentIndicators.kdj.k[i] || ''},${currentIndicators.kdj.d[i] || ''},${currentIndicators.kdj.j[i] || ''},`;
+                csv += `${currentIndicators.wr[i] || ''},${currentIndicators.cci[i] || ''},${currentIndicators.dmi.adx[i] || ''},`;
+                csv += `${currentIndicators.sar[i] || ''},${currentIndicators.trix[i] || ''},${currentIndicators.atr[i] || ''},`;
+                csv += `${currentIndicators.mom[i] || ''},${currentIndicators.mfi[i] || ''},${currentIndicators.obv[i] || ''},`;
+                csv += `${currentIndicators.vr[i] || ''},${currentIndicators.brar.br[i] || ''},${currentIndicators.brar.ar[i] || ''},${currentIndicators.cr[i] || ''}\n`;
+            });
+            
+            downloadFile(csv, `${currentSymbol}_indicators.csv`, 'text/csv');
+        }
+        
+        // 下载K线数据（CSV格式）
+        function downloadKlineData() {
+            if (!stockData) {
+                alert('请先获取股票数据');
+                return;
+            }
+            
+            let csv = 'Date,Open,High,Low,Close,Volume\n';
+            stockData.forEach(row => {
+                csv += `${row.date},${row.open},${row.high},${row.low},${row.close},${row.volume}\n`;
+            });
+            
+            downloadFile(csv, `${currentSymbol}_kline.csv`, 'text/csv');
+        }
+        
+        // 下载JSON格式
+        function downloadJSON() {
+            if (!stockData || !currentIndicators) {
+                alert('请先获取股票数据');
+                return;
+            }
+            
+            const data = {
+                symbol: currentSymbol,
+                downloadTime: new Date().toISOString(),
+                klineData: stockData,
+                indicators: currentIndicators
+            };
+            
+            const json = JSON.stringify(data, null, 2);
+            downloadFile(json, `${currentSymbol}_data.json`, 'application/json');
+        }
+        
+        // 生成分析报告（TXT格式）
+        function downloadReport() {
+            if (!stockData || !currentIndicators) {
+                alert('请先获取股票数据');
+                return;
+            }
+            
+            const latest = stockData[stockData.length - 1];
+            const previous = stockData[stockData.length - 2];
+            const changePercent = ((latest.close - previous.close) / previous.close * 100).toFixed(2);
+            
+            let report = `股票分析报告\n`;
+            report += `=====================================\n\n`;
+            report += `股票代码: ${currentSymbol}\n`;
+            report += `生成时间: ${new Date().toLocaleString('zh-CN')}\n`;
+            report += `数据周期: ${stockData[0].date} 至 ${latest.date}\n`;
+            report += `数据条数: ${stockData.length}\n\n`;
+            
+            report += `最新行情\n`;
+            report += `-------------------------------------\n`;
+            report += `最新价: ${latest.close.toFixed(2)}\n`;
+            report += `涨跌幅: ${changePercent}%\n`;
+            report += `开盘价: ${latest.open.toFixed(2)}\n`;
+            report += `最高价: ${latest.high.toFixed(2)}\n`;
+            report += `最低价: ${latest.low.toFixed(2)}\n`;
+            report += `成交量: ${(latest.volume / 1000000).toFixed(2)}M\n\n`;
+            
+            report += `技术指标\n`;
+            report += `-------------------------------------\n`;
+            const lastIdx = stockData.length - 1;
+            report += `RSI(14): ${currentIndicators.rsi[lastIdx]?.toFixed(2) || 'N/A'}\n`;
+            report += `MACD: ${currentIndicators.macd.macd[lastIdx]?.toFixed(4) || 'N/A'}\n`;
+            report += `KDJ K: ${currentIndicators.kdj.k[lastIdx]?.toFixed(2) || 'N/A'}\n`;
+            report += `KDJ D: ${currentIndicators.kdj.d[lastIdx]?.toFixed(2) || 'N/A'}\n`;
+            report += `KDJ J: ${currentIndicators.kdj.j[lastIdx]?.toFixed(2) || 'N/A'}\n`;
+            report += `WR(14): ${currentIndicators.wr[lastIdx]?.toFixed(2) || 'N/A'}\n`;
+            report += `CCI(14): ${currentIndicators.cci[lastIdx]?.toFixed(2) || 'N/A'}\n`;
+            report += `ATR(14): ${currentIndicators.atr[lastIdx]?.toFixed(2) || 'N/A'}\n\n`;
+            
+            report += `均线系统\n`;
+            report += `-------------------------------------\n`;
+            report += `MA5: ${currentIndicators.ma5[lastIdx]?.toFixed(2) || 'N/A'}\n`;
+            report += `MA10: ${currentIndicators.ma10[lastIdx]?.toFixed(2) || 'N/A'}\n`;
+            report += `MA20: ${currentIndicators.ma20[lastIdx]?.toFixed(2) || 'N/A'}\n`;
+            report += `MA30: ${currentIndicators.ma30[lastIdx]?.toFixed(2) || 'N/A'}\n`;
+            report += `MA60: ${currentIndicators.ma60[lastIdx]?.toFixed(2) || 'N/A'}\n\n`;
+            
+            report += `=====================================\n`;
+            report += `报告结束\n`;
+            
+            downloadFile(report, `${currentSymbol}_report.txt`, 'text/plain');
+        }
+        
+        // 通用下载函数
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
         // 显示错误
         function showError(message) {
             const errorDiv = document.getElementById('errorMsg');
@@ -1485,24 +1302,8 @@
                     data = await fetchFromYahoo(stockCode, adjustedRange, klineType);
                 } else if (dataSource === 'sina') {
                     data = await fetchFromSina(stockCode);
-                } else if (dataSource === 'eastmoney') {
-                    data = await fetchFromEastMoney(stockCode, adjustedRange, klineType);
-                } else if (dataSource === 'tencent') {
-                    data = await fetchFromTencent(stockCode, adjustedRange, klineType);
-                } else if (dataSource === 'netease') {
-                    data = await fetchFromNetease(stockCode, adjustedRange, klineType);
-                } else if (dataSource === 'alphavantage') {
-                    data = await fetchFromAlphaVantage(stockCode, adjustedRange, klineType);
-                } else if (dataSource === 'finnhub') {
-                    data = await fetchFromFinnhub(stockCode, adjustedRange, klineType);
-                } else if (dataSource === 'polygon') {
-                    data = await fetchFromPolygon(stockCode, adjustedRange, klineType);
-                } else if (dataSource === 'twelvedata') {
-                    data = await fetchFromTwelveData(stockCode, adjustedRange, klineType);
-                } else if (dataSource === 'iexcloud') {
-                    data = await fetchFromIEXCloud(stockCode, adjustedRange, klineType);
                 } else {
-                    showError('该数据源暂未实现，请选择其他数据源');
+                    showError('该数据源暂未实现，请选择Yahoo Finance或新浪财经');
                     return;
                 }
 
@@ -1663,22 +1464,8 @@
                             fetchCompanyInfo(symbol).catch(() => {
                                 displayBasicInfo(symbol);
                             });
-                            
-                            // 获取财报数据
-                            fetchFinancialReports(symbol).catch(err => {
-                                console.warn('获取财报失败:', err);
-                                document.getElementById('financialReports').innerHTML = '<div class="info-box"><p>财报数据加载中...</p></div>';
-                            });
-                            
-                            // 获取相关新闻
-                            fetchNews(symbol).catch(err => {
-                                console.warn('获取新闻失败:', err);
-                                document.getElementById('newsList').innerHTML = '<div class="info-box"><p>新闻加载中...</p></div>';
-                            });
                         } else {
                             displayBasicInfo(symbol);
-                            document.getElementById('financialReports').innerHTML = '<div class="info-box"><p>财报数据仅在日K及以上周期显示</p></div>';
-                            document.getElementById('newsList').innerHTML = '<div class="info-box"><p>新闻仅在日K及以上周期显示</p></div>';
                         }
                         
                         return data;
@@ -1890,461 +1677,31 @@
             document.getElementById('fundamentalsData').innerHTML = '<div class="info-box"><p>暂时无法获取基本面数据</p></div>';
         }
 
-        // 获取财务报表数据
-        async function fetchFinancialReports(symbol) {
-            try {
-                console.log('📊 获取财务报表...');
-                
-                // 使用Yahoo Finance的财务报表API
-                const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${symbol}?modules=incomeStatementHistory,balanceSheetHistory,cashflowStatementHistory`;
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                
-                const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
-                const json = await response.json();
-                
-                if (json.quoteSummary && json.quoteSummary.result && json.quoteSummary.result[0]) {
-                    const data = json.quoteSummary.result[0];
-                    displayFinancialReports(data);
-                    console.log('✅ 财务报表获取成功');
-                } else {
-                    throw new Error('无财报数据');
-                }
-            } catch (error) {
-                console.warn('财报获取失败:', error);
-                document.getElementById('financialReports').innerHTML = `
-                    <div class="info-box">
-                        <p>暂时无法获取详细财报数据</p>
-                        <p style="font-size: 12px; color: #666; margin-top: 8px;">提示：可以访问 Yahoo Finance 或公司官网查看完整财报</p>
-                    </div>
-                `;
-            }
-        }
-
-        // 显示财务报表
-        function displayFinancialReports(data) {
-            let html = '';
-            
-            // 利润表
-            if (data.incomeStatementHistory && data.incomeStatementHistory.incomeStatementHistory) {
-                const statements = data.incomeStatementHistory.incomeStatementHistory.slice(0, 3);
-                html += '<h3 style="color: #4facfe; margin-bottom: 10px;">📈 利润表（最近3期）</h3>';
-                html += '<table class="financial-table"><thead><tr><th>项目</th>';
-                statements.forEach(s => {
-                    const date = new Date(s.endDate.raw * 1000).toISOString().split('T')[0];
-                    html += `<th>${date}</th>`;
-                });
-                html += '</tr></thead><tbody>';
-                
-                const items = [
-                    { key: 'totalRevenue', label: '营业收入' },
-                    { key: 'grossProfit', label: '毛利润' },
-                    { key: 'operatingIncome', label: '营业利润' },
-                    { key: 'netIncome', label: '净利润' },
-                    { key: 'ebitda', label: 'EBITDA' }
-                ];
-                
-                items.forEach(item => {
-                    html += `<tr><td>${item.label}</td>`;
-                    statements.forEach(s => {
-                        const value = s[item.key];
-                        html += `<td>${value ? value.fmt : '-'}</td>`;
-                    });
-                    html += '</tr>';
-                });
-                
-                html += '</tbody></table>';
-            }
-            
-            // 资产负债表
-            if (data.balanceSheetHistory && data.balanceSheetHistory.balanceSheetStatements) {
-                const statements = data.balanceSheetHistory.balanceSheetStatements.slice(0, 3);
-                html += '<h3 style="color: #4facfe; margin: 20px 0 10px 0;">💰 资产负债表（最近3期）</h3>';
-                html += '<table class="financial-table"><thead><tr><th>项目</th>';
-                statements.forEach(s => {
-                    const date = new Date(s.endDate.raw * 1000).toISOString().split('T')[0];
-                    html += `<th>${date}</th>`;
-                });
-                html += '</tr></thead><tbody>';
-                
-                const items = [
-                    { key: 'totalAssets', label: '总资产' },
-                    { key: 'totalLiab', label: '总负债' },
-                    { key: 'totalStockholderEquity', label: '股东权益' },
-                    { key: 'cash', label: '现金' },
-                    { key: 'totalCurrentAssets', label: '流动资产' }
-                ];
-                
-                items.forEach(item => {
-                    html += `<tr><td>${item.label}</td>`;
-                    statements.forEach(s => {
-                        const value = s[item.key];
-                        html += `<td>${value ? value.fmt : '-'}</td>`;
-                    });
-                    html += '</tr>';
-                });
-                
-                html += '</tbody></table>';
-            }
-            
-            // 现金流量表
-            if (data.cashflowStatementHistory && data.cashflowStatementHistory.cashflowStatements) {
-                const statements = data.cashflowStatementHistory.cashflowStatements.slice(0, 3);
-                html += '<h3 style="color: #4facfe; margin: 20px 0 10px 0;">💵 现金流量表（最近3期）</h3>';
-                html += '<table class="financial-table"><thead><tr><th>项目</th>';
-                statements.forEach(s => {
-                    const date = new Date(s.endDate.raw * 1000).toISOString().split('T')[0];
-                    html += `<th>${date}</th>`;
-                });
-                html += '</tr></thead><tbody>';
-                
-                const items = [
-                    { key: 'totalCashFromOperatingActivities', label: '经营活动现金流' },
-                    { key: 'totalCashFromFinancingActivities', label: '融资活动现金流' },
-                    { key: 'totalCashflowsFromInvestingActivities', label: '投资活动现金流' },
-                    { key: 'freeCashflow', label: '自由现金流' }
-                ];
-                
-                items.forEach(item => {
-                    html += `<tr><td>${item.label}</td>`;
-                    statements.forEach(s => {
-                        const value = s[item.key];
-                        html += `<td>${value ? value.fmt : '-'}</td>`;
-                    });
-                    html += '</tr>';
-                });
-                
-                html += '</tbody></table>';
-            }
-            
-            if (html) {
-                document.getElementById('financialReports').innerHTML = html;
-            } else {
-                document.getElementById('financialReports').innerHTML = '<div class="info-box"><p>暂无财报数据</p></div>';
-            }
-        }
-
-        // 获取相关新闻
-        async function fetchNews(symbol) {
-            try {
-                console.log('📰 获取相关新闻...');
-                
-                // 使用多个新闻源
-                const newsSources = [
-                    {
-                        name: 'Yahoo Finance News',
-                        fetch: async () => {
-                            const url = `https://query1.finance.yahoo.com/v1/finance/search?q=${symbol}&quotesCount=0&newsCount=10`;
-                            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                            const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
-                            return await response.json();
-                        },
-                        parse: (json) => {
-                            if (json.news && json.news.length > 0) {
-                                return json.news.map(item => ({
-                                    title: item.title,
-                                    summary: item.summary || '暂无摘要',
-                                    source: item.publisher,
-                                    date: new Date(item.providerPublishTime * 1000).toLocaleDateString('zh-CN'),
-                                    url: item.link
-                                }));
-                            }
-                            return [];
-                        }
-                    },
-                    {
-                        name: 'Finnhub News',
-                        fetch: async () => {
-                            // 备用新闻源（需要API Key时可配置）
-                            return { status: 'ok', articles: [] };
-                        },
-                        parse: () => []
-                    }
-                ];
-                
-                for (let source of newsSources) {
-                    try {
-                        const json = await source.fetch();
-                        const news = source.parse(json);
-                        
-                        if (news && news.length > 0) {
-                            displayNews(news);
-                            console.log(`✅ 新闻获取成功，来源：${source.name}`);
-                            return;
-                        }
-                    } catch (err) {
-                        console.warn(`${source.name} 失败:`, err);
-                        continue;
-                    }
-                }
-                
-                throw new Error('所有新闻源都失败');
-            } catch (error) {
-                console.warn('新闻获取失败:', error);
-                document.getElementById('newsList').innerHTML = `
-                    <div class="info-box">
-                        <h3>📰 暂时无法获取新闻</h3>
-                        <p style="margin-top: 10px;">建议访问以下网站查看相关新闻：</p>
-                        <ul style="margin-top: 10px; color: #aaa; line-height: 2;">
-                            <li>Yahoo Finance: <a href="https://finance.yahoo.com/quote/${symbol}" target="_blank" style="color: #4facfe;">查看</a></li>
-                            <li>Google Finance: <a href="https://www.google.com/finance/quote/${symbol.split('.')[0]}:${symbol.includes('.') ? symbol.split('.')[1] : 'NASDAQ'}" target="_blank" style="color: #4facfe;">查看</a></li>
-                        </ul>
-                    </div>
-                `;
-            }
-        }
-
-        // 显示新闻
-        function displayNews(news) {
-            let html = '';
-            
-            news.slice(0, 10).forEach(item => {
-                html += `
-                    <div class="news-item" onclick="window.open('${item.url}', '_blank')">
-                        <div class="news-title">${item.title}</div>
-                        <div class="news-meta">
-                            <span>📅 ${item.date}</span>
-                            <span>📰 ${item.source}</span>
-                        </div>
-                        <div class="news-summary">${item.summary}</div>
-                    </div>
-                `;
-            });
-            
-            document.getElementById('newsList').innerHTML = html || '<div class="info-box"><p>暂无新闻</p></div>';
-        }
-
         // 从新浪财经获取数据
         async function fetchFromSina(symbol) {
             try {
-                console.log('📊 新浪财经数据源');
+                // 转换股票代码格式
                 let sinaCode = symbol.replace('.SS', '').replace('.SZ', '');
                 if (symbol.includes('.SS')) {
                     sinaCode = 'sh' + sinaCode;
                 } else if (symbol.includes('.SZ')) {
                     sinaCode = 'sz' + sinaCode;
                 } else {
-                    sinaCode = 'sh' + sinaCode;
+                    sinaCode = 'sh' + sinaCode; // 默认上海
                 }
                 
-                // 使用代理访问新浪
-                const url = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${sinaCode}&scale=240&ma=5,10,20,60&datalen=1000`;
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                
-                const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
-                const text = await response.text();
-                const jsonData = JSON.parse(text);
-                
-                if (jsonData && jsonData.length > 0) {
-                    const data = jsonData.map(item => ({
-                        date: item.day,
-                        open: parseFloat(item.open),
-                        high: parseFloat(item.high),
-                        low: parseFloat(item.low),
-                        close: parseFloat(item.close),
-                        volume: parseFloat(item.volume)
-                    }));
-                    
-                    console.log(`✅ 新浪财经获取成功，${data.length} 条数据`);
-                    displayBasicInfo(symbol);
-                    return data;
-                }
-                throw new Error('新浪财经暂无数据');
+                // 注意：由于跨域限制，这里需要使用代理或JSONP
+                // 这是一个简化示例，实际使用时可能需要后端代理
+                showError('新浪财经需要后端代理支持，请使用Yahoo Finance数据源');
+                return null;
             } catch (error) {
-                console.error('新浪财经错误:', error);
-                throw error;
-            }
-        }
-
-        // 东方财富数据源
-        async function fetchFromEastMoney(symbol, range, interval) {
-            try {
-                console.log('📊 东方财富数据源');
-                // 转换代码格式
-                let emCode = symbol.replace('.SS', '').replace('.SZ', '').replace('.HK', '');
-                let market = '1'; // 上海
-                if (symbol.includes('.SZ')) market = '0'; // 深圳
-                if (symbol.includes('.HK')) market = '116'; // 港股
-                
-                // 东方财富API（通过代理）
-                const klineMap = { '1m': '1', '5m': '5', '15m': '15', '30m': '30', '60m': '60', '1d': '101', '1wk': '102', '1mo': '103' };
-                const ktype = klineMap[interval] || '101';
-                
-                const url = `https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=${market}.${emCode}&klt=${ktype}&fqt=1&lmt=500&fields1=f1,f2,f3,f4,f5&fields2=f51,f52,f53,f54,f55,f56,f57`;
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                
-                const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
-                const json = await response.json();
-                
-                if (json.data && json.data.klines && json.data.klines.length > 0) {
-                    const data = json.data.klines.map(item => {
-                        const parts = item.split(',');
-                        return {
-                            date: parts[0],
-                            open: parseFloat(parts[1]),
-                            close: parseFloat(parts[2]),
-                            high: parseFloat(parts[3]),
-                            low: parseFloat(parts[4]),
-                            volume: parseFloat(parts[5])
-                        };
-                    });
-                    
-                    console.log(`✅ 东方财富获取成功，${data.length} 条数据`);
-                    displayBasicInfo(symbol);
-                    return data;
-                }
-                throw new Error('东方财富暂无数据');
-            } catch (error) {
-                console.error('东方财富错误:', error);
-                throw error;
-            }
-        }
-
-        // 腾讯财经数据源
-        async function fetchFromTencent(symbol, range, interval) {
-            try {
-                console.log('📊 腾讯财经数据源');
-                // 转换代码
-                let qqCode = symbol.replace('.SS', '').replace('.SZ', '');
-                let prefix = 'sh';
-                if (symbol.includes('.SZ')) prefix = 'sz';
-                
-                const url = `https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=${prefix}${qqCode},day,,500`;
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                
-                const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
-                const json = await response.json();
-                
-                if (json.data && json.data[`${prefix}${qqCode}`] && json.data[`${prefix}${qqCode}`].day) {
-                    const klines = json.data[`${prefix}${qqCode}`].day;
-                    const data = klines.map(item => ({
-                        date: item[0],
-                        open: parseFloat(item[1]),
-                        close: parseFloat(item[2]),
-                        high: parseFloat(item[3]),
-                        low: parseFloat(item[4]),
-                        volume: parseFloat(item[5])
-                    }));
-                    
-                    console.log(`✅ 腾讯财经获取成功，${data.length} 条数据`);
-                    displayBasicInfo(symbol);
-                    return data;
-                }
-                throw new Error('腾讯财经暂无数据');
-            } catch (error) {
-                console.error('腾讯财经错误:', error);
-                throw error;
-            }
-        }
-
-        // 网易财经数据源
-        async function fetchFromNetease(symbol, range, interval) {
-            try {
-                console.log('📊 网易财经数据源');
-                let code = symbol.replace('.SS', '').replace('.SZ', '');
-                let prefix = '0';
-                if (symbol.includes('.SS')) prefix = '1';
-                
-                const today = new Date();
-                const start = new Date(today.getTime() - getRangeSeconds(range) * 1000);
-                const startDate = start.toISOString().split('T')[0].replace(/-/g, '');
-                const endDate = today.toISOString().split('T')[0].replace(/-/g, '');
-                
-                const url = `https://img1.money.126.net/data/hs/kline/day/history/${today.getFullYear()}/${prefix}${code}.json`;
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                
-                const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
-                const json = await response.json();
-                
-                if (json.data && json.data.length > 0) {
-                    const data = json.data.map(item => ({
-                        date: item[0],
-                        open: parseFloat(item[1]),
-                        high: parseFloat(item[2]),
-                        low: parseFloat(item[3]),
-                        close: parseFloat(item[4]),
-                        volume: parseFloat(item[5])
-                    }));
-                    
-                    console.log(`✅ 网易财经获取成功，${data.length} 条数据`);
-                    displayBasicInfo(symbol);
-                    return data;
-                }
-                throw new Error('网易财经暂无数据');
-            } catch (error) {
-                console.error('网易财经错误:', error);
-                throw error;
-            }
-        }
-
-        // Alpha Vantage数据源（免费但需要API Key）
-        async function fetchFromAlphaVantage(symbol, range, interval) {
-            try {
-                console.log('📊 Alpha Vantage数据源（演示模式）');
-                showError('Alpha Vantage需要API Key。请访问 https://www.alphavantage.co 申请免费API Key，然后在代码中配置。当前使用Yahoo Finance数据源。');
-                // 回退到Yahoo
-                return await fetchFromYahoo(symbol, range, interval);
-            } catch (error) {
-                console.error('Alpha Vantage错误:', error);
-                throw error;
-            }
-        }
-
-        // Finnhub数据源
-        async function fetchFromFinnhub(symbol, range, interval) {
-            try {
-                console.log('📊 Finnhub数据源（演示模式）');
-                showError('Finnhub需要API Key。请访问 https://finnhub.io 申请免费API Key。当前使用Yahoo Finance数据源。');
-                // 回退到Yahoo
-                return await fetchFromYahoo(symbol, range, interval);
-            } catch (error) {
-                console.error('Finnhub错误:', error);
-                throw error;
-            }
-        }
-
-        // Polygon.io数据源
-        async function fetchFromPolygon(symbol, range, interval) {
-            try {
-                console.log('📊 Polygon.io数据源（演示模式）');
-                showError('Polygon.io需要API Key。请访问 https://polygon.io 申请。当前使用Yahoo Finance数据源。');
-                // 回退到Yahoo
-                return await fetchFromYahoo(symbol, range, interval);
-            } catch (error) {
-                console.error('Polygon.io错误:', error);
-                throw error;
-            }
-        }
-
-        // Twelve Data数据源
-        async function fetchFromTwelveData(symbol, range, interval) {
-            try {
-                console.log('📊 Twelve Data数据源（演示模式）');
-                showError('Twelve Data需要API Key。请访问 https://twelvedata.com 申请。当前使用Yahoo Finance数据源。');
-                // 回退到Yahoo
-                return await fetchFromYahoo(symbol, range, interval);
-            } catch (error) {
-                console.error('Twelve Data错误:', error);
-                throw error;
-            }
-        }
-
-        // IEX Cloud数据源
-        async function fetchFromIEXCloud(symbol, range, interval) {
-            try {
-                console.log('📊 IEX Cloud数据源（演示模式）');
-                showError('IEX Cloud需要API Key。请访问 https://iexcloud.io 申请。当前使用Yahoo Finance数据源。');
-                // 回退到Yahoo
-                return await fetchFromYahoo(symbol, range, interval);
-            } catch (error) {
-                console.error('IEX Cloud错误:', error);
+                console.error('Sina Finance error:', error);
                 throw error;
             }
         }
 
         function getRangeSeconds(range) {
             const ranges = {
-                '1d': 1 * 24 * 3600,
-                '5d': 5 * 24 * 3600,
                 '1mo': 30 * 24 * 3600,
                 '3mo': 90 * 24 * 3600,
                 '6mo': 180 * 24 * 3600,
@@ -2359,6 +1716,9 @@
         function analyzeAndDisplay(data) {
             // 计算所有技术指标
             const indicators = calculateAllIndicators(data);
+            
+            // 存储到全局变量以便下载
+            currentIndicators = indicators;
             
             // 显示结果区域
             document.getElementById('results').style.display = 'block';
@@ -3058,9 +2418,14 @@
             const changePercent = ((latest.close - previous.close) / previous.close * 100);
             const amplitude = ((latest.high - latest.low) / previous.close * 100);
             const turnover = (latest.volume / 1000000).toFixed(2);
+            
+            // 根据颜色方案确定颜色
+            const isUp = changePercent > 0;
+            const cardClass = isUp ? 'bullish' : 'bearish';
+            const cardStyle = isUp ? colorConfig[colorScheme].upBg : colorConfig[colorScheme].downBg;
 
             const html = `
-                <div class="stat-card ${changePercent > 0 ? 'bullish' : 'bearish'}">
+                <div class="stat-card ${cardClass}" style="background: ${cardStyle};">
                     <div class="stat-label">最新价</div>
                     <div class="stat-value">¥${latest.close.toFixed(2)}</div>
                     <div class="stat-change">${changePercent > 0 ? '↑' : '↓'} ${Math.abs(changePercent).toFixed(2)}%</div>
@@ -3261,22 +2626,14 @@
             const canvas = document.getElementById('candleCanvas');
             const ctx = canvas.getContext('2d');
             
-            // 设置canvas尺寸（使用高分辨率）
-            const dpr = window.devicePixelRatio || 1;
-            const rect = container.getBoundingClientRect();
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            canvas.style.width = rect.width + 'px';
-            canvas.style.height = rect.height + 'px';
-            ctx.scale(dpr, dpr);
+            // 设置canvas尺寸
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
             
-            const width = rect.width;
-            const height = rect.height;
-            
-            // 计算绘图区域（优化padding，扩大K线区域）
-            const padding = { top: 60, right: 80, bottom: 80, left: 70 };
-            const chartWidth = width - padding.left - padding.right;
-            const chartHeight = height - padding.top - padding.bottom;
+            // 计算绘图区域
+            const padding = { top: 40, right: 80, bottom: 60, left: 60 };
+            const chartWidth = canvas.width - padding.left - padding.right;
+            const chartHeight = canvas.height - padding.top - padding.bottom;
             
             // 计算价格范围
             const allPrices = data.flatMap(d => [d.high, d.low]);
@@ -3297,7 +2654,7 @@
             
             // 清空画布
             ctx.fillStyle = '#0f1429';
-            ctx.fillRect(0, 0, width, height);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             // 绘制网格
             ctx.strokeStyle = '#2d3561';
@@ -3312,13 +2669,13 @@
                 // 价格标签
                 const price = maxPrice - (priceRange / 5) * i;
                 ctx.fillStyle = '#aaa';
-                ctx.font = '14px Arial';
+                ctx.font = '12px Arial';
                 ctx.textAlign = 'right';
-                ctx.fillText(price.toFixed(2), padding.left - 10, y + 5);
+                ctx.fillText(price.toFixed(2), padding.left - 10, y + 4);
             }
             
-            // 绘制K线（蜡烛更粗）
-            const candleWidth = Math.max(4, Math.min(12, chartWidth / data.length - 3));
+            // 绘制K线
+            const candleWidth = Math.max(2, chartWidth / data.length - 2);
             data.forEach((d, i) => {
                 const x = indexToX(i);
                 const openY = priceToY(d.open);
@@ -3329,38 +2686,32 @@
                 const isUp = d.close >= d.open;
                 const color = isUp ? '#22c55e' : '#ef4444';
                 
-                // 绘制影线（上下影线，加粗）
+                // 绘制影线（上下影线）
                 ctx.strokeStyle = color;
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(x, highY);
                 ctx.lineTo(x, lowY);
                 ctx.stroke();
                 
-                // 绘制实体（K线主体）
+                // 绘制实体
                 ctx.fillStyle = color;
                 const bodyHeight = Math.abs(closeY - openY);
                 const bodyY = Math.min(openY, closeY);
-                
-                // 如果实体太小，至少显示2px
-                if (bodyHeight < 2) {
-                    ctx.fillRect(x - candleWidth / 2, bodyY - 1, candleWidth, 2);
-                } else {
-                    ctx.fillRect(x - candleWidth / 2, bodyY, candleWidth, bodyHeight);
-                }
+                ctx.fillRect(x - candleWidth / 2, bodyY, candleWidth, Math.max(1, bodyHeight));
             });
             
-            // 绘制均线（加粗）
+            // 绘制均线
             const maLines = [
-                { data: indicators.ma5, color: '#22c55e', label: 'MA5', width: 2.5 },
-                { data: indicators.ma10, color: '#f59e0b', label: 'MA10', width: 2.5 },
-                { data: indicators.ma20, color: '#a855f7', label: 'MA20', width: 2.5 },
-                { data: indicators.ma60, color: '#ec4899', label: 'MA60', width: 2.5 }
+                { data: indicators.ma5, color: '#22c55e', label: 'MA5' },
+                { data: indicators.ma10, color: '#f59e0b', label: 'MA10' },
+                { data: indicators.ma20, color: '#a855f7', label: 'MA20' },
+                { data: indicators.ma60, color: '#ec4899', label: 'MA60' }
             ];
             
             maLines.forEach(ma => {
                 ctx.strokeStyle = ma.color;
-                ctx.lineWidth = ma.width;
+                ctx.lineWidth = 2;
                 ctx.beginPath();
                 let started = false;
                 data.forEach((d, i) => {
@@ -3378,57 +2729,53 @@
                 ctx.stroke();
             });
             
-            // 绘制图例（更大更清晰）
+            // 绘制图例
             let legendX = padding.left;
-            const legendY = 30;
+            const legendY = 20;
             maLines.forEach(ma => {
                 ctx.fillStyle = ma.color;
-                ctx.fillRect(legendX, legendY - 6, 20, 4);
-                ctx.fillStyle = '#fff';
-                ctx.font = 'bold 14px Arial';
+                ctx.fillRect(legendX, legendY - 5, 15, 3);
+                ctx.fillStyle = '#aaa';
+                ctx.font = '12px Arial';
                 ctx.textAlign = 'left';
-                ctx.fillText(ma.label, legendX + 25, legendY);
-                legendX += 100;
+                ctx.fillText(ma.label, legendX + 20, legendY);
+                legendX += 80;
             });
             
-            // 绘制日期（更清晰）
+            // 绘制日期（只显示部分）
             ctx.fillStyle = '#aaa';
-            ctx.font = '12px Arial';
+            ctx.font = '11px Arial';
             ctx.textAlign = 'center';
-            const dateStep = Math.ceil(data.length / 10);
+            const dateStep = Math.ceil(data.length / 8);
             for (let i = 0; i < data.length; i += dateStep) {
                 const x = indexToX(i);
                 const date = data[i].date.substring(5); // 只显示月-日
-                ctx.fillText(date, x, height - 25);
+                ctx.fillText(date, x, canvas.height - padding.bottom + 20);
             }
             
-            // 绘制标题（更大）
+            // 绘制标题
             ctx.fillStyle = '#4facfe';
-            ctx.font = 'bold 18px Arial';
+            ctx.font = 'bold 16px Arial';
             ctx.textAlign = 'left';
-            ctx.fillText('K线图与均线系统 (红涨绿跌)', padding.left, 20);
+            ctx.fillText('K线图与均线系统', padding.left, 25);
             
             // 保存到charts对象
             charts.candlestick = { canvas, redraw: () => drawCandlestickChart(data, indicators) };
             
-            // 响应式（防抖）
-            let resizeTimeout;
-            const resizeHandler = () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    if (charts.candlestick && charts.candlestick.redraw) {
-                        charts.candlestick.redraw();
-                    }
-                }, 250);
-            };
-            
-            window.removeEventListener('resize', resizeHandler);
-            window.addEventListener('resize', resizeHandler);
+            // 响应式
+            window.addEventListener('resize', () => {
+                if (charts.candlestick && charts.candlestick.redraw) {
+                    charts.candlestick.redraw();
+                }
+            });
         }
 
         // 布林带图表（使用Chart.js）
         function drawBollingerChartLW(data, indicators) {
-            const ctx = document.getElementById('bollingerChart').getContext('2d');
+            const container = document.getElementById('bollingerChart');
+            container.innerHTML = '<canvas id="bollingerCanvas"></canvas>';
+            
+            const ctx = document.getElementById('bollingerCanvas').getContext('2d');
             if (charts.bollinger) charts.bollinger.destroy();
 
             const dates = data.map(d => d.date);
@@ -3754,7 +3101,10 @@
         }
 
         function drawSupportResistanceChart(data) {
-            const ctx = document.getElementById('supportResistanceChart').getContext('2d');
+            const container = document.getElementById('supportResistanceChart');
+            container.innerHTML = '<canvas id="supportResistanceCanvas"></canvas>';
+            
+            const ctx = document.getElementById('supportResistanceCanvas').getContext('2d');
             if (charts.supportResistance) charts.supportResistance.destroy();
 
             // 计算支撑压力位
@@ -4212,468 +3562,6 @@
                 }
             };
         }
-
-        // ========== 高级功能：多股对比 ==========
-        async function compareStocks() {
-            const symbols = [
-                document.getElementById('compareStock1').value.trim(),
-                document.getElementById('compareStock2').value.trim(),
-                document.getElementById('compareStock3').value.trim(),
-                document.getElementById('compareStock4').value.trim()
-            ].filter(s => s);
-
-            if (symbols.length < 2) {
-                showError('请至少输入2只股票进行对比');
-                return;
-            }
-
-            document.getElementById('loading').classList.add('active');
-            compareData = {};
-
-            try {
-                // 并行获取所有股票数据
-                const promises = symbols.map(symbol => 
-                    fetchFromYahoo(symbol, '3mo', '1d').then(data => {
-                        compareData[symbol] = data;
-                        return { symbol, data };
-                    }).catch(err => {
-                        console.warn(`${symbol} 获取失败:`, err);
-                        return null;
-                    })
-                );
-
-                await Promise.all(promises);
-
-                // 显示对比结果
-                displayCompareResults(symbols);
-            } catch (error) {
-                showError('对比分析失败: ' + error.message);
-            } finally {
-                document.getElementById('loading').classList.remove('active');
-            }
-        }
-
-        function displayCompareResults(symbols) {
-            const validSymbols = symbols.filter(s => compareData[s] && compareData[s].length > 0);
-
-            if (validSymbols.length === 0) {
-                document.getElementById('compareResults').innerHTML = '<div class="info-box"><p>没有获取到有效数据</p></div>';
-                return;
-            }
-
-            let html = '';
-
-            // 价格走势对比
-            html += '<div class="card"><h2>📈 价格走势对比（归一化）</h2>';
-            html += '<div class="chart-container"><canvas id="compareChart"></canvas></div></div>';
-
-            // 涨跌幅对比
-            const stats = validSymbols.map(symbol => {
-                const data = compareData[symbol];
-                const first = data[0].close;
-                const last = data[data.length - 1].close;
-                const change = ((last - first) / first * 100).toFixed(2);
-                const volume = data.reduce((sum, d) => sum + d.volume, 0) / data.length;
-
-                return { symbol, change, volume, latest: last };
-            });
-
-            html += '<div class="card"><h2>📊 核心数据对比</h2><table class="financial-table"><thead><tr>';
-            html += '<th>股票代码</th><th>最新价</th><th>涨跌幅</th><th>平均成交量</th></tr></thead><tbody>';
-
-            stats.forEach(s => {
-                const color = s.change >= 0 ? '#22c55e' : '#ef4444';
-                html += `<tr>
-                    <td><strong>${s.symbol}</strong></td>
-                    <td>¥${s.latest.toFixed(2)}</td>
-                    <td style="color: ${color}; font-weight: bold;">${s.change >= 0 ? '+' : ''}${s.change}%</td>
-                    <td>${(s.volume / 1000000).toFixed(2)}M</td>
-                </tr>`;
-            });
-
-            html += '</tbody></table></div>';
-
-            document.getElementById('compareResults').innerHTML = html;
-
-            // 绘制对比图表
-            const ctx = document.getElementById('compareChart').getContext('2d');
-            if (charts.compare) charts.compare.destroy();
-
-            const colors = ['#4facfe', '#22c55e', '#f59e0b', '#ef4444'];
-            const datasets = validSymbols.map((symbol, i) => {
-                const data = compareData[symbol];
-                const normalized = data.map((d, idx) => (d.close / data[0].close - 1) * 100);
-                return {
-                    label: symbol,
-                    data: normalized,
-                    borderColor: colors[i],
-                    borderWidth: 2.5,
-                    fill: false,
-                    pointRadius: 0
-                };
-            });
-
-            charts.compare = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: compareData[validSymbols[0]].map(d => d.date),
-                    datasets: datasets
-                },
-                options: {
-                    ...getChartOptions(),
-                    plugins: {
-                        ...getChartOptions().plugins,
-                        title: {
-                            display: true,
-                            text: '相对涨跌幅对比（%）',
-                            color: '#aaa'
-                        }
-                    }
-                }
-            });
-        }
-
-        // ========== 高级功能：策略回测 ==========
-        function runBacktest() {
-            if (!stockData || stockData.length < 30) {
-                showError('请先获取股票数据（至少30天）');
-                return;
-            }
-
-            const initialCapital = parseFloat(document.getElementById('initialCapital').value);
-            const buyRSI = parseFloat(document.getElementById('buySignal').value);
-            const sellRSI = parseFloat(document.getElementById('sellSignal').value);
-            const commissionRate = parseFloat(document.getElementById('commission').value) / 100;
-
-            // 计算RSI
-            const indicators = calculateAllIndicators(stockData);
-            const rsi = indicators.rsi;
-
-            // 回测逻辑
-            let capital = initialCapital;
-            let shares = 0;
-            let trades = [];
-            let equity = [initialCapital];
-
-            stockData.forEach((d, i) => {
-                if (i < 14 || !rsi[i]) {
-                    equity.push(shares > 0 ? shares * d.close + capital : capital);
-                    return;
-                }
-
-                // 买入信号
-                if (shares === 0 && rsi[i] < buyRSI && rsi[i - 1] >= buyRSI) {
-                    const buyPrice = d.close;
-                    const cost = capital * 0.95; // 使用95%资金
-                    shares = Math.floor(cost / buyPrice / (1 + commissionRate));
-                    const totalCost = shares * buyPrice * (1 + commissionRate);
-                    capital -= totalCost;
-                    trades.push({
-                        date: d.date,
-                        type: 'buy',
-                        price: buyPrice,
-                        shares: shares,
-                        capital: capital
-                    });
-                }
-                // 卖出信号
-                else if (shares > 0 && rsi[i] > sellRSI && rsi[i - 1] <= sellRSI) {
-                    const sellPrice = d.close;
-                    const proceeds = shares * sellPrice * (1 - commissionRate);
-                    capital += proceeds;
-                    trades.push({
-                        date: d.date,
-                        type: 'sell',
-                        price: sellPrice,
-                        shares: shares,
-                        capital: capital
-                    });
-                    shares = 0;
-                }
-
-                equity.push(shares > 0 ? shares * d.close + capital : capital);
-            });
-
-            // 如果最后还持有，按最后价格计算
-            if (shares > 0) {
-                const lastPrice = stockData[stockData.length - 1].close;
-                capital += shares * lastPrice * (1 - commissionRate);
-            }
-
-            // 计算回测指标
-            const finalCapital = capital;
-            const totalReturn = ((finalCapital - initialCapital) / initialCapital * 100).toFixed(2);
-            const buyAndHoldReturn = ((stockData[stockData.length - 1].close - stockData[0].close) / stockData[0].close * 100).toFixed(2);
-            const winTrades = trades.filter((t, i, arr) => {
-                if (t.type === 'sell' && i > 0) {
-                    const buyTrade = arr[i - 1];
-                    return t.price > buyTrade.price;
-                }
-                return false;
-            }).length;
-            const totalTrades = trades.filter(t => t.type === 'sell').length;
-            const winRate = totalTrades > 0 ? (winTrades / totalTrades * 100).toFixed(2) : 0;
-
-            // 显示回测结果
-            let html = `
-                <div class="stats-grid" style="margin-bottom: 20px;">
-                    <div class="stat-card ${totalReturn >= 0 ? 'bullish' : 'bearish'}">
-                        <div class="stat-label">策略收益率</div>
-                        <div class="stat-value">${totalReturn >= 0 ? '+' : ''}${totalReturn}%</div>
-                        <div class="stat-change">最终资金: ¥${finalCapital.toFixed(2)}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">买入持有收益</div>
-                        <div class="stat-value">${buyAndHoldReturn >= 0 ? '+' : ''}${buyAndHoldReturn}%</div>
-                        <div class="stat-change">对比基准</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">交易次数</div>
-                        <div class="stat-value">${totalTrades}</div>
-                        <div class="stat-change">买卖对: ${totalTrades}</div>
-                    </div>
-                    <div class="stat-card ${winRate >= 50 ? 'bullish' : 'bearish'}">
-                        <div class="stat-label">胜率</div>
-                        <div class="stat-value">${winRate}%</div>
-                        <div class="stat-change">赢/总: ${winTrades}/${totalTrades}</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>📈 资金曲线</h2>
-                    <div class="chart-container"><canvas id="equityChart"></canvas></div>
-                </div>
-
-                <div class="card">
-                    <h2>📋 交易记录</h2>
-                    <table class="financial-table">
-                        <thead><tr><th>日期</th><th>操作</th><th>价格</th><th>数量</th><th>资金余额</th></tr></thead>
-                        <tbody>
-            `;
-
-            trades.forEach(t => {
-                const typeText = t.type === 'buy' ? '<span style="color: #22c55e;">买入</span>' : '<span style="color: #ef4444;">卖出</span>';
-                html += `<tr>
-                    <td>${t.date}</td>
-                    <td>${typeText}</td>
-                    <td>¥${t.price.toFixed(2)}</td>
-                    <td>${t.shares}</td>
-                    <td>¥${t.capital.toFixed(2)}</td>
-                </tr>`;
-            });
-
-            html += '</tbody></table></div>';
-
-            document.getElementById('backtestResults').innerHTML = html;
-
-            // 绘制资金曲线
-            const ctx = document.getElementById('equityChart').getContext('2d');
-            if (charts.equity) charts.equity.destroy();
-
-            charts.equity = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: stockData.map(d => d.date),
-                    datasets: [{
-                        label: '策略资金',
-                        data: equity,
-                        borderColor: '#22c55e',
-                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                        borderWidth: 2.5,
-                        fill: true,
-                        pointRadius: 0
-                    }]
-                },
-                options: getChartOptions()
-            });
-        }
-
-        // ========== 高级功能：智能选股 ==========
-        async function screenStocks() {
-            const maxPE = parseFloat(document.getElementById('maxPE').value);
-            const minROE = parseFloat(document.getElementById('minROE').value);
-            const maxRSI = parseFloat(document.getElementById('maxRSI').value);
-            const minRSI = parseFloat(document.getElementById('minRSI').value);
-
-            document.getElementById('loading').classList.add('active');
-            document.getElementById('screenerResults').innerHTML = '<div class="info-box"><p>正在筛选股票池...</p></div>';
-
-            try {
-                const results = [];
-
-                // 从股票列表中筛选
-                for (let stock of stockList.slice(0, 20)) { // 限制前20只避免太慢
-                    try {
-                        const data = await fetchFromYahoo(stock.code, '1mo', '1d');
-                        const indicators = calculateAllIndicators(data);
-                        const currentRSI = indicators.rsi[indicators.rsi.length - 1];
-
-                        // 获取基本面（简化版）
-                        const符合RSI = (!minRSI || currentRSI >= minRSI) && (!maxRSI || currentRSI <= maxRSI);
-
-                        if (符合RSI) {
-                            results.push({
-                                symbol: stock.code,
-                                name: stock.name,
-                                price: data[data.length - 1].close,
-                                rsi: currentRSI,
-                                change: ((data[data.length - 1].close - data[data.length - 2].close) / data[data.length - 2].close * 100).toFixed(2)
-                            });
-                        }
-                    } catch (err) {
-                        console.warn(`${stock.code} 筛选失败`);
-                    }
-                }
-
-                // 显示结果
-                if (results.length === 0) {
-                    document.getElementById('screenerResults').innerHTML = '<div class="info-box"><p>没有找到符合条件的股票</p></div>';
-                } else {
-                    let html = `<div class="card"><h2>✅ 筛选结果（${results.length}只）</h2>`;
-                    html += '<table class="financial-table"><thead><tr><th>股票</th><th>代码</th><th>最新价</th><th>涨跌幅</th><th>RSI</th><th>操作</th></tr></thead><tbody>';
-
-                    results.forEach(r => {
-                        const color = r.change >= 0 ? '#22c55e' : '#ef4444';
-                        html += `<tr>
-                            <td><strong>${r.name}</strong></td>
-                            <td>${r.symbol}</td>
-                            <td>¥${r.price.toFixed(2)}</td>
-                            <td style="color: ${color};">${r.change >= 0 ? '+' : ''}${r.change}%</td>
-                            <td>${r.rsi.toFixed(2)}</td>
-                            <td><button onclick="document.getElementById('stockCode').value='${r.symbol}';fetchStockData();" style="padding: 6px 12px; font-size: 12px;">查看</button></td>
-                        </tr>`;
-                    });
-
-                    html += '</tbody></table></div>';
-                    document.getElementById('screenerResults').innerHTML = html;
-                }
-            } catch (error) {
-                showError('筛选失败: ' + error.message);
-            } finally {
-                document.getElementById('loading').classList.remove('active');
-            }
-        }
-
-        // ========== 高级功能：投资组合管理 ==========
-        function addToPortfolio() {
-            const symbol = document.getElementById('portfolioSymbol').value.trim();
-            const shares = parseFloat(document.getElementById('portfolioShares').value);
-            const cost = parseFloat(document.getElementById('portfolioCost').value);
-
-            if (!symbol || !shares || !cost) {
-                showError('请填写完整信息');
-                return;
-            }
-
-            portfolio.push({
-                symbol,
-                shares,
-                cost,
-                addDate: new Date().toLocaleDateString('zh-CN')
-            });
-
-            document.getElementById('portfolioSymbol').value = '';
-            document.getElementById('portfolioShares').value = '';
-            document.getElementById('portfolioCost').value = '';
-
-            updatePortfolio();
-        }
-
-        async function updatePortfolio() {
-            if (portfolio.length === 0) {
-                document.getElementById('portfolioList').innerHTML = '<div class="info-box"><p>暂无持仓，请添加</p></div>';
-                document.getElementById('portfolioSummary').innerHTML = '';
-                return;
-            }
-
-            document.getElementById('loading').classList.add('active');
-
-            try {
-                // 获取所有持仓的当前价格
-                const promises = portfolio.map(p => 
-                    fetchFromYahoo(p.symbol, '1d', '1d').then(data => {
-                        const currentPrice = data[data.length - 1].close;
-                        return {
-                            ...p,
-                            currentPrice,
-                            marketValue: currentPrice * p.shares,
-                            cost: p.cost * p.shares,
-                            profit: (currentPrice - p.cost) * p.shares,
-                            profitPercent: ((currentPrice - p.cost) / p.cost * 100).toFixed(2)
-                        };
-                    }).catch(() => ({ ...p, currentPrice: p.cost, marketValue: p.cost * p.shares, costValue: p.cost * p.shares, profit: 0, profitPercent: 0 }))
-                );
-
-                const positions = await Promise.all(promises);
-
-                // 计算总计
-                const totalCost = positions.reduce((sum, p) => sum + p.cost, 0);
-                const totalMarketValue = positions.reduce((sum, p) => sum + p.marketValue, 0);
-                const totalProfit = totalMarketValue - totalCost;
-                const totalReturn = ((totalProfit / totalCost) * 100).toFixed(2);
-
-                // 显示汇总
-                let summaryHTML = `
-                    <div class="stats-grid" style="margin-bottom: 20px;">
-                        <div class="stat-card">
-                            <div class="stat-label">总成本</div>
-                            <div class="stat-value">¥${totalCost.toFixed(2)}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">总市值</div>
-                            <div class="stat-value">¥${totalMarketValue.toFixed(2)}</div>
-                        </div>
-                        <div class="stat-card ${totalProfit >= 0 ? 'bullish' : 'bearish'}">
-                            <div class="stat-label">总盈亏</div>
-                            <div class="stat-value">${totalProfit >= 0 ? '+' : ''}¥${totalProfit.toFixed(2)}</div>
-                        </div>
-                        <div class="stat-card ${totalReturn >= 0 ? 'bullish' : 'bearish'}">
-                            <div class="stat-label">收益率</div>
-                            <div class="stat-value">${totalReturn >= 0 ? '+' : ''}${totalReturn}%</div>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('portfolioSummary').innerHTML = summaryHTML;
-
-                // 显示持仓明细
-                let listHTML = '<div class="card"><h2>📋 持仓明细</h2><table class="financial-table"><thead><tr>';
-                listHTML += '<th>股票代码</th><th>持仓数量</th><th>成本价</th><th>现价</th><th>市值</th><th>盈亏</th><th>收益率</th><th>操作</th></tr></thead><tbody>';
-
-                positions.forEach((p, i) => {
-                    const color = p.profit >= 0 ? '#22c55e' : '#ef4444';
-                    listHTML += `<tr>
-                        <td><strong>${p.symbol}</strong></td>
-                        <td>${p.shares}</td>
-                        <td>¥${p.cost.toFixed(2)}</td>
-                        <td>¥${p.currentPrice.toFixed(2)}</td>
-                        <td>¥${p.marketValue.toFixed(2)}</td>
-                        <td style="color: ${color};">${p.profit >= 0 ? '+' : ''}¥${p.profit.toFixed(2)}</td>
-                        <td style="color: ${color}; font-weight: bold;">${p.profitPercent >= 0 ? '+' : ''}${p.profitPercent}%</td>
-                        <td><button onclick="removeFromPortfolio(${i})" style="padding: 6px 12px; font-size: 12px; background: #ef4444;">删除</button></td>
-                    </tr>`;
-                });
-
-                listHTML += '</tbody></table></div>';
-                document.getElementById('portfolioList').innerHTML = listHTML;
-
-            } catch (error) {
-                showError('组合更新失败: ' + error.message);
-            } finally {
-                document.getElementById('loading').classList.remove('active');
-            }
-        }
-
-        function removeFromPortfolio(index) {
-            portfolio.splice(index, 1);
-            updatePortfolio();
-        }
-
-        // 初始化组合
-        window.addEventListener('load', () => {
-            if (portfolio.length > 0) {
-                updatePortfolio();
-            }
-        });
     </script>
 </body>
 </html>
