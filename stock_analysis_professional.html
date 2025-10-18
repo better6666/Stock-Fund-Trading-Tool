@@ -692,6 +692,9 @@
                     <button class="download-btn" onclick="downloadReport()">📄 生成分析报告(TXT)</button>
                     <button class="download-btn" onclick="downloadAllCharts()" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">🖼️ 下载所有图表(PNG)</button>
                 </div>
+                <div style="margin-top: 10px; padding: 10px; background: rgba(139, 92, 246, 0.1); border-radius: 8px; font-size: 12px; color: #8b5cf6;">
+                    💡 <strong>下载提示：</strong>如果图表下载失败，请先切换到"技术指标"和"量价分析"标签页，确保图表已完全加载后再下载。
+                </div>
             </div>
 
             <!-- 基本信息 -->
@@ -1428,22 +1431,29 @@
         }
         
         // 下载所有图表（PNG格式）
-        function downloadAllCharts() {
+        async function downloadAllCharts() {
             console.log('downloadAllCharts 被调用');
             if (!stockData || !currentIndicators) {
                 alert('❌ 请先选择股票/基金并获取数据后再下载图表！');
                 return;
             }
             
-            // 获取所有Chart.js图表并下载
-            const chartIds = [
+            // 技术指标标签页的图表
+            const technicalCharts = [
                 'macdChart', 'kdjChart', 'rsiChart', 'wrChart', 'cciChart', 
                 'dmiChart', 'sarChart', 'trixChart', 'atrChart', 'stochChart',
-                'momChart', 'mfiChart', 'ichimokuChart', 'volumeChart', 'obvChart',
-                'volumeRatioChart', 'vrChart', 'brarChart', 'crChart', 'adlChart',
+                'momChart', 'mfiChart', 'ichimokuChart',
                 'rocChart', 'biasChart', 'psyChart', 'emvChart', 'aroonChart',
                 'dmaChart', 'expmaChart'
             ];
+            
+            // 量价分析标签页的图表
+            const volumeCharts = [
+                'volumeChart', 'obvChart', 'volumeRatioChart', 'vrChart', 
+                'brarChart', 'crChart', 'adlChart'
+            ];
+            
+            const chartIds = [...technicalCharts, ...volumeCharts];
             
             const chartNames = {
                 'macdChart': 'MACD指标',
@@ -1475,40 +1485,83 @@
                 'expmaChart': 'EXPMA指数均线'
             };
             
-            let downloadCount = 0;
+            alert('📥 开始自动下载图表...\n\n系统将自动切换标签页并下载所有图表，请稍候片刻。');
             
-            chartIds.forEach((chartId, index) => {
-                const canvas = document.getElementById(chartId);
-                if (canvas && charts[chartId.replace('Chart', '')]) {
-                    // 延迟下载以避免浏览器阻止多个下载
+            let downloadCount = 0;
+            const totalCharts = chartIds.length;
+            
+            // 下载指定图表的辅助函数
+            const downloadChart = (chartId) => {
+                return new Promise((resolve) => {
                     setTimeout(() => {
                         try {
-                            const url = canvas.toDataURL('image/png');
-                            const link = document.createElement('a');
-                            link.href = url;
-                            link.download = `${currentSymbol}_${chartNames[chartId]}.png`;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            downloadCount++;
+                            const canvas = document.getElementById(chartId);
+                            const chartKey = chartId.replace('Chart', '');
                             
-                            if (downloadCount === 1) {
-                                console.log(`✅ 开始下载图表，共 ${chartIds.filter(id => document.getElementById(id) && charts[id.replace('Chart', '')]).length} 张`);
+                            if (canvas && canvas.width > 0 && canvas.height > 0) {
+                                const url = canvas.toDataURL('image/png', 1.0);
+                                
+                                if (url && url.length > 100) {
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.download = `${currentSymbol}_${chartNames[chartId]}.png`;
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    downloadCount++;
+                                    console.log(`✅ 已下载: ${chartNames[chartId]} (${downloadCount}/${totalCharts})`);
+                                    resolve(true);
+                                } else {
+                                    console.warn(`⚠️ 跳过: ${chartNames[chartId]} (未渲染)`);
+                                    resolve(false);
+                                }
+                            } else {
+                                console.warn(`⚠️ 跳过: ${chartNames[chartId]} (Canvas无效)`);
+                                resolve(false);
                             }
                         } catch (error) {
-                            console.error(`下载 ${chartNames[chartId]} 失败:`, error);
+                            console.error(`❌ 下载失败: ${chartNames[chartId]}`, error);
+                            resolve(false);
                         }
-                    }, index * 300); // 每个图表间隔300ms下载
-                }
-            });
+                    }, 300);
+                });
+            };
             
-            if (downloadCount === 0) {
+            // 分步下载流程
+            (async () => {
+                // 步骤1: 切换到技术指标页并下载
+                console.log('📊 步骤1: 下载技术指标图表...');
+                const techTab = Array.from(document.querySelectorAll('.tab')).find(t => t.textContent.includes('技术指标'));
+                if (techTab) {
+                    techTab.click();
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    
+                    for (const chartId of technicalCharts) {
+                        await downloadChart(chartId);
+                    }
+                }
+                
+                // 步骤2: 切换到量价分析页并下载
+                console.log('📊 步骤2: 下载量价分析图表...');
+                const volumeTab = Array.from(document.querySelectorAll('.tab')).find(t => t.textContent.includes('量价分析'));
+                if (volumeTab) {
+                    volumeTab.click();
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    
+                    for (const chartId of volumeCharts) {
+                        await downloadChart(chartId);
+                    }
+                }
+                
+                // 完成提示
                 setTimeout(() => {
-                    if (downloadCount === 0) {
-                        alert('没有可下载的图表，请确保已加载数据');
+                    if (downloadCount > 0) {
+                        alert(`✅ 下载完成！\n\n成功下载 ${downloadCount} 张图表。`);
+                    } else {
+                        alert('❌ 未能下载图表\n\n请确保已加载股票数据，并且图表已正常显示。');
                     }
                 }, 500);
-            }
+            })();
         }
         
         // 通用下载函数
