@@ -20,6 +20,7 @@
         .container {
             max-width: 1800px;
             margin: 0 auto;
+            padding: 0 20px;
         }
         .header {
             background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
@@ -152,10 +153,10 @@
         }
         .card {
             background: #1a1f3a;
-            padding: 20px;
+            padding: 25px;
             border-radius: 12px;
             border: 1px solid #2d3561;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         .card h2 {
             font-size: 20px;
@@ -168,19 +169,34 @@
         .chart-container {
             background: #0f1429;
             border-radius: 8px;
-            padding: 15px;
-            height: 700px;
+            padding: 20px;
+            height: 600px;
+            min-height: 500px;
         }
         .chart-container.small {
-            height: 550px;
+            height: 450px;
         }
         .chart-container.large {
-            height: 850px;
+            height: 700px;
         }
         .chart-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
-            gap: 20px;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        
+        /* 中等屏幕 - 显示1列 */
+        @media (min-width: 1200px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 大屏幕 - 可以显示2列 */
+        @media (min-width: 1600px) {
+            .chart-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         .signals {
             display: flex;
@@ -558,10 +574,42 @@
             }
         }
         
-        /* 超大屏幕优化 */
+        /* 大屏幕优化 1440px+ */
+        @media (min-width: 1440px) {
+            .container {
+                max-width: 1800px;
+            }
+            .chart-container {
+                height: 650px;
+            }
+            .chart-container.small {
+                height: 500px;
+            }
+            .chart-container.large {
+                height: 750px;
+            }
+        }
+        
+        /* 超大屏幕优化 1920px+ */
         @media (min-width: 1920px) {
             .container {
-                max-width: 2400px;
+                max-width: 2200px;
+            }
+            .chart-container {
+                height: 700px;
+            }
+            .chart-container.small {
+                height: 550px;
+            }
+            .chart-container.large {
+                height: 850px;
+            }
+        }
+        
+        /* 4K超高清屏幕 2560px+ */
+        @media (min-width: 2560px) {
+            .container {
+                max-width: 2800px;
             }
             .chart-container {
                 height: 800px;
@@ -570,7 +618,7 @@
                 height: 650px;
             }
             .chart-container.large {
-                height: 1000px;
+                height: 950px;
             }
         }
     </style>
@@ -2970,8 +3018,12 @@
             const latest = data[data.length - 1];
             const previous = data[data.length - 2];
             const changePercent = ((latest.close - previous.close) / previous.close * 100);
+            // 振幅 = (最高价 - 最低价) / 昨收价 × 100%
             const amplitude = ((latest.high - latest.low) / previous.close * 100);
+            // 成交量转换为百万单位
             const turnover = (latest.volume / 1000000).toFixed(2);
+            // 涨跌额
+            const changeAmount = latest.close - previous.close;
             
             // 根据颜色方案确定颜色
             const isUp = changePercent > 0;
@@ -2982,7 +3034,7 @@
                 <div class="stat-card ${cardClass}" style="background: ${cardStyle};">
                     <div class="stat-label">最新价</div>
                     <div class="stat-value">¥${latest.close.toFixed(2)}</div>
-                    <div class="stat-change">${changePercent > 0 ? '↑' : '↓'} ${Math.abs(changePercent).toFixed(2)}%</div>
+                    <div class="stat-change">${changePercent > 0 ? '↑' : '↓'} ${Math.abs(changePercent).toFixed(2)}% (${changeAmount >= 0 ? '+' : ''}${changeAmount.toFixed(2)})</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">今开</div>
@@ -2990,9 +3042,14 @@
                     <div class="stat-change">最高 ¥${latest.high.toFixed(2)}</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">最低</div>
-                    <div class="stat-value">¥${latest.low.toFixed(2)}</div>
-                    <div class="stat-change">振幅 ${amplitude.toFixed(2)}%</div>
+                    <div class="stat-label">昨收</div>
+                    <div class="stat-value">¥${previous.close.toFixed(2)}</div>
+                    <div class="stat-change">最低 ¥${latest.low.toFixed(2)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">振幅</div>
+                    <div class="stat-value">${amplitude.toFixed(2)}%</div>
+                    <div class="stat-change">高低差 ¥${(latest.high - latest.low).toFixed(2)}</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">成交量</div>
@@ -3008,6 +3065,11 @@
                     <div class="stat-label">MA20</div>
                     <div class="stat-value">¥${indicators.ma20[indicators.ma20.length - 1]?.toFixed(2) || '-'}</div>
                     <div class="stat-change">20日均线</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">MA60</div>
+                    <div class="stat-value">¥${indicators.ma60[indicators.ma60.length - 1]?.toFixed(2) || '-'}</div>
+                    <div class="stat-change">60日均线</div>
                 </div>
             `;
             
@@ -4299,24 +4361,59 @@
         }
 
         // 通用图表配置
-        function getChartOptions() {
+        function getChartOptions(yAxisConfig = {}) {
             return {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
                 plugins: {
                     legend: {
                         display: true,
-                        labels: { color: '#aaa', font: { size: 11 } }
+                        labels: { 
+                            color: '#aaa', 
+                            font: { size: 12 },
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { size: 13 },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        displayColors: true
                     }
                 },
                 scales: {
                     x: {
-                        grid: { color: '#2d3561' },
-                        ticks: { color: '#aaa', maxTicksLimit: 12, font: { size: 10 } }
+                        grid: { 
+                            color: '#2d3561',
+                            drawBorder: false
+                        },
+                        ticks: { 
+                            color: '#aaa', 
+                            maxTicksLimit: 15, 
+                            font: { size: 11 },
+                            maxRotation: 45,
+                            minRotation: 0
+                        }
                     },
                     y: {
-                        grid: { color: '#2d3561' },
-                        ticks: { color: '#aaa', font: { size: 10 } }
+                        grid: { 
+                            color: '#2d3561',
+                            drawBorder: false
+                        },
+                        ticks: { 
+                            color: '#aaa', 
+                            font: { size: 11 },
+                            precision: 2,
+                            callback: function(value) {
+                                return value.toFixed(2);
+                            }
+                        },
+                        ...yAxisConfig
                     }
                 }
             };
