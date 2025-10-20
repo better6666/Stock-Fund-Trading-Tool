@@ -3378,24 +3378,38 @@
                 bollingerText = '<span class="neutral-text">中轨下方</span>';
             }
 
-            // 🔥 超严格的多维度信号验证系统（8个维度全方位检测）
+            // 🔥 超强多维度智能预测系统（15个维度深度分析）
             const adx = indicators.dmi.adx;
             const pdi = indicators.dmi.pdi;
             const mdi = indicators.dmi.mdi;
             const obv = indicators.obv;
             const atr = indicators.atr;
+            const wr = indicators.wr;
+            const cci = indicators.cci;
+            const mfi = indicators.mfi;
+            const roc = indicators.roc;
+            const stoch = indicators.stoch;
             
             let strictText = '';
             let bullScore = 0;
             let bearScore = 0;
-            const total = 8;
+            const total = 15;
             const details = [];
+            const reasons = { bull: [], bear: [] };
             
             // ========== 维度1：均线系统（必须多头/空头排列）==========
             const bullMA = ma5 > ma20 && ma20 > ma60 && latest.close > ma5;
             const bearMA = ma5 < ma20 && ma20 < ma60 && latest.close < ma5;
-            if (bullMA) { bullScore++; details.push('✓均线多头'); }
-            if (bearMA) { bearScore++; details.push('✓均线空头'); }
+            if (bullMA) { 
+                bullScore++; 
+                details.push('✓均线多头'); 
+                reasons.bull.push(`均线完美多头排列（MA5>${ma5.toFixed(2)} > MA20>${ma20.toFixed(2)} > MA60>${ma60.toFixed(2)}）`);
+            }
+            if (bearMA) { 
+                bearScore++; 
+                details.push('✓均线空头'); 
+                reasons.bear.push(`均线完美空头排列（MA5<${ma5.toFixed(2)} < MA20<${ma20.toFixed(2)} < MA60<${ma60.toFixed(2)}）`);
+            }
             
             // ========== 维度2：MACD完整验证（DIF/DEA位置+方向+柱体）==========
             const difCurr = dif[n - 1], deaCurr = dea[n - 1];
@@ -3406,8 +3420,16 @@
             // 空头：DIF和DEA都在零轴下方，DIF<DEA，且柱体放大
             const macdBear = difCurr < 0 && deaCurr < 0 && difCurr < deaCurr && 
                             safe(hist[n - 1]) && safe(hist[n - 2]) && hist[n - 1] < hist[n - 2] && hist[n - 1] < 0;
-            if (macdBull) { bullScore++; details.push('✓MACD多头'); }
-            if (macdBear) { bearScore++; details.push('✓MACD空头'); }
+            if (macdBull) { 
+                bullScore++; 
+                details.push('✓MACD多头'); 
+                reasons.bull.push('MACD零轴上方多头排列且柱体放大');
+            }
+            if (macdBear) { 
+                bearScore++; 
+                details.push('✓MACD空头'); 
+                reasons.bear.push('MACD零轴下方空头排列且柱体放大');
+            }
             
             // ========== 维度3：RSI强度与方向（连续2期同向）==========
             const rsiPrev = indicators.rsi[n - 2];
@@ -3418,8 +3440,16 @@
             // 空头：RSI在30-50弱势区间，且连续下行
             const rsiBear = currentRSI < 50 && currentRSI > 30 && 
                            currentRSI < rsiPrev && rsiPrev < rsiPrev2;
-            if (rsiBull) { bullScore++; details.push('✓RSI强势'); }
-            if (rsiBear) { bearScore++; details.push('✓RSI弱势'); }
+            if (rsiBull) { 
+                bullScore++; 
+                details.push('✓RSI强势'); 
+                reasons.bull.push(`RSI强势区${currentRSI.toFixed(1)}且连续上行`);
+            }
+            if (rsiBear) { 
+                bearScore++; 
+                details.push('✓RSI弱势'); 
+                reasons.bear.push(`RSI弱势区${currentRSI.toFixed(1)}且连续下行`);
+            }
             
             // ========== 维度4：DMI趋势强度（ADX≥25，PDI/MDI差距≥5）==========
             const adxCurr = adx[adx.length - 1];
@@ -3427,16 +3457,32 @@
             const mdiCurr = mdi[mdi.length - 1];
             const dmiBull = pdiCurr > mdiCurr && (pdiCurr - mdiCurr) >= 5 && adxCurr >= 25;
             const dmiBear = pdiCurr < mdiCurr && (mdiCurr - pdiCurr) >= 5 && adxCurr >= 25;
-            if (dmiBull) { bullScore++; details.push('✓DMI强势'); }
-            if (dmiBear) { bearScore++; details.push('✓DMI弱势'); }
+            if (dmiBull) { 
+                bullScore++; 
+                details.push('✓DMI强势'); 
+                reasons.bull.push(`DMI确认上涨趋势（ADX=${adxCurr.toFixed(0)}, PDI-MDI=${(pdiCurr-mdiCurr).toFixed(0)}）`);
+            }
+            if (dmiBear) { 
+                bearScore++; 
+                details.push('✓DMI弱势'); 
+                reasons.bear.push(`DMI确认下跌趋势（ADX=${adxCurr.toFixed(0)}, MDI-PDI=${(mdiCurr-pdiCurr).toFixed(0)}）`);
+            }
             
             // ========== 维度5：KDJ位置与交叉（低位金叉/高位死叉）==========
             const kPrev = indicators.kdj.k[n - 2];
             const dPrev = indicators.kdj.d[n - 2];
             const kdjBull = currentK < 80 && currentK > currentD && kPrev <= dPrev && currentK > 20;
             const kdjBear = currentK > 20 && currentK < currentD && kPrev >= dPrev && currentK < 80;
-            if (kdjBull) { bullScore++; details.push('✓KDJ金叉'); }
-            if (kdjBear) { bearScore++; details.push('✓KDJ死叉'); }
+            if (kdjBull) { 
+                bullScore++; 
+                details.push('✓KDJ金叉'); 
+                reasons.bull.push(`KDJ金叉（K=${currentK.toFixed(0)}, D=${currentD.toFixed(0)}）`);
+            }
+            if (kdjBear) { 
+                bearScore++; 
+                details.push('✓KDJ死叉'); 
+                reasons.bear.push(`KDJ死叉（K=${currentK.toFixed(0)}, D=${currentD.toFixed(0)}）`);
+            }
             
             // ========== 维度6：布林带位置（突破中轨且未触及极值）==========
             const bbWidth = (upperBB - lowerBB) / middleBB * 100;
@@ -3444,8 +3490,16 @@
             const bbBull = latest.close > middleBB && latest.close < upperBB && bbWidth > 2 && bbWidth < 10;
             // 空头：在中轨下方但未触及下轨，且带宽适中
             const bbBear = latest.close < middleBB && latest.close > lowerBB && bbWidth > 2 && bbWidth < 10;
-            if (bbBull) { bullScore++; details.push('✓布林带多'); }
-            if (bbBear) { bearScore++; details.push('✓布林带空'); }
+            if (bbBull) { 
+                bullScore++; 
+                details.push('✓布林带多'); 
+                reasons.bull.push('价格在布林带中轨上方，波动率适中');
+            }
+            if (bbBear) { 
+                bearScore++; 
+                details.push('✓布林带空'); 
+                reasons.bear.push('价格在布林带中轨下方，波动率适中');
+            }
             
             // ========== 维度7：成交量确认（OBV方向与价格一致）==========
             const obvCurr = obv[obv.length - 1];
@@ -3457,8 +3511,16 @@
             const volumeBull = priceCurr > pricePrev && obvCurr > obvPrev && obvPrev > obvPrev2;
             // 空头：价格下跌且OBV连续下降
             const volumeBear = priceCurr < pricePrev && obvCurr < obvPrev && obvPrev < obvPrev2;
-            if (volumeBull) { bullScore++; details.push('✓量能配合'); }
-            if (volumeBear) { bearScore++; details.push('✓量能配合'); }
+            if (volumeBull) { 
+                bullScore++; 
+                details.push('✓量能配合'); 
+                reasons.bull.push('价涨量升，OBV连续上行');
+            }
+            if (volumeBear) { 
+                bearScore++; 
+                details.push('✓量能配合'); 
+                reasons.bear.push('价跌量增，OBV连续下行');
+            }
             
             // ========== 维度8：波动率过滤（ATR在合理范围，避免剧烈波动）==========
             const atrCurr = atr[atr.length - 1];
@@ -3466,31 +3528,146 @@
             // ATR在平均值的0.5-1.5倍范围内（避免过度波动或过度平静）
             const atrValid = atrCurr > atrAvg * 0.5 && atrCurr < atrAvg * 1.5;
             if (atrValid) { 
-                if (bullScore > bearScore) { bullScore++; details.push('✓波动率正常'); }
-                if (bearScore > bullScore) { bearScore++; details.push('✓波动率正常'); }
+                if (bullScore > bearScore) { bullScore++; details.push('✓波动率正常'); reasons.bull.push('波动适中'); }
+                if (bearScore > bullScore) { bearScore++; details.push('✓波动率正常'); reasons.bear.push('波动适中'); }
             }
             
-            // ========== 最终判定（需要≥7个维度同时满足）==========
-            const minRequired = 7; // 必须满足至少7个维度
+            // ========== 维度9：威廉指标（WR超卖超买）==========
+            const wrCurr = wr[wr.length - 1];
+            // WR在-20至-80之间较为可靠
+            const wrBull = wrCurr < -80 && wrCurr > wr[wr.length - 2]; // 超卖且回升
+            const wrBear = wrCurr > -20 && wrCurr < wr[wr.length - 2]; // 超买且回落
+            if (wrBull) { bullScore++; details.push('✓WR超卖回升'); reasons.bull.push(`WR ${wrCurr.toFixed(0)} 超卖反弹`); }
+            if (wrBear) { bearScore++; details.push('✓WR超买回落'); reasons.bear.push(`WR ${wrCurr.toFixed(0)} 超买回调`); }
+            
+            // ========== 维度10：CCI顺势指标（极值反转）==========
+            const cciCurr = cci[cci.length - 1];
+            const cciPrev = cci[cci.length - 2];
+            // CCI > +100超买，< -100超卖
+            const cciBull = cciCurr < -100 && cciCurr > cciPrev && cciPrev < -100;
+            const cciBear = cciCurr > 100 && cciCurr < cciPrev && cciPrev > 100;
+            if (cciBull) { bullScore++; details.push('✓CCI超卖回升'); reasons.bull.push(`CCI ${cciCurr.toFixed(0)} 底部反转`); }
+            if (cciBear) { bearScore++; details.push('✓CCI超买回落'); reasons.bear.push(`CCI ${cciCurr.toFixed(0)} 顶部反转`); }
+            
+            // ========== 维度11：MFI资金流量（量价背离）==========
+            const mfiCurr = mfi[mfi.length - 1];
+            const mfiPrev = mfi[mfi.length - 2];
+            // MFI类似RSI但考虑成交量，更可靠
+            const mfiBull = mfiCurr < 20 && mfiCurr > mfiPrev; // 超卖区回升
+            const mfiBear = mfiCurr > 80 && mfiCurr < mfiPrev; // 超买区回落
+            if (mfiBull) { bullScore++; details.push('✓MFI资金回流'); reasons.bull.push(`资金流入增强 MFI ${mfiCurr.toFixed(0)}`); }
+            if (mfiBear) { bearScore++; details.push('✓MFI资金流出'); reasons.bear.push(`资金流出加剧 MFI ${mfiCurr.toFixed(0)}`); }
+            
+            // ========== 维度12：ROC变动率（动量确认）==========
+            const rocCurr = roc[roc.length - 1];
+            const rocPrev = roc[roc.length - 2];
+            const rocPrev2 = roc[roc.length - 3];
+            // ROC连续上升/下降确认动量
+            const rocBull = rocCurr > 0 && rocCurr > rocPrev && rocPrev > rocPrev2;
+            const rocBear = rocCurr < 0 && rocCurr < rocPrev && rocPrev < rocPrev2;
+            if (rocBull) { bullScore++; details.push('✓ROC动量加速'); reasons.bull.push('上涨动量持续增强'); }
+            if (rocBear) { bearScore++; details.push('✓ROC动量减弱'); reasons.bear.push('下跌动量持续增强'); }
+            
+            // ========== 维度13：Stoch随机指标（双线交叉）==========
+            const stochK = stoch.k[stoch.k.length - 1];
+            const stochD = stoch.d[stoch.d.length - 1];
+            const stochKPrev = stoch.k[stoch.k.length - 2];
+            const stochDPrev = stoch.d[stoch.d.length - 2];
+            // K线上穿D线且在20以下=金叉买入，K线下穿D线且在80以上=死叉卖出
+            const stochBull = stochK > stochD && stochKPrev <= stochDPrev && stochK < 20;
+            const stochBear = stochK < stochD && stochKPrev >= stochDPrev && stochK > 80;
+            if (stochBull) { bullScore++; details.push('✓Stoch低位金叉'); reasons.bull.push('随机指标低位金叉'); }
+            if (stochBear) { bearScore++; details.push('✓Stoch高位死叉'); reasons.bear.push('随机指标高位死叉'); }
+            
+            // ========== 维度14：价格动量（连续上涨/下跌天数）==========
+            let consecutiveUp = 0;
+            let consecutiveDown = 0;
+            for (let i = data.length - 1; i > data.length - 6 && i > 0; i--) {
+                if (data[i].close > data[i - 1].close) consecutiveUp++;
+                else break;
+            }
+            for (let i = data.length - 1; i > data.length - 6 && i > 0; i--) {
+                if (data[i].close < data[i - 1].close) consecutiveDown++;
+                else break;
+            }
+            if (consecutiveUp >= 3) { bullScore++; details.push(`✓连涨${consecutiveUp}天`); reasons.bull.push(`连续上涨${consecutiveUp}天，动量强劲`); }
+            if (consecutiveDown >= 3) { bearScore++; details.push(`✓连跌${consecutiveDown}天`); reasons.bear.push(`连续下跌${consecutiveDown}天，弱势明显`); }
+            
+            // ========== 维度15：量价配合度（价涨量增/价跌量增）==========
+            const vol3DayAvg = (data[n - 1].volume + data[n - 2].volume + data[n - 3].volume) / 3;
+            const vol10DayAvg = data.slice(-10).reduce((sum, d) => sum + d.volume, 0) / 10;
+            const priceUp3Days = data[n - 1].close > data[n - 3].close;
+            const priceDown3Days = data[n - 1].close < data[n - 3].close;
+            const volumeExpand = vol3DayAvg > vol10DayAvg * 1.2;
+            
+            if (priceUp3Days && volumeExpand) { 
+                bullScore++; 
+                details.push('✓价涨量增'); 
+                reasons.bull.push('价格上涨且成交量放大，多头活跃');
+            }
+            if (priceDown3Days && volumeExpand) { 
+                bearScore++; 
+                details.push('✓价跌量增'); 
+                reasons.bear.push('价格下跌且成交量放大，空头活跃');
+            }
+            
+            // ========== 最终判定（需要≥10个维度同时满足）==========
+            const minRequired = 10; // 提高至10个维度，更严格
+            let recommendation = '';
+            let confidenceLevel = 0;
+            let actionText = '';
+            
             if (bullScore >= minRequired && bullScore > bearScore) {
                 strictText = `<span class="bullish-text">🔥 强烈做多 (${bullScore}/${total})</span>`;
                 details.unshift('🔥强烈做多信号');
+                confidenceLevel = Math.round((bullScore / total) * 100);
+                recommendation = `<strong style="color:#22c55e">📈 建议做多</strong><br/>
+                    信心度：${confidenceLevel}% | 满足 ${bullScore}/${total} 个条件<br/>
+                    <small style="color:#aaa">做多理由：${reasons.bull.slice(0, 3).join('；')}</small>`;
+                actionText = '建议适当做多，设置止损位';
             } else if (bearScore >= minRequired && bearScore > bullScore) {
                 strictText = `<span class="bearish-text">🔥 强烈做空 (${bearScore}/${total})</span>`;
                 details.unshift('🔥强烈做空信号');
-            } else if (bullScore >= 5) {
+                confidenceLevel = Math.round((bearScore / total) * 100);
+                recommendation = `<strong style="color:#ef4444">📉 建议做空</strong><br/>
+                    信心度：${confidenceLevel}% | 满足 ${bearScore}/${total} 个条件<br/>
+                    <small style="color:#aaa">做空理由：${reasons.bear.slice(0, 3).join('；')}</small>`;
+                actionText = '建议减仓或做空，控制风险';
+            } else if (bullScore >= 7 && bullScore > bearScore) {
                 strictText = `<span style="color:#fbbf24">⚠️ 偏多观望 (${bullScore}/${total})</span>`;
                 details.unshift('⚠️偏多但未达标');
-            } else if (bearScore >= 5) {
+                confidenceLevel = Math.round((bullScore / total) * 100);
+                recommendation = `<strong style="color:#fbbf24">🔍 偏多，谨慎观望</strong><br/>
+                    信心度：${confidenceLevel}% | 满足 ${bullScore}/${total} 个条件（需≥10）<br/>
+                    <small style="color:#aaa">建议：等待更多做多信号确认</small>`;
+                actionText = '偏多但未达标，建议观望等待确认';
+            } else if (bearScore >= 7 && bearScore > bullScore) {
                 strictText = `<span style="color:#fbbf24">⚠️ 偏空观望 (${bearScore}/${total})</span>`;
                 details.unshift('⚠️偏空但未达标');
+                confidenceLevel = Math.round((bearScore / total) * 100);
+                recommendation = `<strong style="color:#fbbf24">🔍 偏空，谨慎观望</strong><br/>
+                    信心度：${confidenceLevel}% | 满足 ${bearScore}/${total} 个条件（需≥10）<br/>
+                    <small style="color:#aaa">建议：考虑减仓或等待反弹</small>`;
+                actionText = '偏空但未达标，建议谨慎操作';
             } else {
                 strictText = `<span class="neutral-text">⛔ 严格观望 (多${bullScore}/空${bearScore})</span>`;
                 details.unshift('⛔信号混乱，严禁操作');
+                recommendation = `<strong style="color:#9ca3af">⛔ 信号混乱，严禁操作</strong><br/>
+                    多空分数：${bullScore} vs ${bearScore} （需单边≥10）<br/>
+                    <small style="color:#aaa">当前方向不明确，建议空仓观望，等待明确信号</small>`;
+                actionText = '多空信号混乱，强烈建议空仓观望';
             }
             
             // 将详细信息添加到控制台，便于调试
-            console.log('🔍 严格信号分析:', details.join(', '));
+            console.log('🔍 多维度分析结果:', {
+                多头得分: bullScore,
+                空头得分: bearScore,
+                信心度: confidenceLevel + '%',
+                多头理由: reasons.bull,
+                空头理由: reasons.bear,
+                操作建议: actionText,
+                详细: details.join(', ')
+            });
 
             // 显示信号
             const signalsHTML = signals.map(s => 
@@ -3498,8 +3675,17 @@
             ).join('');
             document.getElementById('signals').innerHTML = signalsHTML;
 
-            // 显示指标面板
+            // 显示指标面板（添加详细推荐）
             const panelHTML = `
+                <div style="background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(102, 126, 234, 0.1)); 
+                            padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #4facfe;">
+                    <div style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: #4facfe;">
+                        🎯 智能操作建议
+                    </div>
+                    <div style="font-size: 14px; line-height: 1.8;">
+                        ${recommendation}
+                    </div>
+                </div>
                 <div class="indicator-row">
                     <span class="indicator-name">趋势方向</span>
                     <span class="indicator-value">${trendText}</span>
@@ -3521,7 +3707,7 @@
                     <span class="indicator-value">${bollingerText}</span>
                 </div>
                 <div class="indicator-row">
-                    <span class="indicator-name">严格信号</span>
+                    <span class="indicator-name">综合信号</span>
                     <span class="indicator-value">${strictText}</span>
                 </div>
             `;
