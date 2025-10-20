@@ -1218,7 +1218,23 @@
             { name: '京东', code: '9618.HK', market: '港股', category: '电商' },
             { name: '小米集团', code: '1810.HK', market: '港股', category: '科技' },
             { name: '比亚迪股份', code: '1211.HK', market: '港股', category: '汽车' },
-            { name: '中国移动', code: '0941.HK', market: '港股', category: '通信' }
+            { name: '中国移动', code: '0941.HK', market: '港股', category: '通信' },
+            // 加密货币（币圈）
+            { name: '比特币', code: 'BTC-USD', market: '加密货币', category: '主流币' },
+            { name: '以太坊', code: 'ETH-USD', market: '加密货币', category: '主流币' },
+            { name: '币安币', code: 'BNB-USD', market: '加密货币', category: '主流币' },
+            { name: '瑞波币', code: 'XRP-USD', market: '加密货币', category: '主流币' },
+            { name: '卡尔达诺', code: 'ADA-USD', market: '加密货币', category: '主流币' },
+            { name: 'Solana', code: 'SOL-USD', market: '加密货币', category: '主流币' },
+            { name: '狗狗币', code: 'DOGE-USD', market: '加密货币', category: 'Meme币' },
+            { name: '柴犬币', code: 'SHIB-USD', market: '加密货币', category: 'Meme币' },
+            { name: 'Polygon', code: 'MATIC-USD', market: '加密货币', category: 'Layer2' },
+            { name: 'Avalanche', code: 'AVAX-USD', market: '加密货币', category: 'Layer1' },
+            { name: 'Polkadot', code: 'DOT-USD', market: '加密货币', category: '跨链' },
+            { name: 'Chainlink', code: 'LINK-USD', market: '加密货币', category: 'DeFi' },
+            { name: 'Uniswap', code: 'UNI-USD', market: '加密货币', category: 'DeFi' },
+            { name: 'Litecoin', code: 'LTC-USD', market: '加密货币', category: '主流币' },
+            { name: 'Bitcoin Cash', code: 'BCH-USD', market: '加密货币', category: '主流币' }
         ];
 
         // 热门基金列表（扩展版 - 使用ETF代码）
@@ -1738,7 +1754,7 @@
                 if (errorMsg.includes('HTTP error')) {
                     errorMsg = '网络连接失败，请检查网络或稍后重试';
                 } else if (errorMsg.includes('未找到数据')) {
-                    errorMsg = `股票代码"${stockCode}"可能不正确，请检查：\n- 美股直接输入代码（如 AAPL）\n- A股上海加 .SS（如 600519.SS）\n- A股深圳加 .SZ（如 000001.SZ）\n- 港股加 .HK（如 0700.HK）`;
+                    errorMsg = `股票代码"${stockCode}"可能不正确，请检查：\n- 美股直接输入代码（如 AAPL）\n- A股上海加 .SS（如 600519.SS）\n- A股深圳加 .SZ（如 000001.SZ）\n- 港股加 .HK（如 0700.HK）\n- 加密货币加 -USD（如 BTC-USD, ETH-USD）`;
                 }
                 
                 showError(errorMsg);
@@ -3447,8 +3463,11 @@
                 toggleBtn.addEventListener('click', () => {
                     const enlarged = container.classList.toggle('enlarged');
                     toggleBtn.textContent = enlarged ? '⤡ 还原' : '⤢ 放大';
-                    // 重新计算尺寸
-                    resizeOrRedraw(container);
+                    // 滚动到视图并重新计算尺寸
+                    if (enlarged) {
+                        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                    setTimeout(() => resizeOrRedraw(container), 200);
                 });
 
                 const saveBtn = document.createElement('button');
@@ -3480,20 +3499,41 @@
         function resizeOrRedraw(container) {
             // Chart.js图表：直接resize
             const canvas = container.querySelector('canvas');
-            if (!canvas) return;
+            if (!canvas) {
+                console.warn('未找到canvas元素');
+                return;
+            }
+            
             const id = canvas.id;
+            console.log('🔄 调整图表尺寸:', id);
+            
+            // K线图特殊处理：需要重新绘制
             if (id === 'candleCanvas' || container.id === 'candlestickChart') {
-                // 重新绘制K线以适配新高度
                 if (stockData && currentIndicators) {
-                    drawCandlestickChart(stockData, currentIndicators);
+                    setTimeout(() => {
+                        drawCandlestickChart(stockData, currentIndicators);
+                        console.log('✅ K线图已重绘');
+                    }, 100);
                 }
                 return;
             }
+            
+            // Chart.js图表：调用resize方法
             if (id && id.endsWith('Chart')) {
                 const key = id.replace('Chart', '');
                 const chart = charts[key];
                 if (chart && typeof chart.resize === 'function') {
-                    setTimeout(() => chart.resize(), 50);
+                    // 多次尝试resize，确保生效
+                    setTimeout(() => {
+                        chart.resize();
+                        console.log('✅ 图表已调整:', key);
+                    }, 100);
+                    setTimeout(() => {
+                        chart.resize();
+                        chart.update('none'); // 强制更新
+                    }, 300);
+                } else {
+                    console.warn('未找到图表实例:', key);
                 }
             }
         }
