@@ -157,6 +157,7 @@
             border-radius: 12px;
             border: 1px solid #2d3561;
             margin-bottom: 25px;
+            position: relative;
         }
         .card h2 {
             font-size: 20px;
@@ -174,7 +175,7 @@
             min-height: 500px;
         }
         .chart-container.small {
-            height: 450px;
+            height: 550px;
         }
         .chart-container.large {
             height: 700px;
@@ -183,6 +184,30 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 25px;
+        }
+
+        .chart-action-bar {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+            z-index: 3;
+        }
+        .chart-action-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #ddd;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .chart-action-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .chart-container.enlarged {
+            height: 900px !important;
         }
         
         /* 中等屏幕 - 显示1列 */
@@ -619,6 +644,9 @@
             }
             .chart-container.large {
                 height: 950px;
+            }
+            .chart-container.enlarged {
+                height: 1100px !important;
             }
         }
     </style>
@@ -2118,6 +2146,8 @@
             
             // 绘制所有图表
             drawAllCharts(data, indicators);
+            // 附加每个图表的放大/还原控制
+            attachChartControls();
             
             // 形态识别
             displayPatterns(data);
@@ -3088,6 +3118,14 @@
             const ma20 = indicators.ma20[indicators.ma20.length - 1];
             const ma60 = indicators.ma60[indicators.ma60.length - 1];
 
+            // 辅助函数
+            const n = data.length - 1;
+            const crossedUp = (a, b) => a[n - 1] > b[n - 1] && a[n - 2] <= b[n - 2];
+            const crossedDown = (a, b) => a[n - 1] < b[n - 1] && a[n - 2] >= b[n - 2];
+            const slopeUp = arr => arr[n - 1] > arr[n - 2];
+            const slopeDown = arr => arr[n - 1] < arr[n - 2];
+            const safe = v => (typeof v === 'number' && isFinite(v));
+
             // 趋势信号
             let trendText = '';
             if (ma5 > ma20 && ma20 > ma60) {
@@ -3116,6 +3154,9 @@
             // MACD信号
             let macdText = '';
             const prevMACD = indicators.macd.macd[indicators.macd.macd.length - 2];
+            const dif = indicators.macd.dif;
+            const dea = indicators.macd.dea;
+            const hist = indicators.macd.macd;
             if (currentMACD > 0 && prevMACD < 0) {
                 signals.push({ text: 'MACD金叉', type: 'buy' });
                 macdText = '<span class="bullish-text">金叉</span>';
@@ -3162,6 +3203,41 @@
                 bollingerText = '<span class="neutral-text">中轨下方</span>';
             }
 
+            // 更严格的综合信号（多因子确认）
+            const adx = indicators.dmi.adx;
+            const pdi = indicators.dmi.pdi;
+            const mdi = indicators.dmi.mdi;
+            let strictText = '';
+            let strictScore = 0;
+            const total = 5;
+            // 条件1：均线多头/空头
+            const bullMA = ma5 > ma20 && ma20 > ma60; if (bullMA) strictScore++;
+            const bearMA = ma5 < ma20 && ma20 < ma60;
+            // 条件2：MACD DIF/DEA金叉/死叉且柱能量增强
+            const macdBull = crossedUp(dif, dea) && safe(hist[n - 1]) && safe(hist[n - 2]) && hist[n - 1] > hist[n - 2];
+            const macdBear = crossedDown(dif, dea) && safe(hist[n - 1]) && safe(hist[n - 2]) && hist[n - 1] < hist[n - 2];
+            if (macdBull || macdBear) strictScore++;
+            // 条件3：RSI在合理区间并上/下行
+            const rsiBull = currentRSI > 50 && currentRSI < 70 && slopeUp(indicators.rsi);
+            const rsiBear = currentRSI < 50 && currentRSI > 30 && slopeDown(indicators.rsi);
+            if (rsiBull || rsiBear) strictScore++;
+            // 条件4：DMI趋势强度
+            const dmiBull = pdi[pdi.length - 1] > mdi[mdi.length - 1] && adx[adx.length - 1] >= 20;
+            const dmiBear = pdi[pdi.length - 1] < mdi[mdi.length - 1] && adx[adx.length - 1] >= 20;
+            if (dmiBull || dmiBear) strictScore++;
+            // 条件5：布林带方向（位于中轨上/下且同向）
+            const bbBull = latest.close > middleBB;
+            const bbBear = latest.close < middleBB;
+            if (bbBull || bbBear) strictScore++;
+
+            if ((bullMA && macdBull && rsiBull && dmiBull && bbBull)) {
+                strictText = `<span class="bullish-text">强势做多（${strictScore}/${total}）</span>`;
+            } else if ((bearMA && macdBear && rsiBear && dmiBear && bbBear)) {
+                strictText = `<span class="bearish-text">强势做空（${strictScore}/${total}）</span>`;
+            } else {
+                strictText = `<span class="neutral-text">观望（满足 ${strictScore}/${total} 条）</span>`;
+            }
+
             // 显示信号
             const signalsHTML = signals.map(s => 
                 `<div class="signal ${s.type}">${s.text}</div>`
@@ -3190,8 +3266,80 @@
                     <span class="indicator-name">布林带</span>
                     <span class="indicator-value">${bollingerText}</span>
                 </div>
+                <div class="indicator-row">
+                    <span class="indicator-name">严格信号</span>
+                    <span class="indicator-value">${strictText}</span>
+                </div>
             `;
             document.getElementById('indicatorPanel').innerHTML = panelHTML;
+        }
+
+        // 为每个图表卡片附加“放大/还原”与“下载”按钮
+        function attachChartControls() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const container = card.querySelector('.chart-container');
+                if (!container) return;
+                if (card.querySelector('.chart-action-bar')) return; // 避免重复
+
+                const bar = document.createElement('div');
+                bar.className = 'chart-action-bar';
+
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'chart-action-btn';
+                toggleBtn.textContent = '⤢ 放大';
+                toggleBtn.addEventListener('click', () => {
+                    const enlarged = container.classList.toggle('enlarged');
+                    toggleBtn.textContent = enlarged ? '⤡ 还原' : '⤢ 放大';
+                    // 重新计算尺寸
+                    resizeOrRedraw(container);
+                });
+
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'chart-action-btn';
+                saveBtn.textContent = '🖼 下载';
+                saveBtn.addEventListener('click', () => {
+                    const canvas = container.querySelector('canvas');
+                    if (!canvas) return;
+                    try {
+                        const url = canvas.toDataURL('image/png', 1.0);
+                        if (url && url.length > 100) {
+                            const id = canvas.id || 'chart';
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = `${currentSymbol || 'chart'}_${id}.png`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                    } catch (e) { console.warn('下载失败', e); }
+                });
+
+                bar.appendChild(toggleBtn);
+                bar.appendChild(saveBtn);
+                card.appendChild(bar);
+            });
+        }
+
+        function resizeOrRedraw(container) {
+            // Chart.js图表：直接resize
+            const canvas = container.querySelector('canvas');
+            if (!canvas) return;
+            const id = canvas.id;
+            if (id === 'candleCanvas' || container.id === 'candlestickChart') {
+                // 重新绘制K线以适配新高度
+                if (stockData && currentIndicators) {
+                    drawCandlestickChart(stockData, currentIndicators);
+                }
+                return;
+            }
+            if (id && id.endsWith('Chart')) {
+                const key = id.replace('Chart', '');
+                const chart = charts[key];
+                if (chart && typeof chart.resize === 'function') {
+                    setTimeout(() => chart.resize(), 50);
+                }
+            }
         }
 
         // 绘制所有图表
