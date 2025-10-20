@@ -667,6 +667,9 @@
                     <button onclick="switchCategory('fund')" id="fundCategoryBtn" class="category-btn">
                         💼 基金市场
                     </button>
+                    <button onclick="switchCategory('crypto')" id="cryptoCategoryBtn" class="category-btn">
+                        ₿ 加密货币
+                    </button>
                 </div>
             </div>
 
@@ -681,6 +684,18 @@
                 <div style="margin-bottom: 15px;">
                     <h3 style="color: #4facfe; font-size: 16px; margin-bottom: 10px;">💼 热门基金</h3>
                     <div class="stock-grid" id="fundGrid"></div>
+                </div>
+            </div>
+
+            <div id="cryptoCategory" class="category-content" style="display: none;">
+                <div style="margin-bottom: 15px;">
+                    <h3 style="color: #4facfe; font-size: 16px; margin-bottom: 10px;">₿ 加密货币 (Crypto)</h3>
+                    <div class="stock-grid" id="cryptoGrid"></div>
+                </div>
+                <div style="margin-top: 15px; padding: 12px; background: rgba(251, 191, 36, 0.1); border-radius: 8px; border-left: 4px solid #fbbf24;">
+                    <p style="color: #fbbf24; font-size: 13px; margin: 0;">
+                        ⚠️ <strong>风险提示：</strong>加密货币市场波动极大，价格可能剧烈波动。请谨慎投资，做好风险管理。
+                    </p>
                 </div>
             </div>
 
@@ -1218,23 +1233,36 @@
             { name: '京东', code: '9618.HK', market: '港股', category: '电商' },
             { name: '小米集团', code: '1810.HK', market: '港股', category: '科技' },
             { name: '比亚迪股份', code: '1211.HK', market: '港股', category: '汽车' },
-            { name: '中国移动', code: '0941.HK', market: '港股', category: '通信' },
-            // 加密货币（币圈）
+            { name: '中国移动', code: '0941.HK', market: '港股', category: '通信' }
+        ];
+
+        // 加密货币列表（币圈）
+        const cryptoList = [
+            // 主流币
             { name: '比特币', code: 'BTC-USD', market: '加密货币', category: '主流币' },
             { name: '以太坊', code: 'ETH-USD', market: '加密货币', category: '主流币' },
             { name: '币安币', code: 'BNB-USD', market: '加密货币', category: '主流币' },
             { name: '瑞波币', code: 'XRP-USD', market: '加密货币', category: '主流币' },
             { name: '卡尔达诺', code: 'ADA-USD', market: '加密货币', category: '主流币' },
             { name: 'Solana', code: 'SOL-USD', market: '加密货币', category: '主流币' },
+            { name: 'Litecoin', code: 'LTC-USD', market: '加密货币', category: '主流币' },
+            { name: 'Bitcoin Cash', code: 'BCH-USD', market: '加密货币', category: '主流币' },
+            // Meme币
             { name: '狗狗币', code: 'DOGE-USD', market: '加密货币', category: 'Meme币' },
             { name: '柴犬币', code: 'SHIB-USD', market: '加密货币', category: 'Meme币' },
+            { name: 'Pepe', code: 'PEPE-USD', market: '加密货币', category: 'Meme币' },
+            // Layer1/Layer2
             { name: 'Polygon', code: 'MATIC-USD', market: '加密货币', category: 'Layer2' },
             { name: 'Avalanche', code: 'AVAX-USD', market: '加密货币', category: 'Layer1' },
             { name: 'Polkadot', code: 'DOT-USD', market: '加密货币', category: '跨链' },
+            { name: 'Cosmos', code: 'ATOM-USD', market: '加密货币', category: '跨链' },
+            // DeFi
             { name: 'Chainlink', code: 'LINK-USD', market: '加密货币', category: 'DeFi' },
             { name: 'Uniswap', code: 'UNI-USD', market: '加密货币', category: 'DeFi' },
-            { name: 'Litecoin', code: 'LTC-USD', market: '加密货币', category: '主流币' },
-            { name: 'Bitcoin Cash', code: 'BCH-USD', market: '加密货币', category: '主流币' }
+            { name: 'Aave', code: 'AAVE-USD', market: '加密货币', category: 'DeFi' },
+            // 稳定币
+            { name: 'USDT', code: 'USDT-USD', market: '加密货币', category: '稳定币' },
+            { name: 'USDC', code: 'USDC-USD', market: '加密货币', category: '稳定币' }
         ];
 
         // 热门基金列表（扩展版 - 使用ETF代码）
@@ -1306,6 +1334,7 @@
         window.onload = function() {
             initStockGrid();
             initFundGrid();
+            initCryptoGrid();
         };
 
         // 初始化股票列表
@@ -1332,19 +1361,36 @@
             `).join('');
         }
 
+        // 初始化加密货币列表
+        function initCryptoGrid() {
+            const grid = document.getElementById('cryptoGrid');
+            grid.innerHTML = cryptoList.map(crypto => `
+                <div class="stock-item" onclick="selectStock('${crypto.code}', '${crypto.name}')">
+                    <div class="stock-name">${crypto.name}</div>
+                    <div class="stock-code">${crypto.code}</div>
+                    <div class="stock-code">${crypto.category}</div>
+                </div>
+            `).join('');
+        }
+
         // 切换分类
         function switchCategory(category) {
             document.getElementById('stockCategoryBtn').classList.remove('active');
             document.getElementById('fundCategoryBtn').classList.remove('active');
+            document.getElementById('cryptoCategoryBtn').classList.remove('active');
             document.getElementById('stockCategory').style.display = 'none';
             document.getElementById('fundCategory').style.display = 'none';
+            document.getElementById('cryptoCategory').style.display = 'none';
 
             if (category === 'stock') {
                 document.getElementById('stockCategoryBtn').classList.add('active');
                 document.getElementById('stockCategory').style.display = 'block';
-            } else {
+            } else if (category === 'fund') {
                 document.getElementById('fundCategoryBtn').classList.add('active');
                 document.getElementById('fundCategory').style.display = 'block';
+            } else if (category === 'crypto') {
+                document.getElementById('cryptoCategoryBtn').classList.add('active');
+                document.getElementById('cryptoCategory').style.display = 'block';
             }
         }
 
@@ -1780,23 +1826,42 @@
             }
         ];
 
-        // 多数据源配置（更多选择）
+        // 多数据源配置（扩展更多可靠代理）
         const multiDataSources = [
             {
-                name: 'AllOrigins Proxy',
-                getUrl: (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+                name: '直接访问（无代理）',
+                getUrl: (url) => url,
+                timeout: 8000
             },
             {
-                name: 'CORS Anywhere',
-                getUrl: (url) => `https://cors-anywhere.herokuapp.com/${url}`
+                name: 'AllOrigins Proxy',
+                getUrl: (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+                timeout: 15000
+            },
+            {
+                name: 'CORS Proxy',
+                getUrl: (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                timeout: 12000
             },
             {
                 name: 'ThingProxy',
-                getUrl: (url) => `https://thingproxy.freeboard.io/fetch/${url}`
+                getUrl: (url) => `https://thingproxy.freeboard.io/fetch/${url}`,
+                timeout: 12000
+            },
+            {
+                name: 'Cloudflare Worker',
+                getUrl: (url) => `https://cors-anywhere-cf.herokuapp.com/${url}`,
+                timeout: 10000
             },
             {
                 name: 'CORS.SH',
-                getUrl: (url) => `https://cors.sh/${url}`
+                getUrl: (url) => `https://cors.sh/${url}`,
+                timeout: 10000
+            },
+            {
+                name: 'JSONProxy',
+                getUrl: (url) => `https://jsonp.afeld.me/?url=${encodeURIComponent(url)}`,
+                timeout: 10000
             }
         ];
 
@@ -1821,13 +1886,24 @@
             const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${period1}&period2=${period2}&interval=${interval}`;
             
             // 尝试多个数据源
+            let lastError = null;
             for (let i = 0; i < multiDataSources.length; i++) {
                 try {
                     const source = multiDataSources[i];
-                    console.log(`🔄 尝试数据源 ${i + 1}/${multiDataSources.length}: ${source.name}`);
+                    console.log(`🔄 尝试数据源 ${i + 1}/${multiDataSources.length}: ${source.name} (超时${source.timeout}ms)`);
                     
                     const proxyUrl = source.getUrl(yahooUrl);
-                    const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), source.timeout);
+                    
+                    const response = await fetch(proxyUrl, { 
+                        signal: controller.signal,
+                        headers: {
+                            'Accept': 'application/json',
+                        }
+                    });
+                    
+                    clearTimeout(timeoutId);
                     
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}`);
@@ -1906,17 +1982,23 @@
                     
                     throw new Error('未找到数据');
                 } catch (error) {
-                    console.warn(`❌ ${multiDataSources[i].name} 失败:`, error.message);
+                    lastError = error;
+                    const errorMsg = error.name === 'AbortError' ? '请求超时' : error.message;
+                    console.warn(`❌ ${multiDataSources[i].name} 失败: ${errorMsg}`);
                     
                     // 如果不是最后一个数据源，继续尝试
                     if (i < multiDataSources.length - 1) {
-                        console.log('继续尝试下一个数据源...');
+                        console.log('⏭️ 继续尝试下一个数据源...');
+                        await new Promise(resolve => setTimeout(resolve, 500)); // 短暂延迟
                         continue;
                     }
                 }
             }
             
-            throw new Error('所有数据源都无法访问，请检查网络或稍后重试');
+            // 所有数据源都失败
+            const errorDetail = lastError ? ` (最后错误: ${lastError.message})` : '';
+            console.error('🚫 所有数据源均失败', errorDetail);
+            throw new Error(`所有${multiDataSources.length}个数据源都无法访问${errorDetail}\n\n可能原因：\n1. 网络连接问题\n2. 防火墙或代理限制\n3. Yahoo Finance API暂时不可用\n4. 股票代码不正确\n\n建议：稍后重试或检查网络设置`);
         }
 
         // 获取公司基本面信息（带多数据源，静默失败）
