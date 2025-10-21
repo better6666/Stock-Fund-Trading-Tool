@@ -171,14 +171,14 @@
             background: #0f1429;
             border-radius: 8px;
             padding: 20px;
-            height: 600px;
-            min-height: 500px;
+            height: 750px;
+            min-height: 600px;
         }
         .chart-container.small {
-            height: 550px;
+            height: 650px;
         }
         .chart-container.large {
-            height: 700px;
+            height: 850px;
         }
         .chart-grid {
             display: grid;
@@ -605,13 +605,13 @@
                 max-width: 1800px;
             }
             .chart-container {
-                height: 650px;
+                height: 800px;
             }
             .chart-container.small {
-                height: 500px;
+                height: 700px;
             }
             .chart-container.large {
-                height: 750px;
+                height: 900px;
             }
         }
         
@@ -621,13 +621,13 @@
                 max-width: 2200px;
             }
             .chart-container {
-                height: 700px;
+                height: 850px;
             }
             .chart-container.small {
-                height: 550px;
+                height: 750px;
             }
             .chart-container.large {
-                height: 850px;
+                height: 1000px;
             }
         }
         
@@ -637,16 +637,16 @@
                 max-width: 2800px;
             }
             .chart-container {
-                height: 800px;
-            }
-            .chart-container.small {
-                height: 650px;
-            }
-            .chart-container.large {
                 height: 950px;
             }
+            .chart-container.small {
+                height: 850px;
+            }
+            .chart-container.large {
+                height: 1100px;
+            }
             .chart-container.enlarged {
-                height: 1100px !important;
+                height: 1300px !important;
             }
         }
     </style>
@@ -3431,15 +3431,13 @@
                 reasons.bear.push('MACD零轴下方空头排列且柱体放大');
             }
             
-            // ========== 维度3：RSI强度与方向（连续2期同向）==========
+            // ========== 维度3：RSI强度与方向（放宽条件）==========
             const rsiPrev = indicators.rsi[n - 2];
             const rsiPrev2 = indicators.rsi[n - 3];
-            // 多头：RSI在50-70强势区间，且连续上行
-            const rsiBull = currentRSI > 50 && currentRSI < 70 && 
-                           currentRSI > rsiPrev && rsiPrev > rsiPrev2;
-            // 空头：RSI在30-50弱势区间，且连续下行
-            const rsiBear = currentRSI < 50 && currentRSI > 30 && 
-                           currentRSI < rsiPrev && rsiPrev < rsiPrev2;
+            // 多头：RSI在45-75强势区间，且上行（无需连续）
+            const rsiBull = currentRSI > 45 && currentRSI < 75 && currentRSI > rsiPrev;
+            // 空头：RSI在25-55弱势区间，且下行（无需连续）
+            const rsiBear = currentRSI < 55 && currentRSI > 25 && currentRSI < rsiPrev;
             if (rsiBull) { 
                 bullScore++; 
                 details.push('✓RSI强势'); 
@@ -3468,11 +3466,13 @@
                 reasons.bear.push(`DMI确认下跌趋势（ADX=${adxCurr.toFixed(0)}, MDI-PDI=${(mdiCurr-pdiCurr).toFixed(0)}）`);
             }
             
-            // ========== 维度5：KDJ位置与交叉（低位金叉/高位死叉）==========
+            // ========== 维度5：KDJ位置与交叉（放宽阈值）==========
             const kPrev = indicators.kdj.k[n - 2];
             const dPrev = indicators.kdj.d[n - 2];
-            const kdjBull = currentK < 80 && currentK > currentD && kPrev <= dPrev && currentK > 20;
-            const kdjBear = currentK > 20 && currentK < currentD && kPrev >= dPrev && currentK < 80;
+            // 多头：K>D或刚刚金叉，K值在合理范围
+            const kdjBull = (currentK > currentD && currentK < 85) || (currentK > currentD && kPrev <= dPrev);
+            // 空头：K<D或刚刚死叉，K值在合理范围
+            const kdjBear = (currentK < currentD && currentK > 15) || (currentK < currentD && kPrev >= dPrev);
             if (kdjBull) { 
                 bullScore++; 
                 details.push('✓KDJ金叉'); 
@@ -3532,11 +3532,11 @@
                 if (bearScore > bullScore) { bearScore++; details.push('✓波动率正常'); reasons.bear.push('波动适中'); }
             }
             
-            // ========== 维度9：威廉指标（WR超卖超买）==========
+            // ========== 维度9：威廉指标（WR超卖超买，放宽条件）==========
             const wrCurr = wr[wr.length - 1];
-            // WR在-20至-80之间较为可靠
-            const wrBull = wrCurr < -80 && wrCurr > wr[wr.length - 2]; // 超卖且回升
-            const wrBear = wrCurr > -20 && wrCurr < wr[wr.length - 2]; // 超买且回落
+            // 放宽WR阈值
+            const wrBull = (wrCurr < -75 && wrCurr > wr[wr.length - 2]) || (wrCurr < -60 && wrCurr > -40); // 超卖回升或中位偏强
+            const wrBear = (wrCurr > -25 && wrCurr < wr[wr.length - 2]) || (wrCurr > -60 && wrCurr < -40); // 超买回落或中位偏弱
             if (wrBull) { bullScore++; details.push('✓WR超卖回升'); reasons.bull.push(`WR ${wrCurr.toFixed(0)} 超卖反弹`); }
             if (wrBear) { bearScore++; details.push('✓WR超买回落'); reasons.bear.push(`WR ${wrCurr.toFixed(0)} 超买回调`); }
             
@@ -3568,18 +3568,18 @@
             if (rocBull) { bullScore++; details.push('✓ROC动量加速'); reasons.bull.push('上涨动量持续增强'); }
             if (rocBear) { bearScore++; details.push('✓ROC动量减弱'); reasons.bear.push('下跌动量持续增强'); }
             
-            // ========== 维度13：Stoch随机指标（双线交叉）==========
+            // ========== 维度13：Stoch随机指标（放宽交叉条件）==========
             const stochK = stoch.k[stoch.k.length - 1];
             const stochD = stoch.d[stoch.d.length - 1];
             const stochKPrev = stoch.k[stoch.k.length - 2];
             const stochDPrev = stoch.d[stoch.d.length - 2];
-            // K线上穿D线且在20以下=金叉买入，K线下穿D线且在80以上=死叉卖出
-            const stochBull = stochK > stochD && stochKPrev <= stochDPrev && stochK < 20;
-            const stochBear = stochK < stochD && stochKPrev >= stochDPrev && stochK > 80;
+            // 放宽阈值：K>D且低位或刚金叉=做多，K<D且高位或刚死叉=做空
+            const stochBull = (stochK > stochD && stochK < 50) || (stochK > stochD && stochKPrev <= stochDPrev);
+            const stochBear = (stochK < stochD && stochK > 50) || (stochK < stochD && stochKPrev >= stochDPrev);
             if (stochBull) { bullScore++; details.push('✓Stoch低位金叉'); reasons.bull.push('随机指标低位金叉'); }
             if (stochBear) { bearScore++; details.push('✓Stoch高位死叉'); reasons.bear.push('随机指标高位死叉'); }
             
-            // ========== 维度14：价格动量（连续上涨/下跌天数）==========
+            // ========== 维度14：价格动量（降低连续天数要求）==========
             let consecutiveUp = 0;
             let consecutiveDown = 0;
             for (let i = data.length - 1; i > data.length - 6 && i > 0; i--) {
@@ -3590,15 +3590,17 @@
                 if (data[i].close < data[i - 1].close) consecutiveDown++;
                 else break;
             }
-            if (consecutiveUp >= 3) { bullScore++; details.push(`✓连涨${consecutiveUp}天`); reasons.bull.push(`连续上涨${consecutiveUp}天，动量强劲`); }
-            if (consecutiveDown >= 3) { bearScore++; details.push(`✓连跌${consecutiveDown}天`); reasons.bear.push(`连续下跌${consecutiveDown}天，弱势明显`); }
+            // 降低到2天即可
+            if (consecutiveUp >= 2) { bullScore++; details.push(`✓连涨${consecutiveUp}天`); reasons.bull.push(`连续上涨${consecutiveUp}天，动量向好`); }
+            if (consecutiveDown >= 2) { bearScore++; details.push(`✓连跌${consecutiveDown}天`); reasons.bear.push(`连续下跌${consecutiveDown}天，走势偏弱`); }
             
-            // ========== 维度15：量价配合度（价涨量增/价跌量增）==========
+            // ========== 维度15：量价配合度（放宽成交量要求）==========
             const vol3DayAvg = (data[n - 1].volume + data[n - 2].volume + data[n - 3].volume) / 3;
             const vol10DayAvg = data.slice(-10).reduce((sum, d) => sum + d.volume, 0) / 10;
             const priceUp3Days = data[n - 1].close > data[n - 3].close;
             const priceDown3Days = data[n - 1].close < data[n - 3].close;
-            const volumeExpand = vol3DayAvg > vol10DayAvg * 1.2;
+            // 降低量能放大要求到1.1倍
+            const volumeExpand = vol3DayAvg > vol10DayAvg * 1.1;
             
             if (priceUp3Days && volumeExpand) { 
                 bullScore++; 
@@ -3611,50 +3613,102 @@
                 reasons.bear.push('价格下跌且成交量放大，空头活跃');
             }
             
-            // ========== 最终判定（需要≥10个维度同时满足）==========
-            const minRequired = 10; // 提高至10个维度，更严格
+            // ========== 最终判定（优化后的灵活判定系统）==========
+            const strongSignal = 8;  // 强信号门槛降低为8
+            const moderateSignal = 6; // 中等信号为6
+            const weakSignal = 4;     // 弱信号为4
+            
             let recommendation = '';
             let confidenceLevel = 0;
             let actionText = '';
             
-            if (bullScore >= minRequired && bullScore > bearScore) {
+            // 计算优势差距
+            const advantage = bullScore - bearScore;
+            
+            if (bullScore >= strongSignal && advantage >= 3) {
+                // 强烈做多：满足8个维度且领先空头3分以上
                 strictText = `<span class="bullish-text">🔥 强烈做多 (${bullScore}/${total})</span>`;
                 details.unshift('🔥强烈做多信号');
-                confidenceLevel = Math.round((bullScore / total) * 100);
-                recommendation = `<strong style="color:#22c55e">📈 建议做多</strong><br/>
-                    信心度：${confidenceLevel}% | 满足 ${bullScore}/${total} 个条件<br/>
-                    <small style="color:#aaa">做多理由：${reasons.bull.slice(0, 3).join('；')}</small>`;
-                actionText = '建议适当做多，设置止损位';
-            } else if (bearScore >= minRequired && bearScore > bullScore) {
+                confidenceLevel = Math.min(95, Math.round((bullScore / total) * 100 + advantage * 3));
+                recommendation = `<strong style="color:#22c55e; font-size:16px">📈 强烈建议做多</strong><br/>
+                    <div style="margin-top:8px">
+                        <span style="color:#22c55e">● 信心度：${confidenceLevel}%</span> | 
+                        <span style="color:#aaa">满足 ${bullScore}/${total} 个条件</span> | 
+                        <span style="color:#22c55e">领先 +${advantage}</span>
+                    </div>
+                    <div style="margin-top:8px; padding:8px; background:rgba(34,197,94,0.1); border-radius:6px;">
+                        <small style="color:#22c55e; line-height:1.6">
+                            核心理由：${reasons.bull.slice(0, 3).join('；')}
+                        </small>
+                    </div>`;
+                actionText = '强烈建议做多，可适当加仓，严格设置止损';
+            } else if (bearScore >= strongSignal && advantage <= -3) {
+                // 强烈做空：满足8个维度且领先多头3分以上
                 strictText = `<span class="bearish-text">🔥 强烈做空 (${bearScore}/${total})</span>`;
                 details.unshift('🔥强烈做空信号');
-                confidenceLevel = Math.round((bearScore / total) * 100);
+                confidenceLevel = Math.min(95, Math.round((bearScore / total) * 100 + Math.abs(advantage) * 3));
+                recommendation = `<strong style="color:#ef4444; font-size:16px">📉 强烈建议做空</strong><br/>
+                    <div style="margin-top:8px">
+                        <span style="color:#ef4444">● 信心度：${confidenceLevel}%</span> | 
+                        <span style="color:#aaa">满足 ${bearScore}/${total} 个条件</span> | 
+                        <span style="color:#ef4444">领先 +${Math.abs(advantage)}</span>
+                    </div>
+                    <div style="margin-top:8px; padding:8px; background:rgba(239,68,68,0.1); border-radius:6px;">
+                        <small style="color:#ef4444; line-height:1.6">
+                            核心理由：${reasons.bear.slice(0, 3).join('；')}
+                        </small>
+                    </div>`;
+                actionText = '强烈建议减仓或做空，控制风险';
+            } else if (bullScore >= moderateSignal && advantage >= 2) {
+                // 中度做多：满足6个维度且领先2分
+                strictText = `<span class="bullish-text">✅ 做多 (${bullScore}/${total})</span>`;
+                details.unshift('✅做多信号');
+                confidenceLevel = Math.round((bullScore / total) * 100 + advantage * 2);
+                recommendation = `<strong style="color:#22c55e">📈 建议做多</strong><br/>
+                    <div style="margin-top:6px">
+                        <span style="color:#22c55e">● 信心度：${confidenceLevel}%</span> | 
+                        满足 ${bullScore}/${total} 个条件
+                    </div>
+                    <small style="color:#aaa">理由：${reasons.bull.slice(0, 2).join('；')}</small>`;
+                actionText = '建议适当做多，控制仓位，设置止损';
+            } else if (bearScore >= moderateSignal && advantage <= -2) {
+                // 中度做空：满足6个维度且领先2分
+                strictText = `<span class="bearish-text">✅ 做空 (${bearScore}/${total})</span>`;
+                details.unshift('✅做空信号');
+                confidenceLevel = Math.round((bearScore / total) * 100 + Math.abs(advantage) * 2);
                 recommendation = `<strong style="color:#ef4444">📉 建议做空</strong><br/>
-                    信心度：${confidenceLevel}% | 满足 ${bearScore}/${total} 个条件<br/>
-                    <small style="color:#aaa">做空理由：${reasons.bear.slice(0, 3).join('；')}</small>`;
-                actionText = '建议减仓或做空，控制风险';
-            } else if (bullScore >= 7 && bullScore > bearScore) {
+                    <div style="margin-top:6px">
+                        <span style="color:#ef4444">● 信心度：${confidenceLevel}%</span> | 
+                        满足 ${bearScore}/${total} 个条件
+                    </div>
+                    <small style="color:#aaa">理由：${reasons.bear.slice(0, 2).join('；')}</small>`;
+                actionText = '建议适当减仓，谨慎做空';
+            } else if (bullScore >= weakSignal && bullScore > bearScore) {
+                // 弱多观望
                 strictText = `<span style="color:#fbbf24">⚠️ 偏多观望 (${bullScore}/${total})</span>`;
-                details.unshift('⚠️偏多但未达标');
+                details.unshift('⚠️偏多但信号不足');
                 confidenceLevel = Math.round((bullScore / total) * 100);
-                recommendation = `<strong style="color:#fbbf24">🔍 偏多，谨慎观望</strong><br/>
-                    信心度：${confidenceLevel}% | 满足 ${bullScore}/${total} 个条件（需≥10）<br/>
-                    <small style="color:#aaa">建议：等待更多做多信号确认</small>`;
-                actionText = '偏多但未达标，建议观望等待确认';
-            } else if (bearScore >= 7 && bearScore > bullScore) {
+                recommendation = `<strong style="color:#fbbf24">🔍 偏多，建议观望</strong><br/>
+                    信心度：${confidenceLevel}% | 满足 ${bullScore}/${total} 个条件（需≥6强烈，≥8更佳）<br/>
+                    <small style="color:#aaa">建议：等待更多做多信号确认，暂时观望</small>`;
+                actionText = '偏多但信号不足，建议观望等待';
+            } else if (bearScore >= weakSignal && bearScore > bullScore) {
+                // 弱空观望
                 strictText = `<span style="color:#fbbf24">⚠️ 偏空观望 (${bearScore}/${total})</span>`;
-                details.unshift('⚠️偏空但未达标');
+                details.unshift('⚠️偏空但信号不足');
                 confidenceLevel = Math.round((bearScore / total) * 100);
-                recommendation = `<strong style="color:#fbbf24">🔍 偏空，谨慎观望</strong><br/>
-                    信心度：${confidenceLevel}% | 满足 ${bearScore}/${total} 个条件（需≥10）<br/>
-                    <small style="color:#aaa">建议：考虑减仓或等待反弹</small>`;
-                actionText = '偏空但未达标，建议谨慎操作';
+                recommendation = `<strong style="color:#fbbf24">🔍 偏空，建议观望</strong><br/>
+                    信心度：${confidenceLevel}% | 满足 ${bearScore}/${total} 个条件（需≥6强烈，≥8更佳）<br/>
+                    <small style="color:#aaa">建议：考虑轻仓减持，等待反弹或更多信号</small>`;
+                actionText = '偏空但信号不足，建议谨慎';
             } else {
-                strictText = `<span class="neutral-text">⛔ 严格观望 (多${bullScore}/空${bearScore})</span>`;
-                details.unshift('⛔信号混乱，严禁操作');
-                recommendation = `<strong style="color:#9ca3af">⛔ 信号混乱，严禁操作</strong><br/>
-                    多空分数：${bullScore} vs ${bearScore} （需单边≥10）<br/>
-                    <small style="color:#aaa">当前方向不明确，建议空仓观望，等待明确信号</small>`;
+                // 观望
+                strictText = `<span class="neutral-text">⛔ 方向不明，观望 (多${bullScore}/空${bearScore})</span>`;
+                details.unshift('⛔方向不明确');
+                confidenceLevel = 0;
+                recommendation = `<strong style="color:#9ca3af">⛔ 方向不明，严格观望</strong><br/>
+                    多空分数：${bullScore} vs ${bearScore} （差距${Math.abs(advantage)}，需≥2且单边≥6）<br/>
+                    <small style="color:#aaa">当前多空势均力敌，方向不明确，建议空仓观望，等待明确信号</small>`;
                 actionText = '多空信号混乱，强烈建议空仓观望';
             }
             
