@@ -180,6 +180,10 @@
         .chart-container.large {
             height: 850px;
         }
+        .chart-container.extra-large {
+            height: 1000px;
+            min-height: 900px;
+        }
         .chart-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -613,6 +617,9 @@
             .chart-container.large {
                 height: 900px;
             }
+            .chart-container.extra-large {
+                height: 1050px;
+            }
         }
         
         /* 超大屏幕优化 1920px+ */
@@ -629,6 +636,9 @@
             .chart-container.large {
                 height: 1000px;
             }
+            .chart-container.extra-large {
+                height: 1150px;
+            }
         }
         
         /* 4K超高清屏幕 2560px+ */
@@ -644,6 +654,9 @@
             }
             .chart-container.large {
                 height: 1100px;
+            }
+            .chart-container.extra-large {
+                height: 1250px;
             }
             .chart-container.enlarged {
                 height: 1300px !important;
@@ -836,14 +849,14 @@
             <div id="overview" class="content active">
                 <div class="card">
                     <h2>📊 K线图与均线系统</h2>
-                    <div class="chart-container large">
+                    <div class="chart-container extra-large">
                         <div id="candlestickChart"></div>
                     </div>
                 </div>
 
                 <div class="card">
                     <h2>📈 布林带分析（Bollinger Bands）</h2>
-                    <div class="chart-container">
+                    <div class="chart-container extra-large">
                         <div id="bollingerChart"></div>
                     </div>
                 </div>
@@ -3921,8 +3934,8 @@
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
             
-            // 计算绘图区域
-            const padding = { top: 40, right: 80, bottom: 60, left: 60 };
+            // 计算绘图区域（增大padding让图表更舒展）
+            const padding = { top: 60, right: 100, bottom: 80, left: 80 };
             const chartWidth = canvas.width - padding.left - padding.right;
             const chartHeight = canvas.height - padding.top - padding.bottom;
             
@@ -3957,16 +3970,16 @@
                 ctx.lineTo(padding.left + chartWidth, y);
                 ctx.stroke();
                 
-                // 价格标签
+                // 价格标签（增大字体）
                 const price = maxPrice - (priceRange / 5) * i;
-                ctx.fillStyle = '#aaa';
-                ctx.font = '12px Arial';
+                ctx.fillStyle = '#bbb';
+                ctx.font = '14px Arial';
                 ctx.textAlign = 'right';
-                ctx.fillText(price.toFixed(2), padding.left - 10, y + 4);
+                ctx.fillText(price.toFixed(2), padding.left - 15, y + 5);
             }
             
-            // 绘制K线
-            const candleWidth = Math.max(2, chartWidth / data.length - 2);
+            // 绘制K线（增大蜡烛宽度）
+            const candleWidth = Math.max(4, chartWidth / data.length - 1);
             data.forEach((d, i) => {
                 const x = indexToX(i);
                 const openY = priceToY(d.open);
@@ -3977,19 +3990,19 @@
                 const isUp = d.close >= d.open;
                 const color = isUp ? '#22c55e' : '#ef4444';
                 
-                // 绘制影线（上下影线）
+                // 绘制影线（上下影线，加粗）
                 ctx.strokeStyle = color;
-                ctx.lineWidth = 1;
+                ctx.lineWidth = 2;
                 ctx.beginPath();
                 ctx.moveTo(x, highY);
                 ctx.lineTo(x, lowY);
                 ctx.stroke();
                 
-                // 绘制实体
+                // 绘制实体（加粗）
                 ctx.fillStyle = color;
                 const bodyHeight = Math.abs(closeY - openY);
                 const bodyY = Math.min(openY, closeY);
-                ctx.fillRect(x - candleWidth / 2, bodyY, candleWidth, Math.max(1, bodyHeight));
+                ctx.fillRect(x - candleWidth / 2, bodyY, candleWidth, Math.max(2, bodyHeight));
             });
             
             // 绘制均线
@@ -4002,7 +4015,7 @@
             
             maLines.forEach(ma => {
                 ctx.strokeStyle = ma.color;
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 3;  // 增粗均线
                 ctx.beginPath();
                 let started = false;
                 data.forEach((d, i) => {
@@ -4020,35 +4033,35 @@
                 ctx.stroke();
             });
             
-            // 绘制图例
+            // 绘制图例（增大字体）
             let legendX = padding.left;
-            const legendY = 20;
+            const legendY = 30;
             maLines.forEach(ma => {
                 ctx.fillStyle = ma.color;
-                ctx.fillRect(legendX, legendY - 5, 15, 3);
-                ctx.fillStyle = '#aaa';
-                ctx.font = '12px Arial';
+                ctx.fillRect(legendX, legendY - 6, 20, 4);  // 加大图例色块
+                ctx.fillStyle = '#ddd';
+                ctx.font = 'bold 14px Arial';  // 增大字体
                 ctx.textAlign = 'left';
-                ctx.fillText(ma.label, legendX + 20, legendY);
-                legendX += 80;
+                ctx.fillText(ma.label, legendX + 25, legendY);
+                legendX += 100;  // 增加间距
             });
             
-            // 绘制日期（只显示部分）
-            ctx.fillStyle = '#aaa';
-            ctx.font = '11px Arial';
+            // 绘制日期（只显示部分，增大字体）
+            ctx.fillStyle = '#bbb';
+            ctx.font = '13px Arial';
             ctx.textAlign = 'center';
             const dateStep = Math.ceil(data.length / 8);
             for (let i = 0; i < data.length; i += dateStep) {
                 const x = indexToX(i);
                 const date = data[i].date.substring(5); // 只显示月-日
-                ctx.fillText(date, x, canvas.height - padding.bottom + 20);
+                ctx.fillText(date, x, canvas.height - padding.bottom + 25);
             }
             
-            // 绘制标题
+            // 绘制标题（增大字体）
             ctx.fillStyle = '#4facfe';
-            ctx.font = 'bold 16px Arial';
+            ctx.font = 'bold 20px Arial';
             ctx.textAlign = 'left';
-            ctx.fillText('K线图与均线系统', padding.left, 25);
+            ctx.fillText('K线图与均线系统', padding.left, 35);
             
             // 保存到charts对象
             charts.candlestick = { canvas, redraw: () => drawCandlestickChart(data, indicators) };
@@ -4080,36 +4093,40 @@
                             label: '上轨',
                             data: indicators.bollinger.upper,
                             borderColor: '#ef4444',
-                            borderWidth: 2,
-                            borderDash: [5, 5],
+                            borderWidth: 3,  // 加粗
+                            borderDash: [8, 4],  // 加大虚线
                             fill: false,
-                            pointRadius: 0
+                            pointRadius: 0,
+                            tension: 0.1
                         },
                         {
                             label: '中轨',
                             data: indicators.bollinger.middle,
                             borderColor: '#facc15',
-                            borderWidth: 2,
+                            borderWidth: 3,  // 加粗
                             fill: false,
-                            pointRadius: 0
+                            pointRadius: 0,
+                            tension: 0.1
                         },
                         {
                             label: '下轨',
                             data: indicators.bollinger.lower,
                             borderColor: '#22c55e',
-                            borderWidth: 2,
-                            borderDash: [5, 5],
+                            borderWidth: 3,  // 加粗
+                            borderDash: [8, 4],  // 加大虚线
                             fill: false,
-                            pointRadius: 0
+                            pointRadius: 0,
+                            tension: 0.1
                         },
                         {
                             label: '收盘价',
                             data: data.map(d => d.close),
                             borderColor: '#4facfe',
-                            backgroundColor: 'rgba(79, 172, 254, 0.1)',
-                            borderWidth: 2,
+                            backgroundColor: 'rgba(79, 172, 254, 0.15)',
+                            borderWidth: 4,  // 加粗
                             fill: true,
-                            pointRadius: 0
+                            pointRadius: 0,
+                            tension: 0.1
                         }
                     ]
                 },
@@ -5039,16 +5056,16 @@
                     legend: {
                         display: true,
                         labels: { 
-                            color: '#aaa', 
-                            font: { size: 12 },
-                            padding: 15
+                            color: '#ddd', 
+                            font: { size: 15, weight: 'bold' },  // 增大图例字体
+                            padding: 20
                         }
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        titleFont: { size: 13 },
-                        bodyFont: { size: 12 },
-                        padding: 12,
+                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                        titleFont: { size: 15, weight: 'bold' },  // 增大提示框字体
+                        bodyFont: { size: 14 },
+                        padding: 15,
                         displayColors: true
                     }
                 },
@@ -5056,12 +5073,13 @@
                     x: {
                         grid: { 
                             color: '#2d3561',
-                            drawBorder: false
+                            drawBorder: false,
+                            lineWidth: 1.5  // 增粗网格线
                         },
                         ticks: { 
-                            color: '#aaa', 
+                            color: '#bbb', 
                             maxTicksLimit: 15, 
-                            font: { size: 11 },
+                            font: { size: 13 },  // 增大坐标轴字体
                             maxRotation: 45,
                             minRotation: 0
                         }
@@ -5069,11 +5087,12 @@
                     y: {
                         grid: { 
                             color: '#2d3561',
-                            drawBorder: false
+                            drawBorder: false,
+                            lineWidth: 1.5  // 增粗网格线
                         },
                         ticks: { 
-                            color: '#aaa', 
-                            font: { size: 11 },
+                            color: '#bbb', 
+                            font: { size: 13 },  // 增大坐标轴字体
                             precision: 2,
                             callback: function(value) {
                                 return value.toFixed(2);
